@@ -1,0 +1,467 @@
+#!/usr/bin/env python3
+"""
+Simple PDF Orchestrator - Clean and Lean
+Uses unified extractor with minimal complexity
+"""
+
+import logging
+from pathlib import Path
+from typing import Dict, Any, List
+from pathlib import Path
+import re
+from datetime import datetime
+from dataclasses import dataclass, field
+
+from .extractor import UnifiedPDFExtractor, ExtractionResult
+
+logger = logging.getLogger(__name__)
+
+
+@dataclass
+class LegalNode:
+    """Simple node for legal document structure."""
+    type: str
+    number: str
+    title: str = ""
+    content: str = ""
+    children: List['LegalNode'] = field(default_factory=list)
+    level: int = 0
+
+
+# Indonesian legal hierarchy patterns - for tree structure
+HIERARCHY_PATTERNS = {
+    "buku": (r"^\s*BUKU\s+([IVXLC]+)", 1),
+    "bab": (r"^\s*BAB\s+([IVX]+[A-Z]*)", 2),
+    "bagian": (r"^\s*BAGIAN\s+(?:KE\s*)?(\w+)", 3),
+    "paragraf": (r"^\s*PARAGRAF\s+(?:KE\s*)?(\w+)", 4),
+    "pasal": (r"^\s*Pasal\s+(\d+[A-Z]*)", 5),
+    "ayat": (r"^\s*\(\s*(\d+)\s*\)", 6),
+    "huruf": (r"^\s*([a-z])\.\s*(.*)", 7),
+    "angka": (r"^\s*(\d{1,2})\.\s*(.*)", 7.5),  # Flexible level for amendments and numbered items
+}
+
+
+class PDFOrchestrator:
+    """Simple PDF orchestrator using unified extractor"""
+
+    def __init__(self):
+        """Initialize with unified extractor"""
+        self.extractor = UnifiedPDFExtractor()
+        # Pre-compile regex patterns for performance
+        self._compiled_patterns = {
+            name: re.compile(pattern, re.IGNORECASE | re.MULTILINE)
+            for name, (pattern, _) in HIERARCHY_PATTERNS.items()
+        }
+        logger.info("PDFOrchestrator initialized with unified extractor and tree structure support")
+
+    def extract_text(self, file_path: str) -> ExtractionResult:
+        """Extract text from PDF - simple delegation"""
+        return self.extractor.extract_text(file_path)
+
+    def process_document_complete(self, document_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Complete document processing with PDF extraction and text cleaning.
+        """
+        enhanced_data = document_data.copy()
+
+        # Check if PDF exists
+        pdf_path = document_data.get('pdf_path')
+        if not pdf_path or not Path(pdf_path).exists():
+            logger.warning(f"No PDF available for document: {document_data.get('title', 'Unknown')}")
+            return enhanced_data
+
+        try:
+            # Extract text from PDF
+            pdf_result = self.extract_text(pdf_path)
+
+            if not pdf_result.success:
+                logger.warning(f"PDF extraction failed for: {pdf_path}")
+                return enhanced_data
+
+            # Clean extracted text
+            cleaned_text = self._clean_text(pdf_result.text)
+
+            # Build document tree structure
+            document_tree = self._build_document_tree(cleaned_text)
+
+            # Add PDF content, tree structure, and metadata
+            enhanced_data['doc_content'] = cleaned_text
+            enhanced_data['document_tree'] = self._serialize_tree(document_tree) if document_tree else None
+            enhanced_data['pdf_extraction_metadata'] = {
+                'method': pdf_result.method,
+                'confidence': pdf_result.confidence,
+                'processing_time': pdf_result.processing_time,
+                'text_length': len(cleaned_text) if cleaned_text else 0,
+                'original_text_length': len(pdf_result.text) if pdf_result.text else 0,
+                'page_count': pdf_result.page_count,
+                'tree_nodes_count': self._count_tree_nodes(document_tree) if document_tree else 0
+            }
+
+            logger.info(f"Successfully processed PDF: {pdf_path} ({pdf_result.method})")
+            return enhanced_data
+
+        except Exception as e:
+            logger.error(f"PDF processing failed for {pdf_path}: {str(e)}")
+            return enhanced_data
+
+    def process_txt_content(self, document_data: Dict[str, Any], txt_content: str) -> Dict[str, Any]:
+        """Process TXT content instead of PDF - for manual input"""
+        enhanced_data = document_data.copy()
+
+        try:
+            # Clean TXT content (optional, tergantung kualitas TXT)
+            cleaned_text = self._clean_text(txt_content)
+
+            # Build document tree dari TXT
+            document_tree = self._build_document_tree(cleaned_text)
+
+            # Update data dengan TXT content & tree
+            enhanced_data['content'] = cleaned_text
+            enhanced_data['document_tree'] = self._serialize_tree(document_tree) if document_tree else None
+            enhanced_data['pdf_extraction_metadata'] = {
+                'method': 'manual_txt_input',
+                'confidence': 100.0,  # Manual input = perfect confidence
+                'processing_time': 0.0,
+                'text_length': len(cleaned_text) if cleaned_text else 0,
+                'original_text_length': len(txt_content) if txt_content else 0,
+                'page_count': 0,  # TXT doesn't have pages
+                'tree_nodes_count': self._count_tree_nodes(document_tree) if document_tree else 0
+            }
+            enhanced_data['processing_status'] = 'txt_processed'
+            enhanced_data['last_updated'] = datetime.now().isoformat()
+
+            logger.info(f"Successfully processed TXT content: {document_data.get('title', 'Unknown')}")
+            return enhanced_data
+
+        except Exception as e:
+            logger.error(f"TXT content processing failed: {str(e)}")
+            return enhanced_data
+
+    def process_existing_pdfs(self, pdf_directory: str) -> List[Dict[str, Any]]:
+        """
+        Process existing PDF files in directory.
+        """
+        pdf_dir = Path(pdf_directory)
+        documents = []
+
+        if not pdf_dir.exists():
+            logger.error(f"PDF directory does not exist: {pdf_dir}")
+            return documents
+
+        pdf_files = list(pdf_dir.glob("*.pdf"))
+        logger.info(f"Found {len(pdf_files)} PDF files to process")
+
+        for i, pdf_path in enumerate(pdf_files, 1):
+            try:
+                logger.info(f"Processing PDF {i}/{len(pdf_files)}: {pdf_path.name}")
+
+                # Create minimal document data
+                document_data = {
+                    'title': pdf_path.stem.replace('_', ' ').title(),
+                    'form': 'Unknown',
+                    'number': 'Unknown',
+                    'year': 2024,
+                    'pdf_path': str(pdf_path)
+                }
+
+                # Process the document
+                processed_doc = self.process_document_complete(document_data)
+
+                if processed_doc.get('content'):
+                    documents.append(processed_doc)
+                    logger.info(f"Successfully processed: {pdf_path.name}")
+                else:
+                    logger.warning(f"No content extracted from: {pdf_path.name}")
+
+            except Exception as e:
+                logger.error(f"Error processing {pdf_path.name}: {str(e)}")
+
+        logger.info(f"Processed {len(documents)} PDFs successfully")
+        return documents
+
+    def _clean_text(self, text: str) -> str:
+        """Clean extracted text for legal documents"""
+        if not text:
+            return ""
+
+        try:
+            # Import text cleaner if available
+            from src.utils.text_cleaner import TextCleaner
+            text_cleaner = TextCleaner()
+            return text_cleaner.clean_legal_document_comprehensive(text)
+        except ImportError:
+            logger.warning("TextCleaner not available, using basic cleaning")
+            return self._basic_clean(text)
+
+    def _basic_clean(self, text: str) -> str:
+        """Basic text cleaning fallback"""
+        import re
+
+        # Remove excessive whitespace
+        text = re.sub(r'\s+', ' ', text)
+
+        # Remove page breaks and form feeds
+        text = re.sub(r'[\f\r]+', '\n', text)
+
+        # Clean up line breaks
+        text = re.sub(r'\n\s*\n\s*\n', '\n\n', text)
+
+        return text.strip()
+
+    def _build_document_tree(self, text: str) -> LegalNode:
+        """Build structured document tree from legal text."""
+        root = LegalNode(type="document", number="root", title="Document Root")
+
+        if not text or not text.strip():
+            return root
+
+        lines = text.splitlines()
+        current_stack = [root]  # Stack to track current hierarchy
+        content_buffer = []
+        in_amendment_section = False  # Track if we're in amendment/ketentuan section
+
+        for line in lines:
+            line = line.strip()
+            if not line or len(line) < 2:
+                continue
+
+            # Skip common noise patterns
+            if (line.startswith("REPUBLIK INDONESIA") or
+                line in ["DENGAN RAHMAT TUHAN YANG MAHA ESA"] or
+                re.match(r"^\s*Page\s+\d+\s*$", line) or
+                len(line) <= 3):
+                continue
+
+            # Detect amendment/ketentuan sections
+            if (re.search(r'disisipkan|diubah|dicabut|ditambahkan|ketentuan', line, re.IGNORECASE) or
+                re.search(r'\d+\.\s+(di\s+antara|diantara|setelah|sebelum)', line, re.IGNORECASE)):
+                in_amendment_section = True
+
+            # Check for structural elements
+            matched_node = self._match_hierarchy_pattern(line, in_amendment_section)
+            if matched_node:
+                # Flush any accumulated content to current node
+                self._flush_content_buffer(content_buffer, current_stack[-1])
+                content_buffer = []
+
+                # Adaptive level adjustment for angka in amendments
+                if matched_node.type == "angka" and in_amendment_section:
+                    # Check if we're currently under a pasal (should be nested)
+                    if (len(current_stack) > 1 and
+                        current_stack[-1].type == "pasal"):
+                        # This angka should be nested under the pasal
+                        matched_node.level = 7.5  # Standard angka level
+                    else:
+                        # This is a standalone amendment provision
+                        matched_node.level = 4  # Between paragraf and pasal
+
+                # Reset amendment section flag for major structural elements
+                if matched_node.type in ["buku", "bab", "bagian"]:
+                    in_amendment_section = False
+
+                # Standard hierarchy management
+                while (len(current_stack) > 1 and
+                       current_stack[-1].level >= matched_node.level):
+                    current_stack.pop()
+
+                # Add new node as child of current stack top
+                current_stack[-1].children.append(matched_node)
+                current_stack.append(matched_node)
+            else:
+                # Accumulate content
+                content_buffer.append(line)
+
+        # Flush remaining content
+        self._flush_content_buffer(content_buffer, current_stack[-1])
+
+        # Build full content for pasal nodes after tree is complete
+        self._build_full_content_for_pasal(root)
+
+        return root
+
+    def _match_hierarchy_pattern(self, line: str, in_amendment_section: bool = False) -> LegalNode:
+        """Match line against hierarchy patterns with amendment context awareness."""
+        # Try patterns in hierarchical order
+        pattern_order = ["buku", "bab", "bagian", "paragraf", "pasal", "ayat", "angka", "huruf"]
+
+        for element_type in pattern_order:
+            if element_type not in self._compiled_patterns:
+                continue
+
+            pattern = self._compiled_patterns[element_type]
+            match = pattern.match(line)
+            if match:
+                level = HIERARCHY_PATTERNS[element_type][1]
+                number = match.group(1).strip()
+
+                # Special handling for angka - check if it's an amendment provision
+                if element_type == "angka" and in_amendment_section:
+                    # Check if this looks like a high-level amendment provision
+                    content = match.group(2).strip() if len(match.groups()) > 1 else ""
+                    if (re.search(r'disisipkan|diubah|dicabut|ditambahkan|ketentuan.*diatur', content, re.IGNORECASE) or
+                        re.search(r'(di\s+antara|diantara|setelah|sebelum)\s+pasal', content, re.IGNORECASE) or
+                        re.search(r'peraturan.*berlaku|tetap\s+berlaku', content, re.IGNORECASE)):
+                        # This is a high-level amendment provision
+                        level = 4  # Between paragraf and pasal level
+                    # Otherwise keep default level for nested items under pasal
+
+                # Handle list items with inline content
+                if element_type in ["huruf", "angka"] and len(match.groups()) > 1:
+                    content = match.group(2).strip() if match.group(2) else ""
+
+                    # Create appropriate title format
+                    if element_type == "huruf":
+                        title = f"{number}. {content}" if content else f"{number}."
+                    elif element_type == "angka":
+                        title = f"{number}. {content}" if content else f"{number}."
+                    else:
+                        title = line.strip()
+
+                    return LegalNode(
+                        type=element_type,
+                        number=number,
+                        title=title,
+                        content=content if content and len(content) > 5 else "",
+                        level=level
+                    )
+                else:
+                    # For structural elements without inline content
+                    return LegalNode(
+                        type=element_type,
+                        number=number.upper() if element_type in ["bab", "buku"] else number,
+                        title=line.strip(),
+                        level=level
+                    )
+
+        return None
+
+    def _flush_content_buffer(self, buffer: List[str], target_node: LegalNode):
+        """Add buffered content to target node."""
+        if not buffer:
+            return
+
+        content = " ".join(buffer).strip()
+        if not content or len(content) < 5:
+            return
+
+        # Clean up common artifacts
+        content = re.sub(r'\s+', ' ', content)
+        content = re.sub(r'^\s*[,;.]\s*', '', content)
+
+        # For list items, avoid duplication
+        if target_node.type in ["huruf", "angka"]:
+            title_content = ""
+            if ". " in target_node.title:
+                title_content = target_node.title.split(". ", 1)[1]
+
+            if title_content and content.lower().startswith(title_content.lower()[:30]):
+                return
+
+            if target_node.content:
+                if content not in target_node.content and len(content) > 10:
+                    target_node.content += " " + content
+            else:
+                target_node.content = content if content != title_content else ""
+        else:
+            # For structural elements, append content normally
+            if target_node.content:
+                target_node.content += "\n\n" + content
+            else:
+                target_node.content = content
+
+    def _serialize_tree(self, node: LegalNode) -> Dict[str, Any]:
+        """Serialize tree node to dictionary."""
+        return {
+            "type": node.type,
+            "number": node.number,
+            "title": node.title,
+            "content": node.content,
+            "level": node.level,
+            "children": [self._serialize_tree(child) for child in node.children]
+        }
+
+    def _count_tree_nodes(self, node: LegalNode) -> int:
+        """Count total nodes in tree."""
+        count = 1
+        for child in node.children:
+            count += self._count_tree_nodes(child)
+        return count
+
+    def _build_full_content_for_pasal(self, node: LegalNode):
+        """Build full content for pasal nodes including all children content."""
+        if node.type == "pasal":
+            # Build full content for this pasal
+            full_content_parts = []
+
+            # Add pasal title and existing content
+            if node.title and node.title != f"Pasal {node.number}":
+                pasal_content = node.title.replace(f"Pasal {node.number}", "").strip()
+                if pasal_content:
+                    full_content_parts.append(pasal_content)
+
+            if node.content:
+                full_content_parts.append(node.content)
+
+            # Add all children content recursively
+            def collect_child_content(child_node, indent=""):
+                child_parts = []
+
+                if child_node.type == "ayat":
+                    # Extract ayat content from title
+                    ayat_text = child_node.title
+                    if ayat_text.startswith(f"({child_node.number})"):
+                        ayat_content = ayat_text[len(f"({child_node.number})"):].strip()
+                        if ayat_content:
+                            child_parts.append(f"{indent}({child_node.number}) {ayat_content}")
+
+                    if child_node.content:
+                        child_parts.append(f"{indent}{child_node.content}")
+
+                elif child_node.type in ["huruf", "angka"]:
+                    # Extract content from title
+                    if child_node.type == "huruf":
+                        prefix = f"{child_node.number}."
+                    else:  # angka
+                        prefix = f"{child_node.number}."
+
+                    if child_node.title.startswith(prefix):
+                        item_content = child_node.title[len(prefix):].strip()
+                        if item_content:
+                            child_parts.append(f"{indent}{prefix} {item_content}")
+
+                    if child_node.content and child_node.content != item_content:
+                        child_parts.append(f"{indent}{child_node.content}")
+
+                else:
+                    # Other node types
+                    if child_node.title:
+                        child_parts.append(f"{indent}{child_node.title}")
+                    if child_node.content:
+                        child_parts.append(f"{indent}{child_node.content}")
+
+                # Process grandchildren with increased indent
+                for grandchild in child_node.children:
+                    child_parts.extend(collect_child_content(grandchild, indent + "  "))
+
+                return child_parts
+
+            # Collect content from all children
+            for child in node.children:
+                full_content_parts.extend(collect_child_content(child))
+
+            # Update the pasal's content with full content
+            node.content = "\n".join(full_content_parts)
+
+        # Recursively process all children
+        for child in node.children:
+            self._build_full_content_for_pasal(child)
+
+    def get_status(self) -> Dict[str, Any]:
+        """Get orchestrator status"""
+        return {
+            'extractor_methods': len(self.extractor.methods),
+            'available_methods': [method[0] for method in self.extractor.methods],
+            'tree_patterns': len(self._compiled_patterns),
+            'hierarchy_levels': list(HIERARCHY_PATTERNS.keys()),
+            'status': 'ready'
+        }

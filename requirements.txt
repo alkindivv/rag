@@ -1,0 +1,57 @@
+# 🚀 Simple Vector Pipeline Requirements
+# Production-ready dependencies for legal document vector processing
+
+# Core vector database
+qdrant-client==1.7.0
+
+# Embedding service
+google-generativeai==0.3.2
+
+# Text processing and utilities
+python-dotenv==1.0.0
+dataclasses==0.6; python_version < "3.7"
+
+# Advanced PDF processing and document understanding
+docling==2.9.0
+unstructured==0.16.9
+unstructured[pdf]==0.16.9
+
+# HTTP and async support
+httpx==0.25.2
+aiohttp==3.9.1
+
+# Data handling
+numpy==1.24.3
+pandas==2.0.3
+
+# Logging and monitoring
+structlog==23.2.0
+
+# Testing (optional)
+pytest==7.4.3
+pytest-asyncio==0.21.1
+
+# Development tools (optional)
+black==23.11.0
+flake8==6.1.0
+
+# System utilities
+psutil==5.9.6
+requests==2.31.0
+
+# JSON processing
+ujson==5.8.0
+
+# PostgreSQL and pgvector support
+sqlalchemy==2.0.23
+psycopg2-binary==2.9.9
+pgvector==0.2.4
+asyncpg==0.29.0
+
+# Optional: Advanced text processing
+# spacy==3.7.2  # Uncomment if using advanced NLP features
+# beautifulsoup4==4.12.2  # Uncomment if processing HTML content
+
+# Production deployment (optional)
+# gunicorn==21.2.0  # For web service deployment
+# uvicorn==0.24.0  # For FastAPI deployment
