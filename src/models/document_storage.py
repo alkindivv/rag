@@ -9,7 +9,7 @@ Simple, clean implementation following KISS principles.
 from sqlalchemy import Column, String, Integer, Text, Date, DateTime, Index
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import declarative_base
-from sqlalchemy.dialects.postgresql import UUID, TSVECTOR
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 import uuid
 from datetime import datetime, date
@@ -54,17 +54,9 @@ class LegalDocument(Base):
     # Status and classification
     status = Column(String(50), nullable=False, default="Berlaku", index=True)
 
-    # Subject areas (JSONB array for better indexing)
-    subject = Column(JSONB, default=list)  # ["PERTAHANAN DAN KEAMANAN", "MILITER"]
-
-    # Legal relationships (JSONB arrays for better indexing)
-    amends = Column(JSONB, default=list)  # Documents this amends
-    revokes = Column(JSONB, default=list)  # Documents this revokes
-    amended_by = Column(JSONB, default=list)  # Documents that amend this
-    revoked_by = Column(JSONB, default=list)  # Documents that revoke this
-    revokes_partially = Column(JSONB, default=list)
-    revoked_partially_by = Column(JSONB, default=list)
-    established_by = Column(JSONB, default=list)
+    # Subject areas and relationships
+    subject = Column(JSONB, default=list)
+    relationships = Column(JSONB, default=dict)
 
     # URLs and file paths
     detail_url = Column(Text)  # Source detail page
@@ -74,15 +66,16 @@ class LegalDocument(Base):
     pdf_path = Column(Text)  # Local PDF file path
 
     # Document content
-    content = Column(Text)  # Full document text content
-
-    # Full-text search vector (prepared for future FTS)
-    content_vector = Column(TSVECTOR)
+    content = Column(Text)
 
     # Processing metadata
-    content_length = Column(Integer)  # Character count
+    content_length = Column(Integer)
     processing_status = Column(String(50), default="pending", index=True)
-    error_message = Column(Text)  # Processing errors if any
+    error_message = Column(Text)
+    source_sha256 = Column(Text)
+    pdf_sha256 = Column(Text)
+    content_sha256 = Column(Text)
+    meta = Column(JSONB, default=dict)
 
     # Timestamps
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -91,24 +84,8 @@ class LegalDocument(Base):
 
     # Performance indexes
     __table_args__ = (
-        # Composite indexes for common queries
-        Index('idx_legal_doc_form_year', 'form', 'year'),
-        Index('idx_legal_doc_source_status', 'source', 'status'),
-        Index('idx_legal_doc_field_year', 'field', 'year'),
-
-        # Subject search (GIN index for JSONB)
-        Index('idx_legal_doc_subject', 'subject', postgresql_using='gin'),
-
-        # Legal relationships indexes
-        Index('idx_legal_doc_amends', 'amends', postgresql_using='gin'),
-        Index('idx_legal_doc_revokes', 'revokes', postgresql_using='gin'),
-
-        # Full-text search index (for future FTS implementation)
-        Index('idx_legal_doc_fts', 'content_vector', postgresql_using='gin'),
-
-        # Content search
-        Index('idx_legal_doc_content_text', 'content', postgresql_using='gin',
-              postgresql_ops={'content': 'gin_trgm_ops'}),
+        Index('uq_doc_form_no_year', 'form', 'number', 'year', unique=True),
+        Index('idx_doc_subject', 'subject', postgresql_using='gin'),
     )
 
     def __repr__(self):
@@ -145,13 +122,7 @@ class LegalDocument(Base):
             'date_effective': self.date_effective.isoformat() if self.date_effective else None,
             'status': self.status,
             'subject': self.subject,
-            'amends': self.amends,
-            'revokes': self.revokes,
-            'amended_by': self.amended_by,
-            'revoked_by': self.revoked_by,
-            'revokes_partially': self.revokes_partially,
-            'revoked_partially_by': self.revoked_partially_by,
-            'established_by': self.established_by,
+            'relationships': self.relationships,
             'detail_url': self.detail_url,
             'source_url': self.source_url,
             'pdf_url': self.pdf_url,
@@ -159,6 +130,11 @@ class LegalDocument(Base):
             'pdf_path': self.pdf_path,
             'content_length': self.content_length,
             'processing_status': self.processing_status,
+            'error_message': self.error_message,
+            'source_sha256': self.source_sha256,
+            'pdf_sha256': self.pdf_sha256,
+            'content_sha256': self.content_sha256,
+            'meta': self.meta,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None,
             'processed_at': self.processed_at.isoformat() if self.processed_at else None
@@ -209,40 +185,42 @@ class LegalDocument(Base):
 
         # Generate UUID5 for consistency
         namespace = uuid.UUID('6ba7b810-9dad-11d1-80b4-00c04fd430c8')  # DNS namespace
-        doc_key = f"{data.get('form', '')}-{data.get('number', '')}-{data.get('year', '')}"
+        doc_key = f"{data.get('doc_form', '')}-{data.get('doc_number', '')}-{data.get('doc_year', '')}"
         doc_id = uuid.uuid5(namespace, doc_key)
+
+        content = data.get('doc_content') or data.get('content', '')
 
         return cls(
             id=doc_id,
-            title=data.get('title', ''),
-            number=str(data.get('number', '')),
-            form=data.get('form', ''),
-            form_short=data.get('form_short', data.get('form', '')),
-            year=int(data.get('year', 0)) if data.get('year') else None,
-            source=data.get('source', ''),
-            type=data.get('type', ''),
-            teu=data.get('teu', ''),
-            place_enacted=data.get('place_enacted', ''),
-            language=data.get('language', 'Bahasa Indonesia'),
-            location=data.get('location', ''),
-            field=data.get('field', ''),
-            date_enacted=parse_date(data.get('date_enacted')),
-            date_promulgated=parse_date(data.get('date_promulgated')),
-            date_effective=parse_date(data.get('date_effective')),
-            status=data.get('status', 'Berlaku'),
-            subject=data.get('subject', []),
-            amends=data.get('amends', []),
-            revokes=data.get('revokes', []),
-            amended_by=data.get('amended_by', []),
-            revoked_by=data.get('revoked_by', []),
-            revokes_partially=data.get('revokes_partially', []),
-            revoked_partially_by=data.get('revoked_partially_by', []),
-            established_by=data.get('established_by', []),
+            title=data.get('doc_title', ''),
+            number=str(data.get('doc_number', '')),
+            form=data.get('doc_form', ''),
+            form_short=data.get('doc_form_short', data.get('doc_form', '')),
+            year=int(data.get('doc_year', 0)) if data.get('doc_year') else None,
+            source=data.get('doc_source', ''),
+            type=data.get('doc_type', ''),
+            teu=data.get('doc_teu', ''),
+            place_enacted=data.get('doc_place_enacted', ''),
+            language=data.get('doc_language', 'Bahasa Indonesia'),
+            location=data.get('doc_location', ''),
+            field=data.get('doc_field', ''),
+            date_enacted=parse_date(data.get('doc_date_enacted')),
+            date_promulgated=parse_date(data.get('doc_date_promulgated')),
+            date_effective=parse_date(data.get('doc_date_effective')),
+            status=data.get('doc_status', 'Berlaku'),
+            subject=data.get('doc_subject', []),
+            relationships=data.get('relationships', {}),
             detail_url=data.get('detail_url', ''),
             source_url=data.get('source_url', ''),
             pdf_url=data.get('pdf_url', ''),
             uji_materi_pdf_url=data.get('uji_materi_pdf_url'),
             pdf_path=data.get('pdf_path', ''),
-            content=data.get('content', ''),
-            content_length=len(data.get('content', '')) if data.get('content') else 0
+            content=content,
+            content_length=len(content) if content else 0,
+            processing_status=data.get('doc_processing_status', 'pending'),
+            error_message=data.get('error_message'),
+            source_sha256=data.get('source_sha256'),
+            pdf_sha256=data.get('pdf_sha256'),
+            content_sha256=data.get('content_sha256'),
+            meta=data.get('meta', {}),
         )

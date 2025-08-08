@@ -6,7 +6,7 @@ Uses unified extractor with minimal complexity
 
 import logging
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional, Tuple
 from pathlib import Path
 import re
 from datetime import datetime
@@ -84,9 +84,15 @@ class PDFOrchestrator:
             # Build document tree structure
             document_tree = self._build_document_tree(cleaned_text)
 
+            # Convert tree to JSON structure matching specification
+            doc_id = document_data.get('doc_id', 'document')
+            doc_title = document_data.get('doc_title', document_data.get('title', 'Document'))
+            enhanced_tree = self._serialize_tree(document_tree, doc_id, doc_title)
+
             # Add PDF content, tree structure, and metadata
             enhanced_data['doc_content'] = cleaned_text
-            enhanced_data['document_tree'] = self._serialize_tree(document_tree) if document_tree else None
+            enhanced_data['document_tree'] = enhanced_tree if enhanced_tree else None
+            enhanced_data['doc_processing_status'] = 'pdf_processed'
             enhanced_data['pdf_extraction_metadata'] = {
                 'method': pdf_result.method,
                 'confidence': pdf_result.confidence,
@@ -115,9 +121,14 @@ class PDFOrchestrator:
             # Build document tree dari TXT
             document_tree = self._build_document_tree(cleaned_text)
 
+            # Convert tree
+            doc_id = document_data.get('doc_id', 'document')
+            doc_title = document_data.get('doc_title', document_data.get('title', 'Document'))
+            enhanced_tree = self._serialize_tree(document_tree, doc_id, doc_title)
+
             # Update data dengan TXT content & tree
-            enhanced_data['content'] = cleaned_text
-            enhanced_data['document_tree'] = self._serialize_tree(document_tree) if document_tree else None
+            enhanced_data['doc_content'] = cleaned_text
+            enhanced_data['document_tree'] = enhanced_tree if enhanced_tree else None
             enhanced_data['pdf_extraction_metadata'] = {
                 'method': 'manual_txt_input',
                 'confidence': 100.0,  # Manual input = perfect confidence
@@ -127,7 +138,7 @@ class PDFOrchestrator:
                 'page_count': 0,  # TXT doesn't have pages
                 'tree_nodes_count': self._count_tree_nodes(document_tree) if document_tree else 0
             }
-            enhanced_data['processing_status'] = 'txt_processed'
+            enhanced_data['doc_processing_status'] = 'txt_processed'
             enhanced_data['last_updated'] = datetime.now().isoformat()
 
             logger.info(f"Successfully processed TXT content: {document_data.get('title', 'Unknown')}")
@@ -167,7 +178,7 @@ class PDFOrchestrator:
                 # Process the document
                 processed_doc = self.process_document_complete(document_data)
 
-                if processed_doc.get('content'):
+                if processed_doc.get('doc_content'):
                     documents.append(processed_doc)
                     logger.info(f"Successfully processed: {pdf_path.name}")
                 else:
@@ -369,16 +380,157 @@ class PDFOrchestrator:
             else:
                 target_node.content = content
 
-    def _serialize_tree(self, node: LegalNode) -> Dict[str, Any]:
-        """Serialize tree node to dictionary."""
-        return {
+    def _serialize_tree(
+        self,
+        node: LegalNode,
+        doc_id: str,
+        doc_title: str,
+        parent_unit_id: Optional[str] = None,
+        path: Optional[List[Dict[str, str]]] = None,
+        pasal_id: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Serialize LegalNode tree to specification-compliant structure."""
+
+        if path is None:
+            path = [{"type": "dokumen", "label": doc_title, "unit_id": doc_id}]
+
+        # Root document node
+        if node.type == "document":
+            return {
+                "doc_type": "document",
+                "doc_unit_id": doc_id,
+                "doc_title": doc_title,
+                "children": [
+                    self._serialize_tree(child, doc_id, doc_title, doc_id, path, None)
+                    for child in node.children
+                ],
+            }
+
+        parent_unit_id = parent_unit_id or doc_id
+        unit_id = f"{parent_unit_id}/{node.type}-{node.number}"
+        number_label = node.number
+        ordinal_int, ordinal_suffix = self._split_number_label(number_label)
+        label_display = self._build_label_display(node.type, number_label)
+        seq_sort_key = f"{ordinal_int:04d}|{ordinal_suffix}"
+        current_entry = {"type": node.type, "label": label_display, "unit_id": unit_id}
+        current_path = path + [current_entry]
+        citation = self._build_citation_string(doc_title, current_path)
+
+        data = {
             "type": node.type,
-            "number": node.number,
-            "title": node.title,
-            "content": node.content,
-            "level": node.level,
-            "children": [self._serialize_tree(child) for child in node.children]
+            "unit_id": unit_id,
+            "number_label": number_label,
+            "ordinal_int": ordinal_int,
+            "ordinal_suffix": ordinal_suffix,
+            "label_display": label_display,
+            "seq_sort_key": seq_sort_key,
+            "citation_string": citation,
+            "path": current_path,
         }
+
+        if node.type in ["bab", "bagian", "paragraf", "pasal"]:
+            data["title"] = node.title
+
+        if node.type == "pasal":
+            data["content"] = node.content
+            data["tags_semantik"] = []
+            data["entities"] = []
+
+        if node.type in ["ayat", "huruf", "angka"]:
+            local_content = self._extract_inline_content(node)
+            data.update(
+                {
+                    "parent_pasal_id": pasal_id,
+                    "local_content": local_content,
+                    "display_text": f"{label_display} {local_content}".strip(),
+                    "bm25_body": local_content,
+                    "span": None,
+                }
+            )
+
+        child_pasal_id = pasal_id
+        if node.type == "pasal":
+            child_pasal_id = unit_id
+
+        data["children"] = [
+            self._serialize_tree(child, doc_id, doc_title, unit_id, current_path, child_pasal_id)
+            for child in node.children
+        ]
+
+        return data
+
+    def _split_number_label(self, label: str) -> Tuple[int, str]:
+        """Split number label into integer and suffix."""
+        if not label:
+            return 0, ""
+        if re.fullmatch(r"[IVXLCDM]+", label):
+            return self._roman_to_int(label), ""
+        match = re.match(r"(\d+)([A-Za-z]*)", label)
+        if match:
+            return int(match.group(1)), match.group(2)
+        if label.isalpha():
+            return ord(label.lower()) - 96, ""
+        return 0, ""
+
+    def _roman_to_int(self, roman: str) -> int:
+        """Convert Roman numeral to integer."""
+        roman_vals = {"I": 1, "V": 5, "X": 10, "L": 50, "C": 100, "D": 500, "M": 1000}
+        result = 0
+        prev = 0
+        for ch in reversed(roman.upper()):
+            val = roman_vals.get(ch, 0)
+            if val < prev:
+                result -= val
+            else:
+                result += val
+                prev = val
+        return result
+
+    def _build_label_display(self, node_type: str, number_label: str) -> str:
+        """Create display label for a node."""
+        if node_type == "pasal":
+            return f"Pasal {number_label}"
+        if node_type == "bab":
+            return f"BAB {number_label}"
+        if node_type == "bagian":
+            return f"BAGIAN {number_label}"
+        if node_type == "paragraf":
+            return f"PARAGRAF {number_label}"
+        if node_type == "ayat":
+            return f"({number_label})"
+        if node_type in ["huruf", "angka"]:
+            return f"{number_label}."
+        return number_label
+
+    def _build_citation_string(self, doc_title: str, path: List[Dict[str, str]]) -> str:
+        """Build citation string using path."""
+        parts = []
+        for p in path[1:]:
+            t = p["type"]
+            label = p["label"]
+            if t == "pasal":
+                parts.append(label)
+            elif t == "ayat":
+                num = re.sub(r"[^0-9]", "", label)
+                parts.append(f"ayat ({num})")
+            elif t == "huruf":
+                letter = re.sub(r"[^a-zA-Z]", "", label)
+                parts.append(f"huruf {letter}")
+            elif t == "angka":
+                num = re.sub(r"[^0-9]", "", label)
+                parts.append(f"angka {num}")
+        if parts:
+            return f"{doc_title}, {' '.join(parts)}"
+        return doc_title
+
+    def _extract_inline_content(self, node: LegalNode) -> str:
+        """Extract inline content from node title if content missing."""
+        if node.content:
+            return node.content
+        label = self._build_label_display(node.type, node.number)
+        if node.title.startswith(label):
+            return node.title[len(label):].strip()
+        return node.title
 
     def _count_tree_nodes(self, node: LegalNode) -> int:
         """Count total nodes in tree."""

@@ -179,7 +179,7 @@ class CrawlerOrchestrator:
                     'structure_analysis': regulation.get('structure_analysis'),
                     'chapters': regulation.get('chapters'),
                     'articles': regulation.get('articles'),
-                    'processing_status': 'pdf_processed' if regulation.get('content') else existing_data.get('processing_status', 'pdf_downloaded'),
+                    'doc_processing_status': 'pdf_processed' if regulation.get('doc_content') else existing_data.get('doc_processing_status', 'pdf_downloaded'),
                     'last_updated': datetime.now().isoformat()
                 })
                 regulation = existing_data
