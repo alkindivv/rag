@@ -398,17 +398,30 @@ class PDFOrchestrator:
         if path is None:
             path = [{"type": "dokumen", "label": doc_title, "unit_id": doc_id}]
 
-        # Root document node
+        # Root document node -> emit TreeNode-compliant root
         if node.type == "document":
-            return {
-                "doc_type": "document",
-                "doc_unit_id": doc_id,
-                "doc_title": doc_title,
+            # Ensure the root doc_id is reserved to avoid collisions
+            used_ids.add(doc_id)
+
+            root_node = {
+                "type": "dokumen",
+                "unit_id": doc_id,
+                "number_label": None,
+                "ordinal_int": None,
+                "ordinal_suffix": "",
+                "label_display": doc_title,
+                "seq_sort_key": None,
+                "citation_string": doc_title,
+                "path": path,
+                "title": doc_title,
+                "content": None,
                 "children": [
                     self._serialize_tree(child, doc_id, doc_title, doc_id, path, None, used_ids)
                     for child in node.children
                 ],
             }
+
+            return root_node
 
         parent_unit_id = parent_unit_id or doc_id
         base_unit_id = f"{parent_unit_id}/{node.type}-{node.number}"

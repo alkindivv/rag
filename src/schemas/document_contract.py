@@ -12,12 +12,7 @@ class RelationshipItem(BaseModel):
     reference_link: Optional[str] = None
 
 
-class Relationships(BaseModel):
-    mengubah: List[RelationshipItem] = Field(default_factory=list)
-    diubah_dengan: List[RelationshipItem] = Field(default_factory=list)
-    mencabut: List[RelationshipItem] = Field(default_factory=list)
-    dicabut_dengan: List[RelationshipItem] = Field(default_factory=list)
-    menetapkan: List[RelationshipItem] = Field(default_factory=list)
+class Relationships(BaseModel): Optional[str] = None
 
 
 class UjiMateriItem(BaseModel):

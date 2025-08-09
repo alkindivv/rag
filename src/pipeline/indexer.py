@@ -269,6 +269,7 @@ class LegalDocumentIndexer:
 
         def process_node(node: Dict[str, Any], parent_pasal_id: Optional[str] = None) -> None:
             """Recursively process tree nodes."""
+            logger.debug(f"Processing node: type={node.get('type')}, unit_id={node.get('unit_id')}")
 
             # Map type to enum
             unit_type_map = {
@@ -328,11 +329,14 @@ class LegalDocumentIndexer:
                 process_node(child, current_pasal_id)
 
         # Start processing from root
+        logger.debug(f"Processing document tree: {tree.get('unit_id')} with {len(tree.get('children', []))} children")
         if tree.get("children"):
-            for child in tree["children"]:
+            for i, child in enumerate(tree["children"]):
+                logger.debug(f"Processing child {i}: {child.get('type')} {child.get('unit_id')}")
                 process_node(child)
         else:
             # Process root if no children
+            logger.debug("Processing root node (no children)")
             process_node(tree)
 
         # Update FTS vectors
