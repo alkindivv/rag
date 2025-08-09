@@ -11,7 +11,7 @@ import time
 from dataclasses import asdict
 from typing import Any, Dict, List, Optional
 
-from sqlalchemy.orm import Session
+from sqlalchemy import text
 
 from ...config.settings import settings
 from ...db.session import get_db_session
@@ -58,7 +58,8 @@ class HybridSearchService:
         use_reranking: bool = True,
         fts_weight: float = 0.4,
         vector_weight: float = 0.6,
-        session_id: Optional[str] = None
+        session_id: Optional[str] = None,
+        strategy: str = "auto",
     ) -> Dict[str, Any]:
         """
         Perform comprehensive search with optional reranking.
@@ -71,6 +72,7 @@ class HybridSearchService:
             fts_weight: Weight for FTS results in hybrid scoring
             vector_weight: Weight for vector results in hybrid scoring
             session_id: Optional session ID for logging
+            strategy: Search strategy ('auto', 'explicit', 'fts', 'vector', 'hybrid')
 
         Returns:
             Search response with results and metadata
@@ -79,7 +81,7 @@ class HybridSearchService:
 
         try:
             logger.info(
-                f"Starting search",
+                "Starting search",
                 extra={
                     "query": query,
                     "limit": limit,
@@ -106,7 +108,8 @@ class HybridSearchService:
                 filters=filters,
                 limit=limit * 2 if use_reranking else limit,  # Get more for reranking
                 fts_weight=fts_weight,
-                vector_weight=vector_weight
+                vector_weight=vector_weight,
+                strategy=strategy,
             )
             retrieval_duration = (time.time() - retrieval_start) * 1000
 
@@ -139,7 +142,7 @@ class HybridSearchService:
                 "results": [self._format_result(result) for result in results],
                 "total": len(results),
                 "query": query,
-                "strategy": self._determine_strategy(query),
+                "strategy": strategy if strategy != "auto" else self._determine_strategy(query),
                 "reranked": reranked,
                 "duration_ms": total_duration,
                 "metadata": {
@@ -641,38 +644,11 @@ def create_search_service(
 # Example usage and testing
 if __name__ == "__main__":
     import asyncio
-    from pathlib import Path
 
     async def test_search():
         """Test search functionality."""
-        # Initialize service
         service = create_search_service()
+        response = service.search("test query", limit=1)
+        print(response)
 
-        # Test queries
-        test_queries = [
-            "pasal 1 ayat 2",  # Explicit query
-            "pertambangan mineral dan batubara",  # Thematic query
-            "UU 4/2009",  # Document reference
-            "hilirisasi industri pertambangan"  # Semantic query
-        ]
-
-        for query in test_queries:
-            print(f"\nTesting query: {query}")
-            response = service.search(query, limit=5)
-
-            print(f"Strategy: {response['strategy']}")
-            print(f"Results: {response['total']}")
-            print(f"Duration: {response['duration_ms']:.2f}ms")
-
-            for i, result in enumerate(response["results"][:3]):
-                print(f"  {i+1}. {result['citation']} (score: {result['score']:.3f})")
-
-        # Test document outline
-        print(f"\nTesting document outline:")
-        outline_response = service.get_document_outline("UU-2025-2")
-        print(f"Document: {outline_response.get('document', {}).get('title', 'N/A')}")
-        print(f"Units: {outline_response['total_units']}")
-
-    # Run test if executed directly
-    if __name__ == "__main__":
-        asyncio.run(test_search())
+    asyncio.run(test_search())

@@ -8,9 +8,8 @@ Handles both explicit queries (specific legal references) and thematic queries
 from __future__ import annotations
 
 import re
-from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional
 
 from sqlalchemy import text
 from sqlalchemy.orm import Session
@@ -480,7 +479,8 @@ class HybridRetriever:
         filters: Optional[SearchFilters] = None,
         limit: int = 20,
         fts_weight: float = 0.4,
-        vector_weight: float = 0.6
+        vector_weight: float = 0.6,
+        strategy: str = "auto",
     ) -> List[SearchResult]:
         """
         Perform hybrid search combining multiple strategies.
@@ -491,6 +491,7 @@ class HybridRetriever:
             limit: Maximum number of results
             fts_weight: Weight for FTS results in hybrid scoring
             vector_weight: Weight for vector results in hybrid scoring
+            strategy: Search strategy ('auto', 'explicit', 'fts', 'vector', 'hybrid')
 
         Returns:
             List of ranked search results
@@ -501,13 +502,23 @@ class HybridRetriever:
         try:
             from ...db.session import get_db_session
             with get_db_session() as db:
-                # Route query to appropriate strategy
-                if self.router.is_explicit_query(query):
+                if strategy == "explicit":
                     return self._explicit_search(db, query, filters, limit)
-                else:
+                if strategy == "fts":
+                    return FTSSearcher(db).search(query, filters, limit)
+                if strategy == "vector":
+                    return VectorSearcher(db, self.embedder).search(query, filters, limit)
+                if strategy == "hybrid":
                     return self._thematic_search(
                         db, query, filters, limit, fts_weight, vector_weight
                     )
+
+                # Auto strategy: route based on query type
+                if self.router.is_explicit_query(query):
+                    return self._explicit_search(db, query, filters, limit)
+                return self._thematic_search(
+                    db, query, filters, limit, fts_weight, vector_weight
+                )
 
         except Exception as e:
             logger.error(f"Hybrid search failed: {e}")

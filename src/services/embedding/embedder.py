@@ -1,5 +1,6 @@
-from __future__ import annotations
 """Jina embedding client with batching and retry for v4 1024-dimensional embeddings."""
+
+from __future__ import annotations
 
 import logging
 from typing import List, Optional
@@ -23,7 +24,10 @@ class JinaEmbedder:
         if not settings.jina_api_key:
             raise ValueError("JINA_API_KEY is required")
 
-        self.headers = {"Authorization": f"Bearer {settings.jina_api_key}"}
+        self.headers = {
+            "Authorization": f"Bearer {settings.jina_api_key}",
+            "Content-Type": "application/json",
+        }
         logger.info(f"Initialized JinaEmbedder with model: {self.model_name}")
 
     def embed_single(self, text: str) -> Optional[List[float]]:
@@ -80,7 +84,6 @@ class JinaEmbedder:
             payload = {
                 "model": self.model_name,
                 "input": texts,
-                "encoding_format": "float"
             }
 
             logger.debug(f"Embedding batch of {len(texts)} texts")
