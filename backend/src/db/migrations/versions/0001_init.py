@@ -13,6 +13,7 @@ depends_on = None
 
 
 def upgrade() -> None:
+
     """Create tables and indexes."""
     bind = op.get_bind()
     if bind.dialect.name != "postgresql":
@@ -44,6 +45,7 @@ def upgrade() -> None:
             sa.Column("embedding", sa.LargeBinary(), nullable=False),
         )
         return
+
 
     op.execute("CREATE EXTENSION IF NOT EXISTS vector")
     op.create_table(
@@ -108,6 +110,7 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+
     """Drop created tables."""
     bind = op.get_bind()
     if bind.dialect.name != "postgresql":
@@ -115,6 +118,8 @@ def downgrade() -> None:
         op.drop_table("legal_units")
         op.drop_table("legal_documents")
         return
+
+
 
     op.drop_index("idx_vec_doc_meta", table_name="document_vectors")
     op.drop_index("idx_vec_embedding_hnsw", table_name="document_vectors")
