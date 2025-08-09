@@ -1,139 +1,193 @@
-Tujuan Utama
+## Legal RAG Agents Spec (Codex‑friendly)
 
-Bangun sistem RAG hukum Indonesia yang:
-	•	Akurat & cepat: hybrid retrieval (FTS leaf + vector pasal + optional rerank).
-	•	Sederhana & maintainable: modul kecil <300 LOC/file.
-	•	Production‑ready: logging terstruktur, retry/backoff, DI untuk HTTP client, alembic migrations.
+Tujuan umum:
+- Akurat & cepat: hybrid retrieval (FTS leaf + vector pasal + rerank).
+- Sederhana & maintainable: modul <300 LOC/file, tipe jelas, logging terstruktur.
+- Production‑ready: Alembic migrations, retry/backoff, DI untuk HTTP client.
 
-Arsitektur Singkat (keputusan final)
-	•	Index storage:
-	•	FTS (Postgres tsvector) di leaf (ayat/huruf/angka) → presisi untuk query eksplisit.
-	•	pgvector 1024‑dim (Jina v4) di pasal → semantik yang stabil & hemat latency.
-	•	Hybrid retriever:
-	1.	Jika query eksplisit → explicit lookup (filter by doc + pasal/ayat/huruf/angka).
-	2.	Jika tematik → vector top‑K (pasal) + FTS top‑K (leaf) → (opsional) Jina reranker.
-	•	LLM: default Gemini 1.5 Flash (bisa pilih OpenAI/Anthropic via env).
-	•	Parser & cleaner: pipeline modular, pola hierarki di pattern_manager.py.
+---
 
-⸻
+# Code Review and Structural Suggestions
 
-Peran Agent & Batasan
 
-1) Agent: DB/Schema
+### 1) Agent: Craweler/pdf refactor
+READ 
 
-Tanggung jawab
-	•	Skema SQLAlchemy: LegalDocument, LegalUnit, DocumentVector, UjiMateriDecision, LegalRelationship, Subject.
-	•	Indeks:
-	•	content_vector tsvector (FTS) pada legal_units.bm25_body (generated column/GIN).
-	•	pgvector HNSW pada document_vectors.embedding.
-	•	Alembic migrations lengkap & repeatable.
+## Ingestion Pipeline (`src/ingestion.py`)
+- Separate command-line parsing from business logic for easier testing.
+- Consider converting sequential PDF processing to asynchronous tasks to utilise the existing event loop.
+- Use structured logging instead of print statements for consistent output and easier log aggregation.
+- Wrap file I/O with context managers and handle potential JSON decoding errors explicitly.
 
-Input/Output
-	•	Input: kontrak JSON parsed tree.
-	•	Output: tabel & indeks siap query.
+## Crawler Services (`src/services/crawler/*`)
+- Implement retry/backoff utilities as shared helpers rather than inline loops for clearer flow.
+- Use dependency injection for the HTTP client session to improve testability.
+- Break large methods such as `_extract_uji_materi_decisions` into smaller units and add type hints for intermediate structures.
 
-Keberhasilan
-	•	Migrations idempotent, query plan EXPLAIN menunjukkan penggunaan index.
+## PDF Processing (`src/pdf/*` and `src/services/pdf/*`)
+- Merge duplicate orchestrator modules and keep a single entry point for PDF handling.
+- Move hierarchy pattern definitions to a configuration or data file to reduce clutter in `PDFOrchestrator`.
+- Streaming downloads could write directly to disk instead of holding all chunks in memory.
+- Introduce unit tests for tree-building logic to ensure Indonesian legal hierarchy is parsed correctly.
 
-Do/Don’t
-	•	Do: enum types (form/status/unit_type), unique constraints, FK cascade.
-	•	Don’t: menyimpan embedding pada leaf (hanya pasal).
+## Text Cleaning (`src/utils/text_cleaner.py`)
+- The monolithic `clean_legal_document_comprehensive` performs many responsibilities; break it into a pipeline of composable steps.
+- Maintain a registry of cleaning operations with clear names and allow enabling/disabling steps via configuration.
+- Add profiling or benchmarking hooks to understand the cost of each cleaning stage.
 
-⸻
 
-2) Agent: Parser/Cleaner
+- Tanggung jawab
+  - `PDFOrchestrator`: bangun `document_tree` (dokumen→…→pasal→ayat/huruf/angka).
+  - `text_cleaner.py`: normalisasi whitespace, hapus watermark/header/footer.
+  - `pattern_manager.py`: regex hierarki (buku, bab, bagian, paragraf, pasal, ayat, huruf, angka, sisipan/amandemen pasal).
 
-Tanggung jawab
-	•	PDFOrchestrator: bangun tree legal (dokumen→…→pasal→ayat/huruf/angka).
-	•	TextCleaner: pipeline modular (normalize ws, drop watermark/header/footer, fix inline numbering).
-	•	PatternManager: regex hierarki (buku, bab, bagian, paragraf, pasal, ayat, angka, huruf).
+- Input
+  - PDF/teks mentah.
 
-Input/Output
-	•	Input: path PDF / teks mentah.
-	•	Output: document_tree JSON + doc_content bersih.
+- Output/Deliverables
+  - `doc_content` bersih dan `document_tree` lengkap.
+  - embedding pasal di `document_vectors`. yang berisi pasal lengkap beserta ayat/huruf/angka/amandemen angka
+  - Leaf unit berisi: `bm25_body`, `citation_string`, `parent_pasal_id`, `path`.
 
-Keberhasilan
-	•	Setiap pasal punya content lengkap (gabungan ayat/huruf/angka).
-	•	Leaf memiliki bm25_body, display_text, parent_pasal_id, path, citation_string.
+- Acceptance criteria
+  - Setiap pasal memiliki konten lengkap (gabungan ayat/huruf/angka).
+  - Node sisipan (mis. Pasal 1A) terdeteksi dan tersusun benar.
 
-Do/Don’t
-	•	Do: tangani Pasal 1A dan sisipan/amandemen.
-	•	Don’t: menaruh huruf di root kecuali konsiderans (kalau iya, tetap type=huruf).
 
-⸻
+### 2) Agent: Indexer/Embedding
 
-3) Agent: Indexer/Embedding
+- Tanggung jawab
+  - Upsert `legal_documents` dari metadata, simpan `document_tree` → flatten ke `legal_units`.
+  - Bangun konten per pasal, embed Jina v4 dim=1024 → simpan ke `document_vectors`.
+  - Simpan provenance: `doc_relationships`, `doc_uji_materi` (mentah JSON dari sumber).
 
-Tanggung jawab
-	•	Upsert dokumen + flatten tree → simpan unit.
-	•	Batch embed pasal (Jina v4) → simpan DocumentVector.
-	•	Simpan relationships + uji materi.
+- Input
+  - Output Parser/Cleaner, Embedding service.
 
-Keberhasilan
-	•	Batch size configurable, retry/backoff, latency embed stabil.
-	•	Metadata vektor (form/number/year/status, pasal_number) terisi.
+- Output/Deliverables
+  - Baris pada `legal_units` (leaf dan non‑leaf) + `document_vectors` (per pasal).
+  - Metadata vektor lengkap: `doc_form`, `doc_year`, `doc_number`, `doc_status`, `pasal_number`.
 
-⸻
+- Acceptance criteria
+  - Batch embedding configurable; retry/backoff saat error jaringan.
+  - Token/char count tercatat untuk setiap vektor.
 
-4) Agent: Retriever (Hybrid)
+---
 
-Tanggung jawab
-	•	Explicit lookup (regex): form/nomor/tahun/pasal/ayat/huruf/angka → ambil leaf tepat.
-	•	Semantic: vector top‑K (pasal) + FTS top‑K (leaf).
-	•	Rerank opsional (Jina).
+### 3) Agent: DB/Schema
 
-Keberhasilan
-	•	Query eksplisit selalu memukul unit benar.
-	•	Query tematik relevan dengan citation yang valid.
+- Tanggung jawab
+  - Tabel inti: `legal_documents`, `legal_units`, `document_vectors`, `subjects`, `document_subject`, `vector_search_logs`.
+  - Tidak ada tabel normalisasi relasi/ujimateri di Postgres. Simpan mentah:
+    - `legal_documents.doc_relationships JSONB`
+    - `legal_documents.doc_uji_materi JSONB`
+  - Enums: `doc_form`, `doc_status`, `unit_type` (lihat `plan/db.md`).
+  - Index: GIN pada `legal_units.content_vector`, HNSW pada `document_vectors.embedding`.
 
-⸻
+- Input
+  - JSON metadata + `document_tree` hasil parser.
 
-5) Agent: LLM
+- Output/Deliverables
+  - Alembic migrations konsisten dengan `plan/db.md`.
+  - SQLAlchemy models di `apps/legal-rag/backend/src/db/models.py`.
 
-Tanggung jawab
-	•	Factory provider: Gemini/OpenAI/Anthropic.
-	•	Prompting: system prompt ketat untuk kutip & citation.
+- Acceptance criteria
+  - Unique `(doc_form, doc_number, doc_year)` berlaku.
+  - `doc_form` enum: UU, PP, PERPU, PERPRES, POJK, PERMEN, PERDA, LAINNYA, SE.
+  - EXPLAIN menunjukkan penggunaan GIN/HNSW sesuai tipe query.
 
-Keberhasilan
-	•	Tidak “mengarang” nomor pasal, sebut “tidak yakin” bila ragu.
+### 4) Agent: Retriever (Hybrid)
 
-⸻
+- Tanggung jawab
+  - Routing:
+    - Query eksplisit → explicit lookup (doc/pasal/ayat/huruf/angka) via FTS/filter.
+    - Query tematik → gabung Vector top‑K (pasal) + FTS top‑K (leaf), opsional rerank.
+  - Lihat rancangan di `plan/hybrid_retrieval.md`.
 
-6) Agent: API
+- Input
+  - Query teks pengguna.
 
-Tanggung jawab
-	•	FastAPI:
-	•	POST /index/document → ingest JSON.
-	•	POST /ask → hybrid retrieve → prompt LLM → jawab + candidates.
+- Output/Deliverables
+  - Daftar kandidat dengan `id`, `text`, `meta.citation`.
 
-Keberhasilan
-	•	Error handling rapi; CORS; batas konteks (chars).
+- Acceptance criteria
+  - Query eksplisit memukul unit yang tepat (uji regex dan lookup SQL).
+  - Query tematik menghasilkan kandidat dengan `citation_string` valid.
 
-⸻
+---
 
-7) Agent: Frontend
+### 5) Agent: Reranker
 
-Tanggung jawab
-	•	Next.js 14 (App Router) mirip ChatGPT (chat thread singkat).
-	•	Tampilkan jawaban + daftar sumber (citation_string).
+- Tanggung jawab
+  - Integrasi Jina rerank (opsional) untuk re‑order kandidat.
+  - Lihat `src/services/search/README_reranker.md`.
 
-Keberhasilan
-	•	UX ringan, tidak bloat, SSR/edge‑friendly.
+- Input/Output
+  - Input: `(query, items[])` → Output: `items[]` berurut dengan skor.
 
-⸻
+- Acceptance criteria
+  - Timeout & error handling benar; top‑k dihormati.
 
-8) Agent: Infra/Quality
+---
 
-Tanggung jawab
-	•	Logging JSON (structured), DI http client, retry/backoff util.
-	•	CLI terpisah dari bisnis (pars/exec).
-	•	Unit tests minimal (parser tree, retriever explicit).
+### 6) Agent: LLM
 
-⸻
+- Tanggung jawab
+  - Provider factory (Gemini/OpenAI/Anthropic) via env.
+  - System/user prompt sesuai `src/prompts/system.py`.
+  - Rakit konteks dari kandidat, wajib sertakan `[citation]` berdasarkan `citation_string`.
 
-Gaya Kode & Batas
-	•	Setiap file ≤ 300 LOC (kalau lewat, pecah).
-	•	Type hints wajib, docstring singkat di public funcs.
-	•	No prints → gunakan logger terstruktur.
-	•	I/O gunakan context manager; tangani JSON decode error eksplisit.
-	•	Konfigurasi via pydantic.BaseSettings.
+- Acceptance criteria
+  - Tidak mengarang nomor pasal; jawab "tidak yakin" bila bukti tidak cukup.
+
+---
+
+### 7) Agent: API
+
+- Tanggung jawab
+  - FastAPI endpoints:
+    - `GET /health`
+    - `GET /search?q=...` → kembalikan kandidat (tanpa LLM)
+    - `POST /ask` → hybrid retrieve → rerank → panggil LLM → jawaban + sources
+  - Lihat `src/services/api/README_api.md`.
+
+- Acceptance criteria
+  - Validasi input, CORS, batas ukuran konteks, logging request id.
+
+---
+
+### 8) Agent: Frontend
+
+- Tanggung jawab
+  - Next.js App Router: chat sederhana, tampilkan jawaban + sumber (citation).
+
+- Acceptance criteria
+  - SSR/edge friendly; UI ringan, tidak bloat.
+
+---
+
+### 9) Agent: Infra/Quality
+
+- Tanggung jawab
+  - Logging JSON terstruktur; DI httpx client; retry/backoff util.
+  - Alembic migrations repeatable; CLI terpisah dari bisnis.
+  - Unit tests: parser tree, retriever explicit routing.
+
+---
+
+## Kontrak I/O Ringkas (untuk Codex)
+
+- Input Parser: `data/pdfs/*.pdf` atau `data/text/*.txt` → Output: `document_tree`, `doc_content`.
+- Input Indexer: JSON metadata + `document_tree` → Output: rows pada `legal_units`, `document_vectors`.
+- Retriever:
+  - FTS Leaf: `SELECT ... FROM legal_units WHERE content_vector @@ plainto_tsquery('indonesian', :q)`
+  - Vector Pasal: `SELECT ... FROM document_vectors ORDER BY embedding <=> :qvec LIMIT :k`
+- Provenance: simpan mentah ke `legal_documents.doc_relationships` dan `legal_documents.doc_uji_materi`.
+- Graph: normalisasi relasi/ujimateri dilakukan di Neo4j (ETL dari JSONB), bukan Postgres.
+
+## Gaya Kode & Batas
+- Maksimal ~300 LOC per file, pecah bila perlu.
+- Type hints wajib; docstring singkat untuk public API.
+- Tanpa `print`; gunakan logger terstruktur.
+- I/O gunakan context manager; tangani error JSON decode.
+- Konfigurasi via `pydantic.BaseSettings`.
