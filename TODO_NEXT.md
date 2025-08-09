@@ -1,4 +1,4 @@
-# TODO_NEXT.md - Legal RAG System Action Plan
+ # TODO_NEXT.md - Legal RAG System Action Plan
 
 ## 🚨 CRITICAL BLOCKERS (Fix Immediately)
 
@@ -45,8 +45,6 @@ final_query = fts_query.format(filters_clause=filters_clause)  # FAILS
 - [x] **REFACTOR**: Use `text()` with bound parameters instead of string interpolation
 - [x] **TEST**: Verify all query paths (FTS, Vector, Explicit) work correctly
 - [x] **VALIDATE**: Test with and without filters
-- [x] **FIX**: Remove nonexistent `dv.content_type` column and use `lu.unit_type`
-- [x] **FIX**: Lazily import `JinaEmbedder` in `HybridRetriever` to avoid NameError
 
 **Code Fix Example**:
 ```python
