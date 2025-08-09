@@ -8,14 +8,10 @@ Provides commands for indexing documents, testing search, and system management.
 from __future__ import annotations
 
 import argparse
-import asyncio
-import json
 import sys
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional
 
-from src.config.settings import settings
 from src.db.session import get_db_session, init_db, reset_db
 from src.pipeline.indexer import LegalDocumentIndexer
 from src.services.search.hybrid_search import HybridSearchService
@@ -125,7 +121,8 @@ def cmd_search(args: argparse.Namespace) -> int:
             limit=args.limit,
             filters=filters,
             use_reranking=args.rerank,
-            session_id="cli_test"
+            session_id="cli_test",
+            strategy=args.strategy,
         )
 
         # Display results
@@ -324,7 +321,7 @@ def cmd_benchmark(args: argparse.Namespace) -> int:
         avg_duration = sum(r["duration_ms"] for r in results) / len(results)
         total_results = sum(r["results_count"] for r in results)
 
-        print(f"\nBenchmark Summary:")
+        print("\nBenchmark Summary:")
         print(f"Queries tested: {len(test_queries)}")
         print(f"Average duration: {avg_duration:.2f}ms")
         print(f"Total results found: {total_results}")
@@ -430,6 +427,12 @@ Examples:
         help="Comma-separated list of document numbers"
     )
     search_parser.add_argument(
+        "--strategy",
+        choices=["auto", "explicit", "fts", "vector", "hybrid"],
+        default="auto",
+        help="Search strategy to use",
+    )
+    search_parser.add_argument(
         "--no-rerank",
         dest="rerank",
         action="store_false",
@@ -451,8 +454,7 @@ Examples:
     )
 
     # Status command
-    status_parser = subparsers.add_parser("status", help="Check system status")
-
+    subparsers.add_parser("status", help="Check system status")
     # Benchmark command
     benchmark_parser = subparsers.add_parser("benchmark", help="Run search benchmarks")
     benchmark_parser.add_argument(

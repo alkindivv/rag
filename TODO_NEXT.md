@@ -11,17 +11,17 @@
 Client error '422 Unprocessable Entity' for url 'https://api.jina.ai/v1/embeddings'
 ```
 
-**Root Cause Analysis Needed**:
-- [ ] Check Jina v4 API documentation for correct request format
-- [ ] Validate request payload structure in `src/services/embedding/embedder.py`
-- [ ] Test with minimal API call outside the application
-- [ ] Verify API key permissions and rate limits
+**Root Cause Analysis**:
+- [x] Check Jina v4 API documentation for correct request format
+- [x] Validate request payload structure in `src/services/embedding/embedder.py`
+- [x] Test with minimal API call outside the application
+- [x] Verify API key permissions and rate limits
 
 **Action Items**:
-- [ ] **IMMEDIATE**: Test Jina API with curl/postman to isolate issue
-- [ ] **FIX**: Update request format in `JinaEmbedder._embed_batch_internal()`
-- [ ] **VALIDATE**: Test with single embedding first, then batch
-- [ ] **FALLBACK**: Implement mock embedder for development if API issues persist
+- [x] **IMMEDIATE**: Test Jina API with curl/postman to isolate issue
+- [x] **FIX**: Update request format in `JinaEmbedder._embed_batch_internal()`
+- [x] **VALIDATE**: Test with single embedding first, then batch
+- [x] **FALLBACK**: Implement mock embedder for development if API issues persist
 
 **Files to Modify**:
 - `src/services/embedding/embedder.py` (lines 80-95)
@@ -84,11 +84,11 @@ UU-2025-2/angka-3: 2 times
 ```
 
 **Action Items**:
-- [ ] **ANALYZE**: Deep-dive into crawler/PDF parser logic to identify duplicate source
-- [ ] **INVESTIGATE**: Check if duplicates have different content or just structural duplicates
-- [ ] **FIX**: Update crawler to prevent duplicates at source
-- [ ] **VALIDATE**: Re-crawl sample documents to verify fix
-- [ ] **CLEANUP**: Remove deduplication logic from indexer once source is fixed
+- [x] **ANALYZE**: Deep-dive into crawler/PDF parser logic to identify duplicate source
+- [x] **INVESTIGATE**: Check if duplicates have different content or just structural duplicates
+- [x] **FIX**: Update crawler to prevent duplicates at source
+- [x] **VALIDATE**: Re-crawl sample documents to verify fix
+- [x] **CLEANUP**: Remove deduplication logic from indexer once source is fixed
 
 **Files to Investigate**:
 - `src/services/crawler/*` - crawler logic
@@ -105,11 +105,11 @@ UU-2025-2/angka-3: 2 times
 **Current Status**: Components exist but integration fails
 
 **Action Items**:
-- [ ] **FIX**: SQL query formatting issues (see item #2)
-- [ ] **IMPLEMENT**: FTS-only search mode for testing without vector search
-- [ ] **TEST**: Each search strategy independently (Explicit, FTS, Vector)
-- [ ] **INTEGRATE**: Combine strategies with proper error handling
-- [ ] **VALIDATE**: End-to-end search pipeline works
+- [x] **FIX**: SQL query formatting issues (see item #2)
+- [x] **IMPLEMENT**: FTS-only search mode for testing without vector search
+- [x] **TEST**: Each search strategy independently (Explicit, FTS, Vector)
+- [x] **INTEGRATE**: Combine strategies with proper error handling
+- [x] **VALIDATE**: End-to-end search pipeline works
 
 **Test Plan**:
 ```bash
@@ -361,9 +361,9 @@ tests/
 
 | Priority | Task | Assignee | Status | Due Date |
 |----------|------|----------|---------|----------|
-| CRITICAL | Fix Jina API | Backend Dev | 🔄 In Progress | Tomorrow |
+| CRITICAL | Fix Jina API | Backend Dev | ✅ Done | Tomorrow |
 | CRITICAL | Fix SQL Queries | Backend Dev | ✅ Done | This Week |
-| HIGH | Complete Search | Backend Dev | ⏳ Pending | Next Week |
+| HIGH | Complete Search | Backend Dev | ✅ Done | Next Week |
 | HIGH | FastAPI Implementation | Backend Dev | ⏳ Pending | Next Week |
 | HIGH | Testing Suite | QA Engineer | ⏳ Pending | Next Sprint |
 | MEDIUM | LLM Integration | ML Engineer | ⏳ Pending | Next Month |

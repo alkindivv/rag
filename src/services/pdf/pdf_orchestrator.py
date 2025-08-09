@@ -7,7 +7,6 @@ Uses unified extractor with minimal complexity
 import logging
 from pathlib import Path
 from typing import Dict, Any, List, Optional, Tuple
-from pathlib import Path
 import re
 from datetime import datetime
 from dataclasses import dataclass, field
@@ -388,8 +387,12 @@ class PDFOrchestrator:
         parent_unit_id: Optional[str] = None,
         path: Optional[List[Dict[str, str]]] = None,
         pasal_id: Optional[str] = None,
+        used_ids: Optional[set[str]] = None,
     ) -> Dict[str, Any]:
         """Serialize LegalNode tree to specification-compliant structure."""
+
+        if used_ids is None:
+            used_ids = set()
 
         if path is None:
             path = [{"type": "dokumen", "label": doc_title, "unit_id": doc_id}]
@@ -401,13 +404,19 @@ class PDFOrchestrator:
                 "doc_unit_id": doc_id,
                 "doc_title": doc_title,
                 "children": [
-                    self._serialize_tree(child, doc_id, doc_title, doc_id, path, None)
+                    self._serialize_tree(child, doc_id, doc_title, doc_id, path, None, used_ids)
                     for child in node.children
                 ],
             }
 
         parent_unit_id = parent_unit_id or doc_id
-        unit_id = f"{parent_unit_id}/{node.type}-{node.number}"
+        base_unit_id = f"{parent_unit_id}/{node.type}-{node.number}"
+        unit_id = base_unit_id
+        counter = 2
+        while unit_id in used_ids:
+            unit_id = f"{base_unit_id}-{counter}"
+            counter += 1
+        used_ids.add(unit_id)
         number_label = node.number
         ordinal_int, ordinal_suffix = self._split_number_label(number_label)
         label_display = self._build_label_display(node.type, number_label)
@@ -453,7 +462,7 @@ class PDFOrchestrator:
             child_pasal_id = unit_id
 
         data["children"] = [
-            self._serialize_tree(child, doc_id, doc_title, unit_id, current_path, child_pasal_id)
+            self._serialize_tree(child, doc_id, doc_title, unit_id, current_path, child_pasal_id, used_ids)
             for child in node.children
         ]
 
