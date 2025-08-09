@@ -41,10 +41,10 @@ final_query = fts_query.format(filters_clause=filters_clause)  # FAILS
 **Root Cause**: Using string formatting on SQLAlchemy `text()` objects
 
 **Action Items**:
-- [ ] **FIX**: Replace `.format()` with proper SQLAlchemy parameter binding
-- [ ] **REFACTOR**: Use `text()` with bound parameters instead of string interpolation
-- [ ] **TEST**: Verify all query paths (FTS, Vector, Explicit) work correctly
-- [ ] **VALIDATE**: Test with and without filters
+- [x] **FIX**: Replace `.format()` with proper SQLAlchemy parameter binding
+- [x] **REFACTOR**: Use `text()` with bound parameters instead of string interpolation
+- [x] **TEST**: Verify all query paths (FTS, Vector, Explicit) work correctly
+- [x] **VALIDATE**: Test with and without filters
 
 **Code Fix Example**:
 ```python

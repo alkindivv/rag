@@ -10,13 +10,11 @@ __description__ = "Indonesian Legal Document Processing and RAG System"
 
 # Make key modules easily importable
 from . import config
-from . import models
 from . import services
 from . import utils
 
 __all__ = [
     'config',
-    'models',
     'services',
     'utils'
 ]
