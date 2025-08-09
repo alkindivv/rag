@@ -5,7 +5,7 @@ from __future__ import annotations
 from contextlib import contextmanager
 from typing import Generator
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -77,6 +77,11 @@ def init_db() -> None:
     Use Alembic migrations for production.
     """
     from .models import Base
+
+    # Ensure required extensions exist (e.g., pgvector)
+    with engine.begin() as conn:
+        if engine.url.get_backend_name() == "postgresql":
+            conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
 
     Base.metadata.create_all(bind=engine)
 

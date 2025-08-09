@@ -11,11 +11,6 @@ uvicorn[standard]==0.24.0
 
 
 
-<<<<<<< wv2927-codex/fix-issues-in-agents.md-and-todo_next.md
-- [x] **FIX**: Remove nonexistent `dv.content_type` column and use `lu.unit_type`
-- [x] **FIX**: Lazily import `JinaEmbedder` in `HybridRetriever` to avoid NameError
-=======
->>>>>>> main
 
 # Configuration Management
 pydantic==2.5.0
@@ -89,7 +84,7 @@ ruff==0.1.6
 mypy==1.7.1
 
 # Type stubs
-types-requests==2.31.0.20231114
+types-requests==2.31.0.20240402
 
 # =============================================================================
 # PRODUCTION DEPLOYMENT

@@ -168,7 +168,7 @@ class FTSSearcher:
                 ts_rank(lu.content_vector, plainto_tsquery('indonesian', :query)) as score
             FROM legal_units lu
             JOIN legal_documents ld ON lu.document_id = ld.id
-            WHERE lu.unit_type IN ('ayat', 'huruf', 'angka')
+            WHERE lu.unit_type IN ('AYAT', 'HURUF', 'ANGKA')
               AND lu.content_vector @@ plainto_tsquery('indonesian', :query)
         """
 
@@ -179,7 +179,7 @@ class FTSSearcher:
             filter_conditions = []
 
             if filters.doc_forms:
-                filter_conditions.append("ld.doc_form = ANY(:doc_forms)")
+                filter_conditions.append("ld.doc_form::text = ANY(:doc_forms)")
                 query_params["doc_forms"] = filters.doc_forms
 
             if filters.doc_years:
@@ -256,6 +256,9 @@ class VectorSearcher:
         try:
             # Get query embedding
             query_embedding = self.embedder.embed_single(query)
+            if getattr(self.embedder, "disabled", False):
+                logger.info("Embedder disabled; skipping vector search")
+                return []
             if not query_embedding:
                 logger.warning("Failed to generate query embedding")
                 return []
@@ -274,7 +277,7 @@ class VectorSearcher:
                     dv.hierarchy_path,
                     1 - (dv.embedding <=> :query_vector) as score
                 FROM document_vectors dv
-                LEFT JOIN legal_units lu ON dv.unit_id = lu.unit_id AND lu.unit_type = 'pasal'
+                LEFT JOIN legal_units lu ON dv.unit_id = lu.unit_id AND lu.unit_type = 'PASAL'
                 WHERE 1=1
             """
 
@@ -285,7 +288,7 @@ class VectorSearcher:
                 filter_conditions = []
 
                 if filters.doc_forms:
-                    filter_conditions.append("dv.doc_form = ANY(:doc_forms)")
+                    filter_conditions.append("dv.doc_form::text = ANY(:doc_forms)")
                     query_params["doc_forms"] = filters.doc_forms
 
                 if filters.doc_years:
@@ -386,19 +389,19 @@ class ExplicitSearcher:
         unit_conditions = []
 
         if references.get("pasal"):
-            unit_conditions.append("lu.number_label = :pasal AND lu.unit_type = 'pasal'")
+            unit_conditions.append("lu.number_label = :pasal AND lu.unit_type = 'PASAL'")
             query_params["pasal"] = references["pasal"]
 
         if references.get("ayat"):
-            unit_conditions.append("lu.number_label = :ayat AND lu.unit_type = 'ayat'")
+            unit_conditions.append("lu.number_label = :ayat AND lu.unit_type = 'AYAT'")
             query_params["ayat"] = references["ayat"]
 
         if references.get("huruf"):
-            unit_conditions.append("lu.number_label = :huruf AND lu.unit_type = 'huruf'")
+            unit_conditions.append("lu.number_label = :huruf AND lu.unit_type = 'HURUF'")
             query_params["huruf"] = references["huruf"]
 
         if references.get("angka"):
-            unit_conditions.append("lu.number_label = :angka AND lu.unit_type = 'angka'")
+            unit_conditions.append("lu.number_label = :angka AND lu.unit_type = 'ANGKA'")
             query_params["angka"] = references["angka"]
 
         # Combine conditions

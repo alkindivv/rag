@@ -172,8 +172,22 @@ class LegalDocumentIndexer:
         """Create LegalDocument record from JSON data."""
 
         # Parse enum values
-        doc_form = DocForm(data.get("doc_form", "LAINNYA"))
-        doc_status = DocStatus(data.get("doc_status", "Berlaku"))
+        # Normalize document form and status with graceful fallback
+        try:
+            doc_form = DocForm(data.get("doc_form", "LAINNYA").upper())
+        except ValueError:
+            logger.warning(
+                f"Unknown doc_form '{data.get('doc_form')}' - defaulting to LAINNYA"
+            )
+            doc_form = DocForm.LAINNYA
+
+        try:
+            doc_status = DocStatus(data.get("doc_status", "Berlaku"))
+        except ValueError:
+            logger.warning(
+                f"Unknown doc_status '{data.get('doc_status')}' - defaulting to BERLAKU"
+            )
+            doc_status = DocStatus.BERLAKU
 
         # Parse dates
         date_fields = ["doc_date_enacted", "doc_date_promulgated", "doc_date_effective"]
@@ -251,6 +265,7 @@ class LegalDocumentIndexer:
         """
         units = []
         pasal_contents = {}  # unit_id -> full_content for embedding
+        processed_unit_ids: set[str] = set()
 
         def process_node(node: Dict[str, Any], parent_pasal_id: Optional[str] = None) -> None:
             """Recursively process tree nodes."""
@@ -272,11 +287,17 @@ class LegalDocumentIndexer:
             node_type = node.get("type", "dokumen")
             unit_type = unit_type_map.get(node_type, UnitType.DOKUMEN)
 
+            unit_id = node.get("unit_id", "")
+            if unit_id in processed_unit_ids:
+                logger.warning(f"Duplicate unit_id detected: {unit_id}; skipping")
+                return
+            processed_unit_ids.add(unit_id)
+
             # Create unit
             unit = LegalUnit(
                 document_id=doc.id,
                 unit_type=unit_type,
-                unit_id=node.get("unit_id", ""),
+                unit_id=unit_id,
                 number_label=node.get("number_label"),
                 ordinal_int=node.get("ordinal_int", 0),
                 ordinal_suffix=node.get("ordinal_suffix", ""),
