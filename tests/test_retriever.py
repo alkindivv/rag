@@ -4,11 +4,7 @@ import os
 import sys
 from pathlib import Path
 import warnings
-
-# <<<<<<< wv2927-codex/fix-issues-in-agents.md-and-todo_next.md
-# import pytest
-# =======
-# >>>>>>> main
+import pytest
 
 
 from sqlalchemy.sql.elements import TextClause
@@ -47,19 +43,17 @@ def test_vector_search_executes_without_format_error():
     assert results == []
     executed_query = mock_session.execute.call_args[0][0]
     assert isinstance(executed_query, TextClause)
-# <<<<<<< wv2927-codex/fix-issues-in-agents.md-and-todo_next.md
-#     assert "content_type" not in executed_query.text
-#     assert "lu.unit_type" in executed_query.text
+
+    assert "content_type" not in executed_query.text
+    assert "lu.unit_type" in executed_query.text
 
 
-# def test_hybrid_retriever_default_embedder_initialization(monkeypatch):
-#     dummy_module = types.ModuleType("embedder")
-#     dummy_module.JinaEmbedder = DummyEmbedder
-#     monkeypatch.setitem(sys.modules, "src.services.embedding.embedder", dummy_module)
+def test_hybrid_retriever_default_embedder_initialization(monkeypatch):
+    dummy_module = types.ModuleType("embedder")
+    dummy_module.JinaEmbedder = DummyEmbedder
+    monkeypatch.setitem(sys.modules, "src.services.embedding.embedder", dummy_module)
 
-#     from src.services.retriever.hybrid_retriever import HybridRetriever
+    from src.services.retriever.hybrid_retriever import HybridRetriever
 
-#     retriever = HybridRetriever()
-#     assert isinstance(retriever.embedder, DummyEmbedder)
-# =======
-# >>>>>>> main
+    retriever = HybridRetriever()
+    assert isinstance(retriever.embedder, DummyEmbedder)

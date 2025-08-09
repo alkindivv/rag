@@ -9,6 +9,14 @@
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
 
+
+
+<<<<<<< wv2927-codex/fix-issues-in-agents.md-and-todo_next.md
+- [x] **FIX**: Remove nonexistent `dv.content_type` column and use `lu.unit_type`
+- [x] **FIX**: Lazily import `JinaEmbedder` in `HybridRetriever` to avoid NameError
+=======
+>>>>>>> main
+
 # Configuration Management
 pydantic==2.5.0
 pydantic-settings==2.1.0

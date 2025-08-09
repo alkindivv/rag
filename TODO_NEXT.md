@@ -29,7 +29,7 @@ Client error '422 Unprocessable Entity' for url 'https://api.jina.ai/v1/embeddin
 
 ---
 
-### 2. Fix SQL Query Formatting in Hybrid Retriever  
+### 2. Fix SQL Query Formatting in Hybrid Retriever
 **Priority: CRITICAL** | **Assignee: Backend Dev** | **ETA: 4-6 hours**
 
 **Problem**: SQLAlchemy `text()` object doesn't support `.format()` method
@@ -45,6 +45,9 @@ final_query = fts_query.format(filters_clause=filters_clause)  # FAILS
 - [x] **REFACTOR**: Use `text()` with bound parameters instead of string interpolation
 - [x] **TEST**: Verify all query paths (FTS, Vector, Explicit) work correctly
 - [x] **VALIDATE**: Test with and without filters
+- [x] **FIX**: Remove nonexistent `dv.content_type` column and use `lu.unit_type`
+- [x] **FIX**: Lazily import `JinaEmbedder` in `HybridRetriever` to avoid NameError
+
 
 **Code Fix Example**:
 ```python
@@ -143,7 +146,7 @@ python -m src.main search "batubara" --strategy hybrid # all combined
 ```python
 GET  /health                           # System health
 GET  /search?q={query}&limit={n}      # Search documents
-POST /search/advanced                  # Advanced search with filters  
+POST /search/advanced                  # Advanced search with filters
 GET  /documents/{doc_id}/outline      # Document structure
 GET  /documents/{doc_id}/units        # Document units
 ```
@@ -392,6 +395,6 @@ tests/
 
 ---
 
-**Last Updated**: 2025-08-09  
-**Next Review**: Weekly on Mondays  
+**Last Updated**: 2025-08-09
+**Next Review**: Weekly on Mondays
 **Status**: 🔄 Active Development
