@@ -12,6 +12,7 @@ from datetime import datetime
 from dataclasses import dataclass, field
 
 from .extractor import UnifiedPDFExtractor, ExtractionResult
+from ...utils.citation import build_citation_string
 
 logger = logging.getLogger(__name__)
 
@@ -423,7 +424,7 @@ class PDFOrchestrator:
         seq_sort_key = f"{ordinal_int:04d}|{ordinal_suffix}"
         current_entry = {"type": node.type, "label": label_display, "unit_id": unit_id}
         current_path = path + [current_entry]
-        citation = self._build_citation_string(doc_title, current_path)
+        citation = build_citation_string(current_path, doc_title)
 
         data = {
             "type": node.type,
@@ -511,26 +512,6 @@ class PDFOrchestrator:
             return f"{number_label}."
         return number_label
 
-    def _build_citation_string(self, doc_title: str, path: List[Dict[str, str]]) -> str:
-        """Build citation string using path."""
-        parts = []
-        for p in path[1:]:
-            t = p["type"]
-            label = p["label"]
-            if t == "pasal":
-                parts.append(label)
-            elif t == "ayat":
-                num = re.sub(r"[^0-9]", "", label)
-                parts.append(f"ayat ({num})")
-            elif t == "huruf":
-                letter = re.sub(r"[^a-zA-Z]", "", label)
-                parts.append(f"huruf {letter}")
-            elif t == "angka":
-                num = re.sub(r"[^0-9]", "", label)
-                parts.append(f"angka {num}")
-        if parts:
-            return f"{doc_title}, {' '.join(parts)}"
-        return doc_title
 
     def _extract_inline_content(self, node: LegalNode) -> str:
         """Extract inline content from node title if content missing."""
