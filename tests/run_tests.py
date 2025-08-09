@@ -170,13 +170,13 @@ class SimpleTestRunner:
         # Test 4: Embedder initialization
         start = time.time()
         try:
-            from src.services.embedding.embedder import JinaEmbedder
+            from src.services.embedding.embedder import JinaV4Embedder
             from src.utils.http import HttpClient
 
             # Test embedder can be created
-            embedder = JinaEmbedder()
-            assert embedder.model_name
-            assert embedder.dimensions > 0
+            embedder = JinaV4Embedder()
+            assert embedder.model
+            assert embedder.default_dims > 0
 
             duration = (time.time() - start) * 1000
             results.append(TestResult(
@@ -274,7 +274,7 @@ class SimpleTestRunner:
         # Test 7: Jina API Format Validation
         start = time.time()
         try:
-            from src.services.embedding.embedder import JinaEmbedder
+            from src.services.embedding.embedder import JinaV4Embedder
             from src.utils.http import HttpClient
             import httpx
             import json
@@ -292,17 +292,21 @@ class SimpleTestRunner:
 
             transport = httpx.MockTransport(mock_handler)
             client = HttpClient(client=httpx.Client(transport=transport))
-            embedder = JinaEmbedder(client=client)
+            embedder = JinaV4Embedder(client=client)
 
             # This should not cause 422 errors
             result = embedder.embed_single("test text")
 
-            # Validate correct API format
+            # Validate correct v4 API format
             payload = captured_request["json"]
             assert payload["model"] == "jina-embeddings-v4"
             assert payload["input"] == ["test text"]
-            assert payload["encoding_format"] == "float"
-            assert "dimensions" not in payload  # This causes 422 errors
+            assert payload["task"] == "retrieval.passage"
+            assert payload["dimensions"] == 1024
+            assert payload["return_multivector"] == False
+            assert payload["late_chunking"] == False
+            assert payload["truncate"] == True
+            assert "encoding_format" not in payload  # v4 doesn't use this
 
             duration = (time.time() - start) * 1000
             results.append(TestResult(
@@ -318,6 +322,90 @@ class SimpleTestRunner:
                 status="FAIL",
                 duration_ms=duration,
                 message=f"Jina API format error: {str(e)}"
+            ))
+
+        # Test 8: Reranker Smoke Test
+        start = time.time()
+        try:
+            from src.services.search.reranker import JinaReranker
+            from src.services.retriever.hybrid_retriever import SearchResult
+            from src.utils.http import HttpClient
+            import httpx
+            import json
+
+            # Mock reranker response with two scores
+            def mock_handler(request: httpx.Request) -> httpx.Response:
+                payload = json.loads(request.content.decode())
+
+                # Validate reranker request format
+                assert payload["model"] == "jina-reranker-v2-base-multilingual"
+                assert "query" in payload
+                assert "documents" in payload
+                assert "top_n" in payload
+                assert "return_documents" in payload
+
+                # Return mock scores in descending order
+                return httpx.Response(200, json={
+                    "model": "jina-reranker-v2-base-multilingual",
+                    "usage": {"total_tokens": 100},
+                    "results": [
+                        {"index": 1, "relevance_score": 0.95},  # Higher score
+                        {"index": 0, "relevance_score": 0.85}   # Lower score
+                    ]
+                })
+
+            transport = httpx.MockTransport(mock_handler)
+            client = HttpClient(client=httpx.Client(transport=transport))
+            reranker = JinaReranker(client=client)
+
+            # Create sample search results
+            search_results = [
+                SearchResult(
+                    id="1",
+                    text="First document",
+                    citation_string="Doc 1",
+                    score=0.5,
+                    source_type="fts",
+                    unit_type="ayat",
+                    unit_id="test-1"
+                ),
+                SearchResult(
+                    id="2",
+                    text="Second document",
+                    citation_string="Doc 2",
+                    score=0.6,
+                    source_type="vector",
+                    unit_type="pasal",
+                    unit_id="test-2"
+                )
+            ]
+
+            # Test reranking
+            reranked = reranker.rerank("test query", search_results, top_k=2)
+
+            # Verify sort order: results should be sorted by score descending
+            assert len(reranked) == 2
+            assert reranked[0].score >= reranked[1].score, f"Results not sorted by score: {reranked[0].score} < {reranked[1].score}"
+
+            # Check that scores were updated (they should be 0.95 and 0.85)
+            scores = [r.score for r in reranked]
+            assert 0.95 in scores, f"Expected score 0.95 not found in {scores}"
+            assert 0.85 in scores, f"Expected score 0.85 not found in {scores}"
+
+            duration = (time.time() - start) * 1000
+            results.append(TestResult(
+                name="Reranker Smoke Test",
+                status="PASS",
+                duration_ms=duration,
+                message="Reranker correctly sorts by relevance score"
+            ))
+        except Exception as e:
+            duration = (time.time() - start) * 1000
+            results.append(TestResult(
+                name="Reranker Smoke Test",
+                status="FAIL",
+                duration_ms=duration,
+                message=f"Reranker test error: {type(e).__name__}: {str(e)}"
             ))
 
         return results
@@ -549,25 +637,25 @@ class SimpleTestRunner:
 
         try:
             from src.db.session import get_db_session
-            from src.db.models import Base
-            from sqlalchemy import create_engine
+            from sqlalchemy import text
 
-            # Create in-memory database
-            engine = create_engine("sqlite:///:memory:")
-            Base.metadata.create_all(engine)
-
-            # Test session creation
+            # Test session creation with actual configured database
+            # Skip table creation for now to avoid PostgreSQL/SQLite compatibility issues
             with get_db_session() as db:
-                # Basic query test
-                result = db.execute("SELECT 1 as test").fetchone()
+                # Basic query test that works on both PostgreSQL and SQLite
+                result = db.execute(text("SELECT 1 as test")).fetchone()
                 assert result[0] == 1
+
+                # Test database type detection
+                db_name = str(db.bind.url).split('://')[0] if db.bind else 'unknown'
+                self.logger.debug(f"Database type: {db_name}")
 
             duration = (time.time() - start) * 1000
             return TestResult(
                 name="Database Test",
                 status="PASS",
                 duration_ms=duration,
-                message="Database operations working"
+                message=f"Database connectivity working"
             )
 
         except Exception as e:

@@ -22,7 +22,7 @@ from typing import List
 
 import httpx
 
-from src.services.embedding.embedder import JinaEmbedder
+from src.services.embedding.embedder import JinaV4Embedder, JinaEmbedder
 from src.utils.http import HttpClient
 
 
@@ -31,10 +31,10 @@ class TestJinaEmbedderConfiguration:
 
     def test_default_initialization(self):
         """Test embedder initializes with default settings."""
-        embedder = JinaEmbedder()
+        embedder = JinaV4Embedder()
 
-        assert embedder.model_name == "jina-embeddings-v4"
-        assert embedder.dimensions == 1024
+        assert embedder.model == "jina-embeddings-v4"
+        assert embedder.default_dims == 1024
         assert embedder.api_key == "test-key"  # From test environment
         assert embedder.batch_size == 2  # From test environment
 
@@ -42,25 +42,24 @@ class TestJinaEmbedderConfiguration:
         """Test embedder with custom configuration."""
         custom_client = MagicMock(spec=HttpClient)
 
-        embedder = JinaEmbedder(
-            model_name="custom-model",
-            dimensions=512,
-            batch_size=8,
+        embedder = JinaV4Embedder(
+            model="custom-model",
+            default_dims=512,
             client=custom_client
         )
 
-        assert embedder.model_name == "custom-model"
-        assert embedder.dimensions == 512
-        assert embedder.batch_size == 8
+        assert embedder.model == "custom-model"
+        assert embedder.default_dims == 512
+        assert embedder.batch_size == 2  # From test environment settings
         assert embedder.client is custom_client
 
     def test_environment_override(self):
         """Test configuration from environment variables."""
         with patch.dict('os.environ', {
-            'JINA_EMBED_MODEL': 'env-model',
+            'EMBEDDING_MODEL': 'env-model',
             'EMBED_BATCH_SIZE': '32'
         }):
-            embedder = JinaEmbedder()
+            embedder = JinaV4Embedder()
             # Note: This tests that the class can handle env vars if implemented
             # Current implementation uses default values
 
@@ -87,7 +86,7 @@ class TestJinaEmbedderAPIPayload:
 
         transport = httpx.MockTransport(mock_handler)
         client = HttpClient(client=httpx.Client(transport=transport))
-        embedder = JinaEmbedder(client=client)
+        embedder = JinaV4Embedder(client=client)
 
         result = embedder.embed_single("test text")
 
@@ -99,12 +98,17 @@ class TestJinaEmbedderAPIPayload:
         assert captured_request["url"].endswith("/v1/embeddings")
         assert captured_request["headers"]["Authorization"] == "Bearer test-key"
         assert captured_request["headers"]["Content-Type"] == "application/json"
+        assert captured_request["headers"]["Accept"] == "application/json"
 
         payload = captured_request["json"]
         assert payload["model"] == "jina-embeddings-v4"
         assert payload["input"] == ["test text"]
-        assert payload["encoding_format"] == "float"
-        assert "dimensions" not in payload  # Jina v4 doesn't accept dimensions parameter
+        assert payload["task"] == "retrieval.passage"
+        assert payload["dimensions"] == 1024
+        assert payload["return_multivector"] == False
+        assert payload["late_chunking"] == False
+        assert payload["truncate"] == True
+        assert "encoding_format" not in payload  # v4 API doesn't use this
 
     def test_batch_embedding_payload_format(self):
         """Test correct batch embedding payload format."""
@@ -124,10 +128,10 @@ class TestJinaEmbedderAPIPayload:
 
         transport = httpx.MockTransport(mock_handler)
         client = HttpClient(client=httpx.Client(transport=transport))
-        embedder = JinaEmbedder(client=client, batch_size=2)
+        embedder = JinaV4Embedder(client=client)
 
         texts = ["first text", "second text"]
-        results = embedder.embed_batch(texts)
+        results = embedder.embed_texts(texts, task="retrieval.passage")
 
         assert len(results) == 2
         assert len(results[0]) == 1024
@@ -159,7 +163,7 @@ class TestJinaEmbedderAPIPayload:
 
         transport = httpx.MockTransport(mock_handler)
         client = HttpClient(client=httpx.Client(transport=transport))
-        embedder = JinaEmbedder(client=client, batch_size=2)
+        embedder = JinaV4Embedder(client=client)
 
         # Test with 5 texts (should create 3 API calls: 2+2+1)
         texts = [f"text {i}" for i in range(5)]
@@ -596,7 +600,7 @@ class TestJinaEmbedderPerformance:
 
         # Process large batch
         large_texts = [f"Legal document content {i}" * 100 for i in range(100)]
-        results = embedder.embed_batch(large_texts)
+        results = embedder.embed_texts(large_texts, task="retrieval.passage")
 
         current, peak = tracemalloc.get_traced_memory()
         tracemalloc.stop()
@@ -893,18 +897,21 @@ class TestJinaEmbedderRegressionTests:
             payload = json.loads(request.content.decode())
             captured_requests.append(payload)
 
-            # Simulate Jina v4 validation - reject invalid formats
-            if "dimensions" in payload:
+            # Simulate Jina v4 validation - accept correct format
+            required_fields = ["model", "input", "task", "dimensions", "return_multivector", "late_chunking", "truncate"]
+            for field in required_fields:
+                if field not in payload:
+                    return httpx.Response(422, json={
+                        "detail": [{"loc": ["body", field], "msg": f"Field required"}]
+                    })
+
+            # Reject old encoding_format parameter
+            if "encoding_format" in payload:
                 return httpx.Response(422, json={
-                    "detail": [{"loc": ["body", "dimensions"], "msg": "Field not allowed"}]
+                    "detail": [{"loc": ["body", "encoding_format"], "msg": "Field not supported in v4"}]
                 })
 
-            if payload.get("encoding_format") != "float":
-                return httpx.Response(422, json={
-                    "detail": [{"loc": ["body", "encoding_format"], "msg": "Invalid encoding format"}]
-                })
-
-            # Accept valid request
+            # Accept valid v4 request
             return httpx.Response(200, json={
                 "model": "jina-embeddings-v4",
                 "data": [{"embedding": [0.1] * 1024, "index": 0}]
@@ -912,17 +919,27 @@ class TestJinaEmbedderRegressionTests:
 
         transport = httpx.MockTransport(mock_handler)
         client = HttpClient(client=httpx.Client(transport=transport))
-        embedder = JinaEmbedder(client=client)
+        embedder = JinaV4Embedder(client=client)
 
-        # Should not raise 422 error with correct format
+        # Should not raise 422 error with correct v4 format
         result = embedder.embed_single("test legal text")
         assert len(result) == 1024
 
-        # Verify correct request format was used
+        # Verify correct v4 request format was used
         assert len(captured_requests) == 1
         payload = captured_requests[0]
-        assert "dimensions" not in payload  # Should not include dimensions
-        assert payload["encoding_format"] == "float"  # Should include correct format
+
+        # Check required v4 fields
+        assert payload["model"] == "jina-embeddings-v4"
+        assert payload["input"] == ["test legal text"]
+        assert payload["task"] == "retrieval.passage"
+        assert payload["dimensions"] == 1024
+        assert payload["return_multivector"] == False
+        assert payload["late_chunking"] == False
+        assert payload["truncate"] == True
+
+        # Ensure old fields are not present
+        assert "encoding_format" not in payload
 
     def test_import_path_consistency(self):
         """Test that import paths work correctly."""

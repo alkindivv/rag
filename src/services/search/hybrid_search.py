@@ -16,7 +16,7 @@ from sqlalchemy import text
 from ...config.settings import settings
 from ...db.session import get_db_session
 from ..retriever.hybrid_retriever import HybridRetriever, SearchFilters, SearchResult
-from ...services.embedding.embedder import JinaEmbedder
+from ..embedding.embedder import JinaV4Embedder
 from ...utils.logging import get_logger, log_timing
 from .reranker import RerankerFactory
 
@@ -34,17 +34,17 @@ class HybridSearchService:
 
     def __init__(
         self,
-        embedder: Optional[JinaEmbedder] = None,
+        embedder: Optional[JinaV4Embedder] = None,
         reranker_provider: Optional[str] = None
     ):
         """
         Initialize hybrid search service.
 
         Args:
-            embedder: Optional embedder instance
+            embedder: Optional JinaV4Embedder instance
             reranker_provider: Optional reranker provider override
         """
-        self.embedder = embedder or JinaEmbedder()
+        self.embedder = embedder or JinaV4Embedder()
         self.retriever = HybridRetriever(embedder=self.embedder)
         self.reranker = RerankerFactory.create_reranker(provider=reranker_provider)
 
@@ -101,6 +101,14 @@ class HybridSearchService:
                     "duration_ms": 0
                 }
 
+            # Determine and log search strategy
+            determined_strategy = self._determine_strategy(query) if strategy == "auto" else strategy
+            logger.info(f"Search strategy: {determined_strategy}", extra={
+                "query": query,
+                "strategy": determined_strategy,
+                "use_reranking": use_reranking
+            })
+
             # Perform retrieval
             retrieval_start = time.time()
             results = self.retriever.search(
@@ -117,20 +125,25 @@ class HybridSearchService:
 
             # Apply reranking if enabled and provider is available
             reranked = False
-            if use_reranking and settings.rerank_provider != "none":
+            rerank_duration = 0
+            if use_reranking and settings.enable_reranker and settings.rerank_provider != "none":
                 rerank_start = time.time()
                 results = self.reranker.rerank(query, results, top_k=limit)
                 rerank_duration = (time.time() - rerank_start) * 1000
                 reranked = True
 
-                logger.debug(f"Reranked to {len(results)} final results")
-                logger.info(
-                    "Reranking completed",
-                    extra=log_timing("rerank", rerank_duration)
-                )
+                logger.info(f"Reranking applied: {determined_strategy}+rerank", extra={
+                    "strategy": f"{determined_strategy}+rerank",
+                    "reranked_count": len(results),
+                    "rerank_duration_ms": rerank_duration
+                })
             else:
                 # Just apply limit without reranking
                 results = results[:limit]
+                logger.info(f"Strategy completed: {determined_strategy}_only", extra={
+                    "strategy": f"{determined_strategy}_only",
+                    "reranking_skipped": not use_reranking or not settings.enable_reranker
+                })
 
             # Log search to database
             self._log_search(query, len(results), session_id)
@@ -240,11 +253,11 @@ class HybridSearchService:
             }
 
     def _determine_strategy(self, query: str) -> str:
-        """Determine which search strategy was used."""
+        """Determine which search strategy should be used."""
         if self.retriever.router.is_explicit_query(query):
-            return "explicit"
+            return "fts"  # Explicit queries use FTS-first approach
         else:
-            return "thematic"
+            return "hybrid"  # Thematic queries use hybrid (FTS + vector)
 
     def _format_result(self, result: SearchResult) -> Dict[str, Any]:
         """Format search result for API response."""

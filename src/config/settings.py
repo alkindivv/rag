@@ -11,9 +11,19 @@ class Settings(BaseSettings):
     database_url: str = Field(..., env="DATABASE_URL")
     jina_api_key: str | None = Field(default=None, env="JINA_API_KEY")
     jina_embed_base: str = Field(default="https://api.jina.ai/v1/embeddings", env="JINA_EMBED_BASE")
-    jina_embed_model: str = Field(default="jina-embeddings-v3", env="JINA_EMBED_MODEL")
+    jina_embed_model: str = Field(default="jina-embeddings-v4", env="JINA_EMBED_MODEL")
     jina_rerank_base: str = Field(default="https://api.jina.ai/v1/rerank", env="JINA_RERANK_BASE")
-    jina_rerank_model: str = Field(default="jina-reranker-v1", env="JINA_RERANK_MODEL")
+    jina_rerank_model: str = Field(default="jina-reranker-v2-base-multilingual", env="JINA_RERANK_MODEL")
+
+    # Jina v4 Embedding Configuration
+    embedding_model: str = Field(default="jina-embeddings-v4", env="EMBEDDING_MODEL")
+    embedding_dim: int = Field(default=1024, env="EMBEDDING_DIM")  # 768, 1024, or 2048
+    embedding_task_query: str = Field(default="retrieval.query", env="EMBEDDING_TASK_QUERY")
+    embedding_task_passage: str = Field(default="retrieval.passage", env="EMBEDDING_TASK_PASSAGE")
+
+    # Reranker Configuration
+    reranker_model: str = Field(default="jina-reranker-v2-base-multilingual", env="RERANKER_MODEL")
+    enable_reranker: bool = Field(default=True, env="ENABLE_RERANKER")
 
     llm_provider: str = Field(default="gemini", env="LLM_PROVIDER")
     gemini_api_key: str | None = Field(default=None, env="GEMINI_API_KEY")

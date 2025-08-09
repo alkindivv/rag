@@ -1412,5 +1412,5 @@ class TestCriticalPathValidation:
 
             mock_jina_embedder.embed_single.side_effect = track_embedding_calls
 
-            with patch('src.services.embedding.embedder.JinaEmbedder', return_value=mock_jina_embedder):
+            with patch('src.services.embedding.embedder.JinaV4Embedder', return_value=mock_jina_embedder):
                 with patch('src.db.session.get_db_session') as mock_get_session:

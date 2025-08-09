@@ -27,7 +27,7 @@ from ..db.models import (
     UnitType,
 )
 from ..db.session import get_db_session
-from ..services.embedding.embedder import JinaEmbedder
+from src.services.embedding.embedder import JinaV4Embedder, ConfigError
 from ..utils.logging import get_logger
 
 logger = get_logger(__name__)
@@ -44,14 +44,14 @@ class LegalDocumentIndexer:
     - Subject associations
     """
 
-    def __init__(self, embedder: Optional[JinaEmbedder] = None):
+    def __init__(self, embedder: Optional[JinaV4Embedder] = None):
         """
         Initialize indexer.
 
         Args:
             embedder: Optional embedder instance. Creates new one if None.
         """
-        self.embedder = embedder or JinaEmbedder()
+        self.embedder = embedder or JinaV4Embedder()
         self.stats = {
             "documents_processed": 0,
             "units_created": 0,
@@ -409,13 +409,13 @@ class LegalDocumentIndexer:
             unit_ids = list(pasal_contents.keys())
             contents = list(pasal_contents.values())
 
-            # Get embeddings in batches
-            embeddings = self.embedder.embed_batch(contents)
+            # Get embeddings using passage task for document content
+            embeddings = self.embedder.embed_passages(contents, dims=settings.embedding_dim)
 
             vectors_created = 0
             for unit_id, content, embedding in zip(unit_ids, contents, embeddings):
-                if embedding is None:
-                    logger.warning(f"Failed to create embedding for {unit_id}")
+                if embedding is None or len(embedding) != settings.embedding_dim:
+                    logger.warning(f"Failed to create valid embedding for {unit_id}")
                     continue
 
                 # Extract hierarchy info from unit_id
@@ -426,7 +426,7 @@ class LegalDocumentIndexer:
                     unit_id=unit_id,
                     content_type="pasal",
                     embedding=embedding,
-                    embedding_model=self.embedder.model_name,
+                    embedding_model=self.embedder.model,
                     doc_form=doc.doc_form,
                     doc_year=doc.doc_year,
                     doc_number=doc.doc_number,

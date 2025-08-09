@@ -14,10 +14,11 @@ from typing import Any, Dict, List, Optional
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
+from ...config.settings import settings
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..embedding.embedder import JinaEmbedder
+    from ..embedding.embedder import JinaV4Embedder
 from ...utils.logging import get_logger, log_timing
 
 logger = get_logger(__name__)
@@ -55,9 +56,22 @@ class SearchFilters:
 class QueryRouter:
     """Routes queries to appropriate search strategy."""
 
-    # Patterns for explicit legal references
+    # Enhanced patterns for explicit legal references with smart routing
     EXPLICIT_PATTERNS = [
-        # Pasal references: "pasal 1", "pasal 1 ayat 2", etc.
+        # Pasal references: "pasal 1", "Pasal 1A", etc.
+        r'[Pp]asal\s+\d+[A-Z]?',
+
+        # Ayat references: "ayat (1)", "ayat 2", etc.
+        r'ayat\s*\(\d+\)',
+        r'ayat\s+\d+',
+
+        # Huruf references: "huruf a", "huruf b", etc.
+        r'huruf\s*[a-z]',
+
+        # Angka references: "angka 1", "angka 2", etc.
+        r'angka\s*\d+',
+
+        # Combined pasal references: "pasal 1 ayat 2", etc.
         r'pasal\s+(\d+)(?:\s+ayat\s+(\d+))?(?:\s+huruf\s+([a-z]))?(?:\s+angka\s+(\d+))?',
 
         # Article references: "artikel 1", "article 1", etc.
@@ -68,16 +82,12 @@ class QueryRouter:
 
         # Bab references: "bab 1", "bab I"
         r'bab\s+([IVX]+|\d+)',
-
-        # Ayat, huruf, angka references
-        r'ayat\s+(\d+)',
-        r'huruf\s+([a-z])',
-        r'angka\s+(\d+)',
     ]
 
     def __init__(self):
         """Initialize query router with compiled patterns."""
         self.patterns = [re.compile(pattern, re.IGNORECASE) for pattern in self.EXPLICIT_PATTERNS]
+        logger.debug(f"Initialized QueryRouter with {len(self.patterns)} explicit patterns")
 
     def is_explicit_query(self, query: str) -> bool:
         """
@@ -89,7 +99,10 @@ class QueryRouter:
         Returns:
             True if query contains explicit legal references
         """
-        return any(pattern.search(query) for pattern in self.patterns)
+        is_explicit = any(pattern.search(query) for pattern in self.patterns)
+        if is_explicit:
+            logger.debug(f"Query identified as explicit: '{query}'")
+        return is_explicit
 
     def extract_explicit_references(self, query: str) -> Dict[str, Any]:
         """
@@ -227,12 +240,12 @@ class FTSSearcher:
 class VectorSearcher:
     """Vector search on document embeddings (pasal level)."""
 
-    def __init__(self, db: Session, embedder: Optional["JinaEmbedder"] = None):
+    def __init__(self, db: Session, embedder: Optional["JinaV4Embedder"] = None):
         """Initialize vector searcher with database session and embedder."""
         self.db = db
         if embedder is None:
-            from ..embedding.embedder import JinaEmbedder as _JinaEmbedder
-            self.embedder = _JinaEmbedder()
+            from ..embedding.embedder import JinaV4Embedder as _JinaV4Embedder
+            self.embedder = _JinaV4Embedder()
         else:
             self.embedder = embedder
 
@@ -254,11 +267,8 @@ class VectorSearcher:
             List of search results
         """
         try:
-            # Get query embedding
-            query_embedding = self.embedder.embed_single(query)
-            if getattr(self.embedder, "disabled", False):
-                logger.info("Embedder disabled; skipping vector search")
-                return []
+            # Get query embedding using retrieval.query task
+            query_embedding = self.embedder.embed_query(query, dims=settings.embedding_dim)
             if not query_embedding:
                 logger.warning("Failed to generate query embedding")
                 return []
@@ -467,11 +477,11 @@ class HybridRetriever:
     Routes queries and combines results from different search methods.
     """
 
-    def __init__(self, embedder: Optional["JinaEmbedder"] = None):
+    def __init__(self, embedder: Optional["JinaV4Embedder"] = None):
         """Initialize hybrid retriever with optional embedder."""
         if embedder is None:
-            from ..embedding.embedder import JinaEmbedder as _JinaEmbedder
-            self.embedder = _JinaEmbedder()
+            from ..embedding.embedder import JinaV4Embedder as _JinaV4Embedder
+            self.embedder = _JinaV4Embedder()
         else:
             self.embedder = embedder
         self.router = QueryRouter()
@@ -516,9 +526,24 @@ class HybridRetriever:
                         db, query, filters, limit, fts_weight, vector_weight
                     )
 
-                # Auto strategy: route based on query type
+                # Auto strategy: FTS-first for explicit queries
                 if self.router.is_explicit_query(query):
-                    return self._explicit_search(db, query, filters, limit)
+                    # Try FTS first with higher limit
+                    fts_searcher = FTSSearcher(db)
+                    fts_results = fts_searcher.search(query, filters, limit=30)
+
+                    # If FTS finds sufficient results (>=limit), use FTS-only
+                    if len(fts_results) >= limit:
+                        logger.debug(f"FTS-only strategy: found {len(fts_results)} results")
+                        return fts_results[:limit]
+
+                    # Otherwise fall back to hybrid search
+                    logger.debug(f"FTS-only insufficient ({len(fts_results)} results), falling back to hybrid")
+                    return self._thematic_search(
+                        db, query, filters, limit, fts_weight, vector_weight
+                    )
+
+                # Non-explicit queries use hybrid search
                 return self._thematic_search(
                     db, query, filters, limit, fts_weight, vector_weight
                 )

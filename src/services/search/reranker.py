@@ -11,7 +11,7 @@ import time
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional, Tuple
 
-from ..embedding.embedder import JinaEmbedder
+# Removed JinaEmbedder import - not needed for reranker
 from ...config.settings import settings
 from ..retriever.hybrid_retriever import SearchResult
 from ...utils.http import HttpClient
@@ -184,8 +184,8 @@ class JinaReranker(BaseReranker):
                 "model": self.model_name,
                 "query": query,
                 "documents": documents,
-                "top_k": len(documents),  # Return scores for all documents
-                "return_documents": False  # We only need scores
+                "top_n": len(documents),  # Return scores for all documents
+                "return_documents": True  # Jina v2 requires this to be true
             }
 
             logger.debug(f"Calling Jina rerank API with {len(documents)} documents")
@@ -200,12 +200,16 @@ class JinaReranker(BaseReranker):
                 logger.error("Invalid response from Jina rerank API")
                 return []
 
-            # Extract scores from response
+            # Extract relevance scores from response
             scores = []
             for result in response["results"]:
-                scores.append(float(result.get("relevance_score", 0.0)))
+                if "relevance_score" not in result:
+                    logger.warning(f"Missing relevance_score in result: {result}")
+                    scores.append(0.0)
+                else:
+                    scores.append(float(result["relevance_score"]))
 
-            logger.debug(f"Received {len(scores)} rerank scores")
+            logger.debug(f"Received {len(scores)} rerank scores from v2-base-multilingual")
             return scores
 
         except Exception as e:

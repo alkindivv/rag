@@ -1,39 +1,52 @@
-"""HTTP client utility with retry/backoff and dependency injection support."""
+"""Simplified HTTP client with smart retry logic and proper error handling."""
 
 from __future__ import annotations
 
-import asyncio
-import json
 import time
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, Optional
 
 import httpx
-from tenacity import (
-    retry,
-    retry_if_exception_type,
-    stop_after_attempt,
-    wait_exponential,
-)
 
-from .logging import get_logger, log_api_request, log_error
+from .logging import get_logger
 
 logger = get_logger(__name__)
 
 
+class HttpError(Exception):
+    """Base HTTP error."""
+    pass
+
+
+class AuthError(HttpError):
+    """Authentication/authorization error (4xx)."""
+    pass
+
+
+class ServerError(HttpError):
+    """Server error (5xx)."""
+    pass
+
+
+class NetworkError(HttpError):
+    """Network/timeout error."""
+    pass
+
+
 class HttpClient:
     """
-    HTTP client with retry logic and structured logging.
+    Simplified HTTP client with smart retry logic.
 
-    Supports both sync and async operations with automatic retries,
-    exponential backoff, and comprehensive error handling.
+    Key features:
+    - Only retries network/timeout errors (not auth errors)
+    - Automatic Accept: application/json headers
+    - Simple exponential backoff
+    - Clear error classification
     """
 
     def __init__(
         self,
         timeout: float = 30.0,
         max_retries: int = 3,
-        base_delay: float = 1.0,
-        max_delay: float = 60.0,
         client: Optional[httpx.Client] = None,
     ):
         """
@@ -41,15 +54,11 @@ class HttpClient:
 
         Args:
             timeout: Request timeout in seconds
-            max_retries: Maximum number of retry attempts
-            base_delay: Base delay for exponential backoff
-            max_delay: Maximum delay between retries
-            client: Optional httpx.Client instance for dependency injection
+            max_retries: Maximum retry attempts for network errors only
+            client: Optional httpx.Client for dependency injection
         """
         self.timeout = timeout
         self.max_retries = max_retries
-        self.base_delay = base_delay
-        self.max_delay = max_delay
 
         # Use provided client or create new one
         self._client = client or httpx.Client(
@@ -73,16 +82,35 @@ class HttpClient:
         if self._owns_client and self._client:
             self._client.close()
 
-    @retry(
-        stop=stop_after_attempt(3),  # Will be overridden by instance config
-        wait=wait_exponential(multiplier=1, min=1, max=60),
-        retry=retry_if_exception_type((
-            httpx.TimeoutException,
-            httpx.ConnectError,
-            httpx.HTTPStatusError,
-        )),
-        reraise=True,
-    )
+    def _should_retry(self, error: Exception) -> bool:
+        """
+        Determine if an error should be retried.
+
+        Only retry network/timeout errors, not auth (4xx) or client errors.
+        """
+        if isinstance(error, httpx.TimeoutException):
+            return True
+        if isinstance(error, (httpx.ConnectError, httpx.NetworkError)):
+            return True
+        if isinstance(error, httpx.HTTPStatusError):
+            # Only retry 5xx server errors, not 4xx client errors
+            return error.response.status_code >= 500
+        return False
+
+    def _classify_error(self, error: Exception) -> HttpError:
+        """Classify httpx errors into our error types."""
+        if isinstance(error, httpx.TimeoutException):
+            return NetworkError(f"Request timed out after {self.timeout}s")
+        if isinstance(error, (httpx.ConnectError, httpx.NetworkError)):
+            return NetworkError(f"Network error: {error}")
+        if isinstance(error, httpx.HTTPStatusError):
+            status = error.response.status_code
+            if 400 <= status < 500:
+                return AuthError(f"Client error '{status} {error.response.reason_phrase}' for url '{error.request.url}'")
+            elif status >= 500:
+                return ServerError(f"Server error '{status} {error.response.reason_phrase}' for url '{error.request.url}'")
+        return HttpError(f"HTTP error: {error}")
+
     def _make_request(
         self,
         method: str,
@@ -91,7 +119,7 @@ class HttpClient:
         **kwargs
     ) -> httpx.Response:
         """
-        Make HTTP request with retry logic.
+        Make HTTP request with smart retry logic.
 
         Args:
             method: HTTP method
@@ -103,117 +131,82 @@ class HttpClient:
             httpx.Response object
 
         Raises:
-            httpx.HTTPError: For HTTP-related errors
+            HttpError: Classified HTTP error
         """
         start_time = time.time()
+        last_error = None
 
-        try:
-            # Update retry configuration dynamically
-            self._make_request.retry.stop = stop_after_attempt(self.max_retries)
-            self._make_request.retry.wait = wait_exponential(
-                multiplier=self.base_delay,
-                min=self.base_delay,
-                max=self.max_delay
-            )
+        for attempt in range(self.max_retries + 1):
+            try:
+                logger.debug(f"HTTP {method} {url} (attempt {attempt + 1}/{self.max_retries + 1})")
 
-            logger.debug(f"Making {method} request to {url}")
-
-            response = self._client.request(
-                method=method,
-                url=url,
-                headers=headers,
-                **kwargs
-            )
-
-            duration_ms = (time.time() - start_time) * 1000
-
-            # Log successful request
-            logger.info(
-                "HTTP request completed",
-                extra=log_api_request(
+                response = self._client.request(
                     method=method,
                     url=url,
-                    status_code=response.status_code,
-                    duration_ms=duration_ms
+                    headers=headers,
+                    **kwargs
                 )
-            )
 
-            # Raise for HTTP error status codes
-            response.raise_for_status()
+                duration_ms = (time.time() - start_time) * 1000
 
-            return response
+                # Log successful request (only debug level to reduce noise)
+                logger.debug(
+                    f"HTTP {method} {url} → {response.status_code} ({duration_ms:.1f}ms)"
+                )
 
-        except Exception as e:
-            duration_ms = (time.time() - start_time) * 1000
+                # Check for HTTP errors
+                response.raise_for_status()
 
-            # Log failed request
-            logger.error(
-                f"HTTP request failed: {e}",
-                extra={
-                    **log_api_request(
-                        method=method,
-                        url=url,
-                        duration_ms=duration_ms
-                    ),
-                    **log_error(e)
-                }
-            )
-            raise
+                return response
+
+            except Exception as e:
+                last_error = e
+                classified_error = self._classify_error(e)
+
+                # Don't retry auth errors or client errors
+                if not self._should_retry(e):
+                    duration_ms = (time.time() - start_time) * 1000
+
+                    # Only log auth errors at debug level to reduce noise
+                    if isinstance(classified_error, AuthError):
+                        logger.debug(f"HTTP {method} {url} → auth error: {classified_error}")
+                    else:
+                        logger.error(f"HTTP {method} {url} → {classified_error}")
+
+                    raise classified_error
+
+                # For retryable errors, wait before next attempt
+                if attempt < self.max_retries:
+                    wait_time = min(2 ** attempt, 10)  # Simple exponential backoff, max 10s
+                    logger.debug(f"Retrying in {wait_time}s due to: {classified_error}")
+                    time.sleep(wait_time)
+
+        # All retries exhausted
+        duration_ms = (time.time() - start_time) * 1000
+        final_error = self._classify_error(last_error)
+        logger.error(f"HTTP {method} {url} → failed after {self.max_retries + 1} attempts: {final_error}")
+        raise final_error
 
     def get(
         self,
         url: str,
         headers: Optional[Dict[str, str]] = None,
-        params: Optional[Dict[str, Any]] = None,
         **kwargs
     ) -> httpx.Response:
         """Make GET request."""
-        return self._make_request("GET", url, headers=headers, params=params, **kwargs)
+        return self._make_request("GET", url, headers=headers, **kwargs)
 
     def post(
         self,
         url: str,
         headers: Optional[Dict[str, str]] = None,
-        data: Optional[Union[str, bytes, Dict[str, Any]]] = None,
         json_data: Optional[Dict[str, Any]] = None,
         **kwargs
     ) -> httpx.Response:
         """Make POST request."""
-        request_kwargs = kwargs.copy()
-
         if json_data is not None:
-            request_kwargs["json"] = json_data
-        elif data is not None:
-            request_kwargs["data"] = data
-
-        return self._make_request("POST", url, headers=headers, **request_kwargs)
-
-    def put(
-        self,
-        url: str,
-        headers: Optional[Dict[str, str]] = None,
-        data: Optional[Union[str, bytes, Dict[str, Any]]] = None,
-        json_data: Optional[Dict[str, Any]] = None,
-        **kwargs
-    ) -> httpx.Response:
-        """Make PUT request."""
-        request_kwargs = kwargs.copy()
-
-        if json_data is not None:
-            request_kwargs["json"] = json_data
-        elif data is not None:
-            request_kwargs["data"] = data
-
-        return self._make_request("PUT", url, headers=headers, **request_kwargs)
-
-    def delete(
-        self,
-        url: str,
-        headers: Optional[Dict[str, str]] = None,
-        **kwargs
-    ) -> httpx.Response:
-        """Make DELETE request."""
-        return self._make_request("DELETE", url, headers=headers, **kwargs)
+            kwargs["json"] = json_data
+        return self._make_request("POST", url, headers=headers, **kwargs)
 
     def get_json(
         self,
@@ -233,14 +226,20 @@ class HttpClient:
             Parsed JSON response
 
         Raises:
-            json.JSONDecodeError: If response is not valid JSON
+            HttpError: If request fails
+            ValueError: If response is not valid JSON
         """
-        response = self.get(url, headers=headers, **kwargs)
+        # Ensure Accept: application/json header
+        merged_headers = {"Accept": "application/json"}
+        if headers:
+            merged_headers.update(headers)
+
+        response = self.get(url, headers=merged_headers, **kwargs)
+
         try:
             return response.json()
-        except json.JSONDecodeError as e:
-            logger.error(f"Failed to decode JSON response: {e}")
-            raise
+        except Exception as e:
+            raise ValueError(f"Failed to decode JSON response: {e}")
 
     def post_json(
         self,
@@ -262,301 +261,34 @@ class HttpClient:
             Parsed JSON response
 
         Raises:
-            json.JSONDecodeError: If response is not valid JSON
+            HttpError: If request fails
+            ValueError: If response is not valid JSON
         """
-        response = self.post(url, headers=headers, json_data=data, **kwargs)
+        # Ensure Accept: application/json header
+        merged_headers = {"Accept": "application/json"}
+        if headers:
+            merged_headers.update(headers)
+
+        response = self.post(url, headers=merged_headers, json_data=data, **kwargs)
+
         try:
             return response.json()
-        except json.JSONDecodeError as e:
-            logger.error(f"Failed to decode JSON response: {e}")
-            raise
-
-    def download_file(
-        self,
-        url: str,
-        file_path: str,
-        headers: Optional[Dict[str, str]] = None,
-        chunk_size: int = 8192,
-        **kwargs
-    ) -> None:
-        """
-        Download file from URL.
-
-        Args:
-            url: File URL
-            file_path: Local file path to save
-            headers: Optional headers
-            chunk_size: Download chunk size in bytes
-            **kwargs: Additional request parameters
-        """
-        with self._client.stream("GET", url, headers=headers, **kwargs) as response:
-            response.raise_for_status()
-
-            with open(file_path, "wb") as f:
-                for chunk in response.iter_bytes(chunk_size=chunk_size):
-                    f.write(chunk)
-
-        logger.info(f"Downloaded file: {url} -> {file_path}")
+        except Exception as e:
+            raise ValueError(f"Failed to decode JSON response: {e}")
 
 
-class AsyncHttpClient:
-    """
-    Async HTTP client with retry logic and structured logging.
-
-    Similar to HttpClient but for async operations.
-    """
-
-    def __init__(
-        self,
-        timeout: float = 30.0,
-        max_retries: int = 3,
-        base_delay: float = 1.0,
-        max_delay: float = 60.0,
-        client: Optional[httpx.AsyncClient] = None,
-    ):
-        """
-        Initialize async HTTP client.
-
-        Args:
-            timeout: Request timeout in seconds
-            max_retries: Maximum number of retry attempts
-            base_delay: Base delay for exponential backoff
-            max_delay: Maximum delay between retries
-            client: Optional httpx.AsyncClient instance for dependency injection
-        """
-        self.timeout = timeout
-        self.max_retries = max_retries
-        self.base_delay = base_delay
-        self.max_delay = max_delay
-
-        # Use provided client or create new one
-        self._client = client or httpx.AsyncClient(
-            timeout=httpx.Timeout(timeout),
-            follow_redirects=True,
-        )
-
-        # Track if we own the client (for cleanup)
-        self._owns_client = client is None
-
-    async def __aenter__(self) -> AsyncHttpClient:
-        """Async context manager entry."""
-        return self
-
-    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
-        """Async context manager exit with cleanup."""
-        await self.close()
-
-    async def close(self) -> None:
-        """Close the async HTTP client if we own it."""
-        if self._owns_client and self._client:
-            await self._client.aclose()
-
-    async def _make_request_async(
-        self,
-        method: str,
-        url: str,
-        headers: Optional[Dict[str, str]] = None,
-        **kwargs
-    ) -> httpx.Response:
-        """
-        Make async HTTP request with retry logic.
-
-        Args:
-            method: HTTP method
-            url: Request URL
-            headers: Optional headers
-            **kwargs: Additional request parameters
-
-        Returns:
-            httpx.Response object
-        """
-        for attempt in range(self.max_retries + 1):
-            start_time = time.time()
-
-            try:
-                logger.debug(f"Making async {method} request to {url} (attempt {attempt + 1})")
-
-                response = await self._client.request(
-                    method=method,
-                    url=url,
-                    headers=headers,
-                    **kwargs
-                )
-
-                duration_ms = (time.time() - start_time) * 1000
-
-                # Log successful request
-                logger.info(
-                    "Async HTTP request completed",
-                    extra=log_api_request(
-                        method=method,
-                        url=url,
-                        status_code=response.status_code,
-                        duration_ms=duration_ms,
-                        attempt=attempt + 1
-                    )
-                )
-
-                # Raise for HTTP error status codes
-                response.raise_for_status()
-
-                return response
-
-            except (httpx.TimeoutException, httpx.ConnectError, httpx.HTTPStatusError) as e:
-                duration_ms = (time.time() - start_time) * 1000
-
-                # Log failed attempt
-                logger.warning(
-                    f"Async HTTP request attempt {attempt + 1} failed: {e}",
-                    extra={
-                        **log_api_request(
-                            method=method,
-                            url=url,
-                            duration_ms=duration_ms,
-                            attempt=attempt + 1
-                        ),
-                        **log_error(e)
-                    }
-                )
-
-                # If this is the last attempt, raise the exception
-                if attempt == self.max_retries:
-                    raise
-
-                # Wait before retry with exponential backoff
-                delay = min(self.base_delay * (2 ** attempt), self.max_delay)
-                await asyncio.sleep(delay)
-
-            except Exception as e:
-                # For non-retryable exceptions, fail immediately
-                duration_ms = (time.time() - start_time) * 1000
-
-                logger.error(
-                    f"Async HTTP request failed with non-retryable error: {e}",
-                    extra={
-                        **log_api_request(
-                            method=method,
-                            url=url,
-                            duration_ms=duration_ms,
-                            attempt=attempt + 1
-                        ),
-                        **log_error(e)
-                    }
-                )
-                raise
-
-    async def get(
-        self,
-        url: str,
-        headers: Optional[Dict[str, str]] = None,
-        params: Optional[Dict[str, Any]] = None,
-        **kwargs
-    ) -> httpx.Response:
-        """Make async GET request."""
-        return await self._make_request_async("GET", url, headers=headers, params=params, **kwargs)
-
-    async def post(
-        self,
-        url: str,
-        headers: Optional[Dict[str, str]] = None,
-        data: Optional[Union[str, bytes, Dict[str, Any]]] = None,
-        json_data: Optional[Dict[str, Any]] = None,
-        **kwargs
-    ) -> httpx.Response:
-        """Make async POST request."""
-        request_kwargs = kwargs.copy()
-
-        if json_data is not None:
-            request_kwargs["json"] = json_data
-        elif data is not None:
-            request_kwargs["data"] = data
-
-        return await self._make_request_async("POST", url, headers=headers, **request_kwargs)
-
-    async def get_json(
-        self,
-        url: str,
-        headers: Optional[Dict[str, str]] = None,
-        **kwargs
-    ) -> Dict[str, Any]:
-        """
-        Make async GET request and return JSON response.
-
-        Args:
-            url: Request URL
-            headers: Optional headers
-            **kwargs: Additional request parameters
-
-        Returns:
-            Parsed JSON response
-        """
-        response = await self.get(url, headers=headers, **kwargs)
-        try:
-            return response.json()
-        except json.JSONDecodeError as e:
-            logger.error(f"Failed to decode JSON response: {e}")
-            raise
-
-    async def post_json(
-        self,
-        url: str,
-        data: Dict[str, Any],
-        headers: Optional[Dict[str, str]] = None,
-        **kwargs
-    ) -> Dict[str, Any]:
-        """
-        Make async POST request with JSON data and return JSON response.
-
-        Args:
-            url: Request URL
-            data: JSON data to send
-            headers: Optional headers
-            **kwargs: Additional request parameters
-
-        Returns:
-            Parsed JSON response
-        """
-        response = await self.post(url, headers=headers, json_data=data, **kwargs)
-        try:
-            return response.json()
-        except json.JSONDecodeError as e:
-            logger.error(f"Failed to decode JSON response: {e}")
-            raise
-
-
+# Factory functions for easy instantiation
 def create_http_client(
     timeout: float = 30.0,
     max_retries: int = 3,
-    **kwargs
 ) -> HttpClient:
-    """
-    Factory function to create HTTP client with default configuration.
-
-    Args:
-        timeout: Request timeout in seconds
-        max_retries: Maximum number of retry attempts
-        **kwargs: Additional client configuration
-
-    Returns:
-        Configured HttpClient instance
-    """
-    return HttpClient(timeout=timeout, max_retries=max_retries, **kwargs)
+    """Create HTTP client with default configuration."""
+    return HttpClient(timeout=timeout, max_retries=max_retries)
 
 
-def create_async_http_client(
-    timeout: float = 30.0,
-    max_retries: int = 3,
-    **kwargs
-) -> AsyncHttpClient:
-    """
-    Factory function to create async HTTP client with default configuration.
-
-    Args:
-        timeout: Request timeout in seconds
-        max_retries: Maximum number of retry attempts
-        **kwargs: Additional client configuration
-
-    Returns:
-        Configured AsyncHttpClient instance
-    """
-    return AsyncHttpClient(timeout=timeout, max_retries=max_retries, **kwargs)
+def create_jina_client() -> HttpClient:
+    """Create HTTP client optimized for Jina API calls."""
+    return HttpClient(
+        timeout=60.0,  # Jina can be slow
+        max_retries=2,  # Less aggressive retries
+    )
