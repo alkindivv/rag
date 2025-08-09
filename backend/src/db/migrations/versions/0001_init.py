@@ -1,5 +1,5 @@
 from __future__ import annotations
-"""Initial database schema."""
+"""Initial database schema with SQLite fallback."""
 
 from alembic import op
 import sqlalchemy as sa
