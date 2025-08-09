@@ -41,10 +41,12 @@ final_query = fts_query.format(filters_clause=filters_clause)  # FAILS
 **Root Cause**: Using string formatting on SQLAlchemy `text()` objects
 
 **Action Items**:
-- [ ] **FIX**: Replace `.format()` with proper SQLAlchemy parameter binding
-- [ ] **REFACTOR**: Use `text()` with bound parameters instead of string interpolation
-- [ ] **TEST**: Verify all query paths (FTS, Vector, Explicit) work correctly
-- [ ] **VALIDATE**: Test with and without filters
+- [x] **FIX**: Replace `.format()` with proper SQLAlchemy parameter binding
+- [x] **REFACTOR**: Use `text()` with bound parameters instead of string interpolation
+- [x] **TEST**: Verify all query paths (FTS, Vector, Explicit) work correctly
+- [x] **VALIDATE**: Test with and without filters
+- [x] **FIX**: Remove nonexistent `dv.content_type` column and use `lu.unit_type`
+- [x] **FIX**: Lazily import `JinaEmbedder` in `HybridRetriever` to avoid NameError
 
 **Code Fix Example**:
 ```python
@@ -359,7 +361,7 @@ tests/
 | Priority | Task | Assignee | Status | Due Date |
 |----------|------|----------|---------|----------|
 | CRITICAL | Fix Jina API | Backend Dev | 🔄 In Progress | Tomorrow |
-| CRITICAL | Fix SQL Queries | Backend Dev | ⏳ Pending | This Week |
+| CRITICAL | Fix SQL Queries | Backend Dev | ✅ Done | This Week |
 | HIGH | Complete Search | Backend Dev | ⏳ Pending | Next Week |
 | HIGH | FastAPI Implementation | Backend Dev | ⏳ Pending | Next Week |
 | HIGH | Testing Suite | QA Engineer | ⏳ Pending | Next Sprint |
