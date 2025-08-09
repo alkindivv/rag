@@ -15,10 +15,10 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from ...config.settings import settings
-from ...db.models import DocForm, DocumentVector, LegalUnit, UnitType
-from ...db.session import get_db_session
-from ..embedding.embedder import JinaEmbedder
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..embedding.embedder import JinaEmbedder
 from ...utils.logging import get_logger, log_timing
 
 logger = get_logger(__name__)
@@ -155,8 +155,8 @@ class FTSSearcher:
         Returns:
             List of search results
         """
-        # Build FTS query
-        fts_query = text("""
+        # Build base query string
+        query_str = """
             SELECT
                 lu.id,
                 lu.unit_id,
@@ -171,12 +171,8 @@ class FTSSearcher:
             JOIN legal_documents ld ON lu.document_id = ld.id
             WHERE lu.unit_type IN ('ayat', 'huruf', 'angka')
               AND lu.content_vector @@ plainto_tsquery('indonesian', :query)
-              {filters_clause}
-            ORDER BY score DESC
-            LIMIT :limit
-        """)
+        """
 
-        # Build filters clause
         filters_clause = ""
         query_params = {"query": query, "limit": limit}
 
@@ -198,9 +194,16 @@ class FTSSearcher:
             if filter_conditions:
                 filters_clause = "AND " + " AND ".join(filter_conditions)
 
-        # Execute query
-        final_query = fts_query.format(filters_clause=filters_clause)
-        results = self.db.execute(text(str(final_query)), query_params).fetchall()
+        if filters_clause:
+            query_str += f" {filters_clause}"
+
+        query_str += """
+            ORDER BY score DESC
+            LIMIT :limit
+        """
+
+        fts_query = text(query_str)
+        results = self.db.execute(fts_query, query_params).fetchall()
 
         # Convert to SearchResult objects
         search_results = []
@@ -225,10 +228,14 @@ class FTSSearcher:
 class VectorSearcher:
     """Vector search on document embeddings (pasal level)."""
 
-    def __init__(self, db: Session, embedder: Optional[JinaEmbedder] = None):
+    def __init__(self, db: Session, embedder: Optional["JinaEmbedder"] = None):
         """Initialize vector searcher with database session and embedder."""
         self.db = db
-        self.embedder = embedder or JinaEmbedder()
+        if embedder is None:
+            from ..embedding.embedder import JinaEmbedder as _JinaEmbedder
+            self.embedder = _JinaEmbedder()
+        else:
+            self.embedder = embedder
 
     def search(
         self,
@@ -254,12 +261,12 @@ class VectorSearcher:
                 logger.warning("Failed to generate query embedding")
                 return []
 
-            # Build vector similarity query
-            vector_query = text("""
+            # Build base query string
+            query_str = """
                 SELECT
                     dv.id,
                     dv.unit_id,
-                    dv.content_type as unit_type,
+                    lu.unit_type,
                     lu.bm25_body as text,
                     lu.citation_string,
                     dv.doc_form,
@@ -270,12 +277,8 @@ class VectorSearcher:
                 FROM document_vectors dv
                 LEFT JOIN legal_units lu ON dv.unit_id = lu.unit_id AND lu.unit_type = 'pasal'
                 WHERE 1=1
-                  {filters_clause}
-                ORDER BY dv.embedding <=> :query_vector
-                LIMIT :limit
-            """)
+            """
 
-            # Build filters clause
             filters_clause = ""
             query_params = {"query_vector": query_embedding, "limit": limit}
 
@@ -301,9 +304,16 @@ class VectorSearcher:
                 if filter_conditions:
                     filters_clause = "AND " + " AND ".join(filter_conditions)
 
-            # Execute query
-            final_query = vector_query.format(filters_clause=filters_clause)
-            results = self.db.execute(text(str(final_query)), query_params).fetchall()
+            if filters_clause:
+                query_str += f" {filters_clause}"
+
+            query_str += """
+                ORDER BY dv.embedding <=> :query_vector
+                LIMIT :limit
+            """
+
+            vector_query = text(query_str)
+            results = self.db.execute(vector_query, query_params).fetchall()
 
             # Convert to SearchResult objects
             search_results = []
@@ -314,7 +324,7 @@ class VectorSearcher:
                     citation_string=row.citation_string or f"Pasal {row.unit_id}",
                     score=float(row.score or 0.0),
                     source_type="vector",
-                    unit_type="pasal",
+                    unit_type=row.unit_type or "pasal",
                     unit_id=row.unit_id,
                     doc_form=row.doc_form,
                     doc_year=row.doc_year,
@@ -455,9 +465,13 @@ class HybridRetriever:
     Routes queries and combines results from different search methods.
     """
 
-    def __init__(self, embedder: Optional[JinaEmbedder] = None):
+    def __init__(self, embedder: Optional["JinaEmbedder"] = None):
         """Initialize hybrid retriever with optional embedder."""
-        self.embedder = embedder or JinaEmbedder()
+        if embedder is None:
+            from ..embedding.embedder import JinaEmbedder as _JinaEmbedder
+            self.embedder = _JinaEmbedder()
+        else:
+            self.embedder = embedder
         self.router = QueryRouter()
 
     def search(
@@ -485,6 +499,7 @@ class HybridRetriever:
         start_time = time.time()
 
         try:
+            from ...db.session import get_db_session
             with get_db_session() as db:
                 # Route query to appropriate strategy
                 if self.router.is_explicit_query(query):
@@ -606,6 +621,7 @@ class HybridRetriever:
             List of related units
         """
         try:
+            from ...db.session import get_db_session
             with get_db_session() as db:
                 if include_children:
                     # Get all child units of the pasal
