@@ -1,4 +1,4 @@
-"""Jina embedding client with batching and retry for v4 1024-dimensional embeddings."""
+"""Jina embedding client with batching and retry for v3 768-dimensional embeddings."""
 
 from __future__ import annotations
 
@@ -12,10 +12,10 @@ logger = logging.getLogger(__name__)
 
 
 class JinaEmbedder:
-    """Embed text using Jina v4 API with 1024-dimensional vectors."""
+    """Embed text using Jina v3 API with 768-dimensional vectors."""
 
     def __init__(self, client: Optional[HttpClient] = None) -> None:
-        """Initialize Jina embedder with v4 model configuration."""
+        """Initialize Jina embedder with v3 model configuration."""
         self.client = client or HttpClient()
         self.base_url = settings.jina_embed_base
         self.model_name = settings.jina_embed_model
@@ -42,7 +42,7 @@ class JinaEmbedder:
             text: Text to embed
 
         Returns:
-            List of 1024 floats or None if error
+            List of 768 floats or None if error
         """
         try:
             embeddings = self.embed_batch([text])
@@ -59,7 +59,7 @@ class JinaEmbedder:
             texts: List of texts to embed
 
         Returns:
-            List of embeddings (1024-dim vectors) or None for failed embeddings
+            List of embeddings (768-dim vectors) or None for failed embeddings
         """
         if not texts:
             return []
@@ -85,7 +85,7 @@ class JinaEmbedder:
             List of embeddings or None for failures
         """
         if self.disabled:
-            return [[0.0] * 1024 for _ in texts]
+            return [[0.0] * 768 for _ in texts]
 
         try:
             payload = {"model": self.model_name, "input": texts}
@@ -102,7 +102,7 @@ class JinaEmbedder:
                 if "embedding" in item:
                     embedding = item["embedding"]
                     # Validate embedding dimensions
-                    if len(embedding) == 1024:
+                    if len(embedding) == 768:
                         embeddings.append(embedding)
                     else:
                         logger.warning(f"Unexpected embedding dimension: {len(embedding)}")

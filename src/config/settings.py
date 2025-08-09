@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     database_url: str = Field(..., env="DATABASE_URL")
     jina_api_key: str | None = Field(default=None, env="JINA_API_KEY")
     jina_embed_base: str = Field(default="https://api.jina.ai/v1/embeddings", env="JINA_EMBED_BASE")
-    jina_embed_model: str = Field(default="jina-embeddings-v4", env="JINA_EMBED_MODEL")
+    jina_embed_model: str = Field(default="jina-embeddings-v3", env="JINA_EMBED_MODEL")
     jina_rerank_base: str = Field(default="https://api.jina.ai/v1/rerank", env="JINA_RERANK_BASE")
     jina_rerank_model: str = Field(default="jina-reranker-v1", env="JINA_RERANK_MODEL")
 

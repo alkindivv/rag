@@ -227,8 +227,8 @@ class DocumentVector(Base):
     content_type = Column(String(50), nullable=False, index=True, default="pasal")
 
     # Vector embedding
-    embedding = Column(Vector(1024), nullable=False)  # Jina v4 1024-dimensional
-    embedding_model = Column(String(100), default='jina-embeddings-v4')
+    embedding = Column(Vector(768), nullable=False)  # Jina v3 768-dimensional
+    embedding_model = Column(String(100), default='jina-embeddings-v3')
     embedding_version = Column(String(20), default='v1')
 
     # Document metadata for fast filtering
