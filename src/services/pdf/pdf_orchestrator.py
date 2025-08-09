@@ -468,7 +468,7 @@ class PDFOrchestrator:
         match = re.match(r"(\d+)([A-Za-z]*)", label)
         if match:
             return int(match.group(1)), match.group(2)
-        if label.isalpha():
+        if len(label) == 1 and label.isalpha():
             return ord(label.lower()) - 96, ""
         return 0, ""
 

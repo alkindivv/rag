@@ -25,6 +25,7 @@ async def main():
     parser.add_argument('--output-dir', default='./data/json', help='Output directory for JSON files')
     parser.add_argument('--pdf-dir', default='./data/pdfs', help='Output directory for PDF files')
     parser.add_argument('--no-pdf', action='store_true', help='Skip PDF processing')
+    # python -m src.ingestion --txt-dir "data/text" --process-txt-batch
     parser.add_argument('--txt-dir', help='Directory containing TXT files for batch processing')
     parser.add_argument('--process-txt-batch', action='store_true', help='Process all TXT files in txt-dir that match existing JSON metadata')
     parser.add_argument('--verbose', '-v', action='store_true', help='Enable verbose logging')
