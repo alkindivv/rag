@@ -1,3 +1,4 @@
+
 """Initial database schema with SQLite fallback."""
 
 from __future__ import annotations
@@ -125,3 +126,4 @@ def downgrade() -> None:
     op.drop_index("idx_units_doc_unitid", table_name="legal_units")
     op.drop_table("legal_units")
     op.drop_table("legal_documents")
+=======
