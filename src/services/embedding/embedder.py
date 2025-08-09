@@ -21,14 +21,18 @@ class JinaEmbedder:
         self.model_name = settings.jina_embed_model
         self.batch_size = settings.embed_batch_size
 
+        # Allow running without API key by generating zero vectors
         if not settings.jina_api_key:
-            raise ValueError("JINA_API_KEY is required")
-
-        self.headers = {
-            "Authorization": f"Bearer {settings.jina_api_key}",
-            "Content-Type": "application/json",
-        }
-        logger.info(f"Initialized JinaEmbedder with model: {self.model_name}")
+            logger.warning("JINA_API_KEY not set; falling back to zero embeddings")
+            self.headers = {}
+            self.disabled = True
+        else:
+            self.headers = {
+                "Authorization": f"Bearer {settings.jina_api_key}",
+                "Content-Type": "application/json",
+            }
+            self.disabled = False
+            logger.info(f"Initialized JinaEmbedder with model: {self.model_name}")
 
     def embed_single(self, text: str) -> Optional[List[float]]:
         """
@@ -80,11 +84,11 @@ class JinaEmbedder:
         Returns:
             List of embeddings or None for failures
         """
+        if self.disabled:
+            return [[0.0] * 1024 for _ in texts]
+
         try:
-            payload = {
-                "model": self.model_name,
-                "input": texts,
-            }
+            payload = {"model": self.model_name, "input": texts}
 
             logger.debug(f"Embedding batch of {len(texts)} texts")
             response = self.client.post_json(self.base_url, payload, headers=self.headers)
@@ -111,7 +115,9 @@ class JinaEmbedder:
             while len(embeddings) < len(texts):
                 embeddings.append(None)
 
-            logger.debug(f"Successfully embedded {sum(1 for e in embeddings if e is not None)}/{len(texts)} texts")
+            logger.debug(
+                f"Successfully embedded {sum(1 for e in embeddings if e is not None)}/{len(texts)} texts"
+            )
             return embeddings
 
         except Exception as e:
