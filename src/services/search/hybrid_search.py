@@ -117,7 +117,7 @@ class HybridSearchService:
                 limit=limit * 2 if use_reranking else limit,  # Get more for reranking
                 fts_weight=fts_weight,
                 vector_weight=vector_weight,
-                strategy=strategy,
+                strategy=determined_strategy,
             )
             retrieval_duration = (time.time() - retrieval_start) * 1000
 
@@ -151,11 +151,11 @@ class HybridSearchService:
             # Prepare response
             total_duration = (time.time() - start_time) * 1000
 
-            response = {
+            return {
                 "results": [self._format_result(result) for result in results],
                 "total": len(results),
                 "query": query,
-                "strategy": strategy if strategy != "auto" else self._determine_strategy(query),
+                "strategy": determined_strategy,
                 "reranked": reranked,
                 "duration_ms": total_duration,
                 "metadata": {
@@ -165,7 +165,8 @@ class HybridSearchService:
                     "weights": {
                         "fts": fts_weight,
                         "vector": vector_weight
-                    }
+                    },
+                    "determined_strategy": determined_strategy
                 }
             }
 
@@ -255,7 +256,7 @@ class HybridSearchService:
     def _determine_strategy(self, query: str) -> str:
         """Determine which search strategy should be used."""
         if self.retriever.router.is_explicit_query(query):
-            return "fts"  # Explicit queries use FTS-first approach
+            return "explicit"  # Route explicit references to explicit searcher
         else:
             return "hybrid"  # Thematic queries use hybrid (FTS + vector)
 

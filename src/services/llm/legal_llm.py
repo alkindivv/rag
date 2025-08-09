@@ -6,7 +6,7 @@ import time
 from typing import List, Dict, Any, Optional
 
 from src.services.llm.factory import LLMFactory
-from src.services.llm.prompt.prompt import ANSWER_WITH_CITATIONS, join_contexts
+from src.services.llm.prompt.prompt import ANSWER_WITH_CITATIONS, SUMMARIZE_UNITS, join_contexts
 from src.config.settings import settings
 from src.utils.logging import get_logger
 
@@ -43,14 +43,18 @@ class LegalLLMService:
         start_time = time.time()
         
         try:
-            # Prepare context
-            context_text = self._prepare_context(context)
+            # Build verbatim block from the most relevant units
+            verbatim_block, summary_context = self._build_verbatim_and_summary_context(query, context)
             
-            # Build prompt
-            prompt = self._build_prompt(query, context_text)
+            # Build prompt for summary constrained to the same units
+            summarize_prompt = SUMMARIZE_UNITS.format(contexts=summary_context)
+            summary = await self._generate_llm_response(summarize_prompt, temperature, max_tokens)
             
-            # Generate answer using LLM
-            answer = await self._generate_llm_response(prompt, temperature, max_tokens)
+            # Compose final answer: verbatim first, then summary
+            answer = (
+                "Teks asli (kutipan hukum):\n\n" + verbatim_block.strip() + "\n\n"
+                "Ringkasan:\n\n" + (summary.strip() or "-")
+            )
             
             # Calculate confidence based on relevance
             confidence = self._calculate_confidence(context)
@@ -75,22 +79,56 @@ class LegalLLMService:
                 "error": str(e)
             }
     
-    def _prepare_context(self, context: List[Dict[str, Any]]) -> str:
-        """Prepare search results as context for LLM"""
+    def _build_verbatim_and_summary_context(self, query: str, context: List[Dict[str, Any]]) -> (str, str):
+        """Construct verbatim legal text block and a summary context limited to same units.
+        Preference order: explicit sources, then fts/vector. Group by unit_id to avoid duplicates.
+        """
         if not context:
-            return "Tidak ditemukan dokumen terkait."
-        
-        context_parts = []
-        for idx, item in enumerate(context[:5]):  # Top 5 results
-            citation = item.get('citation', '')
-            text = item.get('text', '')[:1000]  # Truncate long texts
-            
-            context_parts.append(f"""
-Sumber {idx+1}: {citation}
-Isi: {text}
-""")
-        
-        return "\n\n".join(context_parts)
+            return ("Tidak ditemukan dalam konteks yang diberikan.", "(kosong)")
+
+        # Prioritize explicit results
+        def score_item(it: Dict[str, Any]) -> int:
+            st = (it.get("source_type") or "").lower()
+            if st.startswith("explicit"):
+                return 3
+            if st.startswith("fts"):
+                return 2
+            if st.startswith("vector"):
+                return 1
+            return 0
+
+        # Deduplicate by unit_id, keep best scored first 5
+        seen = set()
+        picked: List[Dict[str, Any]] = []
+        for it in sorted(context, key=lambda x: (score_item(x), x.get("score", 0)), reverse=True):
+            uid = it.get("unit_id") or f"{it.get('document',{})}:{it.get('citation','')}"
+            if uid in seen:
+                continue
+            txt = (it.get("text") or "").strip()
+            if not txt:
+                continue
+            seen.add(uid)
+            picked.append(it)
+            if len(picked) >= 5:
+                break
+
+        if not picked:
+            return ("Tidak ditemukan dalam konteks yang diberikan.", "(kosong)")
+
+        # Build verbatim block and summary context (more compact for LLM)
+        verbatim_parts: List[str] = []
+        summary_rows: List[str] = []
+        for it in picked:
+            cit = it.get("citation") or it.get("citation_string") or "(tanpa citation)"
+            txt = (it.get("text") or "").strip()
+            verbatim_parts.append(f"{cit}\n{txt}")
+            # For summary, keep a shorter slice per unit to reduce tokens but preserve content
+            stxt = txt if len(txt) <= 2000 else txt[:2000] + "…"
+            summary_rows.append(f"- {cit}\n{stxt}")
+
+        verbatim_block = "\n\n".join(verbatim_parts)
+        summary_context = "\n\n".join(summary_rows)
+        return verbatim_block, summary_context
     
     def _build_prompt(self, query: str, context: str) -> str:
         """Build prompt for LLM using template"""

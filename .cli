@@ -1,0 +1,219 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+Elegant CLI for Legal RAG system with Claude-like UI.
+
+Usage examples:
+  ./.cli --ask                 # Interactive Ask mode
+  ./.cli ask                   # Same as --ask
+  ./.cli search "pasal 20 UUD 1945"  # One-shot search
+
+Env:
+  API_URL: override backend API base URL (default: http://localhost:8000)
+"""
+
+import json
+import os
+import sys
+import textwrap
+from typing import Optional
+
+import typer
+import httpx
+from rich.console import Console
+from rich.panel import Panel
+from rich.table import Table
+from rich.syntax import Syntax
+from rich.markdown import Markdown
+from rich.prompt import Prompt
+from rich.text import Text
+from rich import box
+
+app = typer.Typer(add_completion=False)
+console = Console()
+API_URL = os.environ.get("API_URL", "http://localhost:8000")
+
+
+def _render_header(title: str, subtitle: Optional[str] = None) -> None:
+    header = Text(title, style="bold cyan")
+    if subtitle:
+        header.append("\n" + subtitle, style="dim")
+    console.print(Panel(header, border_style="cyan", box=box.ROUNDED))
+
+
+def _render_answer(answer: str) -> None:
+    # Render with Markdown in an expanding panel to prevent truncation
+    md = Markdown((answer or "").strip() + "\n", code_theme="monokai")
+    console.print(Panel(md, title="Jawaban", title_align="left", border_style="green", box=box.ROUNDED, expand=True))
+
+
+def _render_sources(sources: list) -> None:
+    if not sources:
+        return
+    table = Table(title="Sumber", box=box.SIMPLE_HEAVY)
+    table.add_column("No", style="bold dim", width=4)
+    table.add_column("Citation", style="yellow")
+    table.add_column("Unit", style="cyan", no_wrap=True)
+    table.add_column("Score", justify="right", style="magenta")
+
+    for i, src in enumerate(sources, 1):
+        citation = src.get("citation") or src.get("citation_string") or "-"
+        unit = f"{src.get('unit_type','')}: {src.get('unit_id','')}"
+        score = f"{src.get('score', 0):.3f}" if isinstance(src.get("score"), (int, float)) else "-"
+        table.add_row(str(i), citation, unit, score)
+
+    console.print(table)
+
+
+def _infer_strategy(data: dict) -> str:
+    meta = data.get("metadata") or {}
+    if isinstance(meta, dict) and meta.get("strategy"):
+        return str(meta.get("strategy"))
+    # Fallback: infer from sources' source_type
+    sources = data.get("sources") or []
+    if not sources:
+        return "-"
+    counts = {}
+    for s in sources:
+        st = (s.get("source_type") or "").lower()
+        if not st:
+            continue
+        key = st.split("_")[0]  # explicit_reranked -> explicit
+        counts[key] = counts.get(key, 0) + 1
+    if not counts:
+        return "-"
+    # choose the max
+    return max(counts.items(), key=lambda x: x[1])[0]
+
+
+def _render_summary(data: dict) -> None:
+    strategy = _infer_strategy(data)
+    dur = data.get("duration_ms")
+    txt = Text()
+    txt.append(f"Strategy: {strategy}\n", style="bold magenta")
+    if isinstance(dur, (int, float)):
+        txt.append(f"Duration: {dur:.0f} ms\n", style="dim")
+    meta = data.get("metadata")
+    if isinstance(meta, dict) and meta:
+        # show compact metadata
+        try:
+            txt.append(json.dumps(meta, ensure_ascii=False))
+        except Exception:
+            pass
+    console.print(Panel(txt, title="Ringkasan", border_style="magenta", box=box.ROUNDED))
+
+
+def _request(client: httpx.Client, method: str, path: str, json_body: Optional[dict] = None) -> httpx.Response:
+    url = API_URL.rstrip("/") + path
+    return client.request(method, url, json=json_body, timeout=60)
+
+
+@app.command("ask")
+def ask_cmd(query: Optional[str] = typer.Argument(None, help="Pertanyaan yang ingin diajukan")):
+    """Tanya-jawab hukum (RAG) dengan tampilan elegan."""
+    _render_header("Legal RAG • Ask", f"Backend: {API_URL}")
+
+    # Guard against programmatic invocation passing Typer's ArgumentInfo
+    if not isinstance(query, (str, type(None))):
+        query = None
+
+    if query is None:
+        console.print("Masuk ke mode interaktif. Ketik pertanyaan Anda. Ketik :q untuk keluar.", style="dim")
+
+    try:
+        with httpx.Client() as client:
+            while True:
+                if query is None:
+                    q = Prompt.ask("[bold green]Ask[/]", default="")
+                    if not q:
+                        continue
+                    if q.strip() in {":q", ":quit", ":exit"}:
+                        console.print("Keluar.", style="dim")
+                        return
+                else:
+                    q = query
+
+                with console.status("[bold cyan]thinking...[/]", spinner="dots"):
+                    resp = _request(client, "POST", "/ask", {"query": q})
+
+                if resp.status_code != 200:
+                    console.print(Panel(f"HTTP {resp.status_code}: {resp.text}", border_style="red"))
+                else:
+                    data = resp.json()
+                    answer = data.get("answer") or ""
+                    sources = data.get("sources") or []
+                    _render_answer(answer or "(kosong)")
+                    _render_summary(data)
+                    _render_sources(sources)
+
+                # if one-shot, break; else continue loop
+                if query is not None:
+                    break
+    except Exception as e:
+        console.print(Panel(f"Error: {e}", border_style="red"))
+        raise typer.Exit(code=1)
+
+
+@app.command("search")
+def search_cmd(query: str = typer.Argument(..., help="Kueri pencarian"), limit: int = typer.Option(10, "--limit", "-n")):
+    """Pencarian dokumen dengan hasil berpanel dan tabel sumber."""
+    _render_header("Legal RAG • Search", f"Backend: {API_URL}")
+
+    try:
+        with httpx.Client() as client:
+            with console.status("[bold cyan]thinking...[/]", spinner="dots"):
+                params = {"query": query, "limit": limit}
+                # Prefer POST /search if exists, otherwise GET with params
+                # Try GET first (commonly available)
+                resp = client.get(API_URL.rstrip("/") + "/search", params=params, timeout=60)
+
+            if resp.status_code != 200:
+                console.print(Panel(f"HTTP {resp.status_code}: {resp.text}", border_style="red"))
+                raise typer.Exit(code=1)
+
+            data = resp.json()
+            results = data.get("results") or []
+            strategy = data.get("strategy") or "-"
+            meta = data.get("metadata") or {}
+
+            # Render a compact summary
+            summary = Text()
+            summary.append(f"Strategy: {strategy}\n", style="bold magenta")
+            if meta:
+                summary.append(json.dumps(meta, ensure_ascii=False, indent=2))
+            console.print(Panel(summary, title="Ringkasan", border_style="magenta", box=box.ROUNDED))
+
+            # Render results table
+            table = Table(title=f"Hasil ({len(results)})", box=box.SIMPLE_HEAVY)
+            table.add_column("No", style="bold dim", width=4)
+            table.add_column("Text", style="white")
+            table.add_column("Citation", style="yellow")
+            table.add_column("Score", justify="right", style="magenta")
+
+            for i, r in enumerate(results, 1):
+                text_preview = (r.get("text") or "").strip().replace("\n", " ")
+                if len(text_preview) > 160:
+                    text_preview = text_preview[:157] + "…"
+                table.add_row(str(i), text_preview or "(kosong)", r.get("citation") or "-", f"{r.get('score', 0):.3f}")
+
+            console.print(table)
+    except Exception as e:
+        console.print(Panel(f"Error: {e}", border_style="red"))
+        raise typer.Exit(code=1)
+
+
+@app.callback(invoke_without_command=True)
+def main(ask: bool = typer.Option(False, "--ask", help="Masuk ke mode tanya-jawab interaktif")):
+    """CLI elegan untuk query Legal RAG."""
+    if ask:
+        # Delegate to ask command in interactive mode, ensure query=None
+        ask_cmd(query=None)
+    else:
+        if len(sys.argv) == 1:
+            _render_header("Legal RAG CLI", f"Backend: {API_URL}")
+            console.print("Gunakan: ./.cli --ask | ./.cli ask | ./.cli search \"query\"", style="dim")
+
+
+if __name__ == "__main__":
+    app()

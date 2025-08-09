@@ -113,6 +113,7 @@ class QueryRouter:
             'huruf': None,
             'angka': None,
             'doc_form': None,
+            'doc_form_short': None,
             'doc_number': None,
             'doc_year': None
         }
@@ -166,6 +167,12 @@ class QueryRouter:
             references['doc_number'] = match4.group(2)
             references['doc_year'] = int(match4.group(3))
 
+        # Pattern 5: UUD 1945 detection (Constitution)
+        # Handle phrases like "uud 1945" and "u u d 1945".
+        if (re.search(r'\buud\b', clean_query) or re.search(r'\bu\s*u\s*d\b', clean_query)) and re.search(r'1945', clean_query):
+            references['doc_form_short'] = 'UUD'
+            references['doc_year'] = references.get('doc_year') or 1945
+
         return references
 
 
@@ -199,7 +206,7 @@ class FTSSearcher:
                 lu.id,
                 lu.unit_id,
                 lu.unit_type,
-                lu.bm25_body as text,
+                COALESCE(lu.local_content, lu.content, lu.display_text, lu.bm25_body) as text,
                 lu.citation_string,
                 ld.doc_form,
                 ld.doc_year,
@@ -207,7 +214,7 @@ class FTSSearcher:
                 ts_rank(lu.content_vector, plainto_tsquery('indonesian', :query)) as score
             FROM legal_units lu
             JOIN legal_documents ld ON lu.document_id = ld.id
-            WHERE lu.unit_type IN ('AYAT', 'HURUF', 'ANGKA')
+            WHERE LOWER(lu.unit_type::text) IN ('ayat', 'huruf', 'angka')
               AND lu.content_vector @@ plainto_tsquery('indonesian', :query)
         """
 
@@ -305,7 +312,7 @@ class VectorSearcher:
                     dv.id,
                     dv.unit_id,
                     lu.unit_type,
-                    lu.bm25_body as text,
+                    COALESCE(agg.text, lu.local_content, lu.content, lu.display_text, lu.bm25_body) as text,
                     lu.citation_string,
                     dv.doc_form,
                     dv.doc_year,
@@ -313,7 +320,20 @@ class VectorSearcher:
                     dv.hierarchy_path,
                     1 - (dv.embedding <=> CAST(:query_vector AS vector)) as score
                 FROM document_vectors dv
-                LEFT JOIN legal_units lu ON dv.unit_id = lu.unit_id AND lu.unit_type = 'PASAL'
+                LEFT JOIN legal_units lu 
+                  ON dv.unit_id = lu.unit_id AND LOWER(lu.unit_type::text) = 'pasal'
+                LEFT JOIN LATERAL (
+                    SELECT string_agg(
+                        CASE
+                            WHEN LOWER(c.unit_type::text) = 'ayat' THEN '(' || COALESCE(c.number_label,'') || ') ' || COALESCE(c.local_content, c.content, c.display_text, c.bm25_body)
+                            ELSE COALESCE(c.local_content, c.content, c.display_text, c.bm25_body)
+                        END,
+                        E'\n\n'
+                    ORDER BY c.ordinal_int, c.ordinal_suffix
+                    ) AS text
+                    FROM legal_units c
+                    WHERE c.parent_pasal_id = lu.unit_id
+                ) agg ON TRUE
                 WHERE 1=1
             """
 
@@ -410,8 +430,14 @@ class ExplicitSearcher:
 
         # Handle document-level references
         if references.get("doc_form"):
-            conditions.append("ld.doc_form = :doc_form")
+            # Compare enum by casting to text to avoid type mismatch
+            conditions.append("ld.doc_form::text = :doc_form")
             query_params["doc_form"] = references["doc_form"]
+
+        # Allow filtering using short form (e.g., UUD)
+        if references.get("doc_form_short"):
+            conditions.append("ld.doc_form_short = :doc_form_short")
+            query_params["doc_form_short"] = references["doc_form_short"]
 
         if references.get("doc_number"):
             conditions.append("ld.doc_number = :doc_number")
@@ -428,28 +454,28 @@ class ExplicitSearcher:
         if references.get("pasal") and references.get("ayat"):
             # Target specific ayat within pasal using JOIN approach
             unit_conditions.append("""
-                lu.unit_type = 'AYAT' 
+                LOWER(lu.unit_type::text) = 'ayat' 
                 AND lu.number_label = :ayat
                 AND lu.parent_pasal_id IN (
                     SELECT unit_id FROM legal_units 
-                    WHERE unit_type = 'PASAL' AND number_label = :pasal
+                    WHERE LOWER(unit_type::text) = 'pasal' AND number_label = :pasal
                 )
             """)
             query_params["pasal"] = references["pasal"]
             query_params["ayat"] = references["ayat"]
         elif references.get("pasal"):
             # Target specific pasal
-            unit_conditions.append("lu.number_label = :pasal AND lu.unit_type = 'PASAL'")
+            unit_conditions.append("lu.number_label = :pasal AND LOWER(lu.unit_type::text) = 'pasal'")
             query_params["pasal"] = references["pasal"]
 
         if references.get("huruf"):
             # Target specific huruf within ayat
             unit_conditions.append("""
-                lu.unit_type = 'HURUF' 
+                LOWER(lu.unit_type::text) = 'huruf' 
                 AND lu.number_label = :huruf
                 AND lu.parent_pasal_id IN (
                     SELECT unit_id FROM legal_units 
-                    WHERE unit_type = 'AYAT' AND number_label = :ayat
+                    WHERE LOWER(unit_type::text) = 'ayat' AND number_label = :ayat
                 )
             """)
             query_params["huruf"] = references["huruf"]
@@ -457,11 +483,11 @@ class ExplicitSearcher:
         if references.get("angka"):
             # Target specific angka within huruf
             unit_conditions.append("""
-                lu.unit_type = 'ANGKA' 
+                LOWER(lu.unit_type::text) = 'angka' 
                 AND lu.number_label = :angka
                 AND lu.parent_pasal_id IN (
                     SELECT unit_id FROM legal_units 
-                    WHERE unit_type = 'HURUF' AND number_label = :huruf
+                    WHERE LOWER(unit_type::text) = 'huruf' AND number_label = :huruf
                 )
             """)
             query_params["angka"] = references["angka"]
@@ -484,7 +510,7 @@ class ExplicitSearcher:
                 lu.id,
                 lu.unit_id,
                 lu.unit_type,
-                lu.bm25_body as text,
+                COALESCE(agg.text, lu.local_content, lu.content, lu.display_text, lu.bm25_body) as text,
                 lu.citation_string,
                 ld.doc_form,
                 ld.doc_year,
@@ -492,6 +518,18 @@ class ExplicitSearcher:
                 1.0 as score
             FROM legal_units lu
             JOIN legal_documents ld ON lu.document_id = ld.id
+            LEFT JOIN LATERAL (
+                SELECT string_agg(
+                    CASE
+                        WHEN LOWER(c.unit_type::text) = 'ayat' THEN '(' || COALESCE(c.number_label,'') || ') ' || COALESCE(c.local_content, c.content, c.display_text, c.bm25_body)
+                        ELSE COALESCE(c.local_content, c.content, c.display_text, c.bm25_body)
+                    END,
+                    E'\n\n'
+                ORDER BY c.ordinal_int, c.ordinal_suffix
+                ) AS text
+                FROM legal_units c
+                WHERE c.parent_pasal_id = lu.unit_id
+            ) agg ON TRUE
             {where_clause}
             ORDER BY ld.doc_year DESC, lu.ordinal_int ASC
             LIMIT :limit
@@ -721,7 +759,7 @@ class HybridRetriever:
                             lu.id,
                             lu.unit_id,
                             lu.unit_type,
-                            lu.bm25_body as text,
+                            COALESCE(lu.local_content, lu.content, lu.display_text, lu.bm25_body) as text,
                             lu.citation_string,
                             ld.doc_form,
                             ld.doc_year,
@@ -739,7 +777,7 @@ class HybridRetriever:
                             lu.id,
                             lu.unit_id,
                             lu.unit_type,
-                            lu.bm25_body as text,
+                            COALESCE(lu.local_content, lu.content, lu.display_text, lu.bm25_body) as text,
                             lu.citation_string,
                             ld.doc_form,
                             ld.doc_year,
