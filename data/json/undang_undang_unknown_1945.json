@@ -1,0 +1,3727 @@
+{
+  "doc_source": "BPK",
+  "doc_id": "UU-1945--",
+  "doc_type": "Peraturan Perundang-undangan",
+  "doc_title": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+  "doc_teu": "Indonesia, Pemerintah Pusat",
+  "doc_number": "-",
+  "doc_form": "UUD",
+  "doc_form_short": "UUD",
+  "doc_year": "1945",
+  "doc_place_enacted": "Jakarta",
+  "doc_date_enacted": null,
+  "doc_date_promulgated": null,
+  "doc_date_effective": null,
+  "doc_subject": [
+    "KETATANEGARAAN",
+    "KENEGARAAN"
+  ],
+  "doc_status": "Berlaku",
+  "doc_language": "Bahasa Indonesia",
+  "doc_location": "Pemerintah Pusat",
+  "doc_field": null,
+  "doc_content": null,
+  "doc_processing_status": "pdf_processed",
+  "relationships": {},
+  "detail_url": "https://peraturan.bpk.go.id/Details/101646/uud-no--",
+  "source_url": "https://peraturan.bpk.go.id/Details/101646/uud-no--",
+  "pdf_url": "https://peraturan.bpk.go.id/Download/92283/UUD45.pdf",
+  "uji_materi_pdf_url": null,
+  "uji_materi": [],
+  "pdf_path": "data/pdfs/undang_undang_unknown_1945.pdf",
+  "text_path": null,
+  "document_tree": {
+    "doc_type": "document",
+    "doc_unit_id": "UU-1945--",
+    "doc_title": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+    "children": [
+      {
+        "type": "bab",
+        "unit_id": "UU-1945--/bab-I",
+        "number_label": "I",
+        "ordinal_int": 1,
+        "ordinal_suffix": "",
+        "label_display": "BAB I",
+        "seq_sort_key": "0001|",
+        "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+        "path": [
+          {
+            "type": "dokumen",
+            "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+            "unit_id": "UU-1945--"
+          },
+          {
+            "type": "bab",
+            "label": "BAB I",
+            "unit_id": "UU-1945--/bab-I"
+          }
+        ],
+        "title": "BAB I",
+        "children": [
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-I/pasal-1",
+            "number_label": "1",
+            "ordinal_int": 1,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 1",
+            "seq_sort_key": "0001|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 1",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB I",
+                "unit_id": "UU-1945--/bab-I"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 1",
+                "unit_id": "UU-1945--/bab-I/pasal-1"
+              }
+            ],
+            "title": "Pasal 1",
+            "content": "(1) Negara Indonesia ialah Negara Kesatuan, yang berbentuk Republik.\n(2) Kedaulatan adalah di tangan rakyat, dan dilakukan sepenuhnya oleh Majelis Permusyawaratan Rakyat.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": [
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-I/pasal-1/ayat-1",
+                "number_label": "1",
+                "ordinal_int": 1,
+                "ordinal_suffix": "",
+                "label_display": "(1)",
+                "seq_sort_key": "0001|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 1 ayat (1)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB I",
+                    "unit_id": "UU-1945--/bab-I"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 1",
+                    "unit_id": "UU-1945--/bab-I/pasal-1"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(1)",
+                    "unit_id": "UU-1945--/bab-I/pasal-1/ayat-1"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-I/pasal-1",
+                "local_content": "Negara Indonesia ialah Negara Kesatuan, yang berbentuk Republik.",
+                "display_text": "(1) Negara Indonesia ialah Negara Kesatuan, yang berbentuk Republik.",
+                "bm25_body": "Negara Indonesia ialah Negara Kesatuan, yang berbentuk Republik.",
+                "span": null,
+                "children": []
+              },
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-I/pasal-1/ayat-2",
+                "number_label": "2",
+                "ordinal_int": 2,
+                "ordinal_suffix": "",
+                "label_display": "(2)",
+                "seq_sort_key": "0002|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 1 ayat (2)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB I",
+                    "unit_id": "UU-1945--/bab-I"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 1",
+                    "unit_id": "UU-1945--/bab-I/pasal-1"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(2)",
+                    "unit_id": "UU-1945--/bab-I/pasal-1/ayat-2"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-I/pasal-1",
+                "local_content": "Kedaulatan adalah di tangan rakyat, dan dilakukan sepenuhnya oleh Majelis Permusyawaratan Rakyat.",
+                "display_text": "(2) Kedaulatan adalah di tangan rakyat, dan dilakukan sepenuhnya oleh Majelis Permusyawaratan Rakyat.",
+                "bm25_body": "Kedaulatan adalah di tangan rakyat, dan dilakukan sepenuhnya oleh Majelis Permusyawaratan Rakyat.",
+                "span": null,
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "bab",
+        "unit_id": "UU-1945--/bab-II",
+        "number_label": "II",
+        "ordinal_int": 2,
+        "ordinal_suffix": "",
+        "label_display": "BAB II",
+        "seq_sort_key": "0002|",
+        "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+        "path": [
+          {
+            "type": "dokumen",
+            "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+            "unit_id": "UU-1945--"
+          },
+          {
+            "type": "bab",
+            "label": "BAB II",
+            "unit_id": "UU-1945--/bab-II"
+          }
+        ],
+        "title": "BAB II",
+        "children": [
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-II/pasal-2",
+            "number_label": "2",
+            "ordinal_int": 2,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 2",
+            "seq_sort_key": "0002|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 2",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB II",
+                "unit_id": "UU-1945--/bab-II"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 2",
+                "unit_id": "UU-1945--/bab-II/pasal-2"
+              }
+            ],
+            "title": "Pasal 2",
+            "content": "(1) Majelis Permusyawaratan Rakyat terdiri atas anggota-anggota Dewan Perwakilan Rakyat, ditambah dengan utusan-utusan dari daerah-daerah dan golongan-golongan, menurut aturan yang ditetapkan dengan undang-undang.\n(2) Majelis Permusyawaratan Rakyat bersidang sedikitnya sekali dalam lima tahun di ibu kota negara.\n(3) Segala putusan Majelis Permusyawaratan Rakyat ditetapkan dengan suara yang terbanyak.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": [
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-II/pasal-2/ayat-1",
+                "number_label": "1",
+                "ordinal_int": 1,
+                "ordinal_suffix": "",
+                "label_display": "(1)",
+                "seq_sort_key": "0001|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 2 ayat (1)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB II",
+                    "unit_id": "UU-1945--/bab-II"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 2",
+                    "unit_id": "UU-1945--/bab-II/pasal-2"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(1)",
+                    "unit_id": "UU-1945--/bab-II/pasal-2/ayat-1"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-II/pasal-2",
+                "local_content": "Majelis Permusyawaratan Rakyat terdiri atas anggota-anggota Dewan Perwakilan Rakyat, ditambah dengan utusan-utusan dari daerah-daerah dan golongan-golongan, menurut aturan yang ditetapkan dengan undang-undang.",
+                "display_text": "(1) Majelis Permusyawaratan Rakyat terdiri atas anggota-anggota Dewan Perwakilan Rakyat, ditambah dengan utusan-utusan dari daerah-daerah dan golongan-golongan, menurut aturan yang ditetapkan dengan undang-undang.",
+                "bm25_body": "Majelis Permusyawaratan Rakyat terdiri atas anggota-anggota Dewan Perwakilan Rakyat, ditambah dengan utusan-utusan dari daerah-daerah dan golongan-golongan, menurut aturan yang ditetapkan dengan undang-undang.",
+                "span": null,
+                "children": []
+              },
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-II/pasal-2/ayat-2",
+                "number_label": "2",
+                "ordinal_int": 2,
+                "ordinal_suffix": "",
+                "label_display": "(2)",
+                "seq_sort_key": "0002|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 2 ayat (2)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB II",
+                    "unit_id": "UU-1945--/bab-II"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 2",
+                    "unit_id": "UU-1945--/bab-II/pasal-2"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(2)",
+                    "unit_id": "UU-1945--/bab-II/pasal-2/ayat-2"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-II/pasal-2",
+                "local_content": "Majelis Permusyawaratan Rakyat bersidang sedikitnya sekali dalam lima tahun di ibu kota negara.",
+                "display_text": "(2) Majelis Permusyawaratan Rakyat bersidang sedikitnya sekali dalam lima tahun di ibu kota negara.",
+                "bm25_body": "Majelis Permusyawaratan Rakyat bersidang sedikitnya sekali dalam lima tahun di ibu kota negara.",
+                "span": null,
+                "children": []
+              },
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-II/pasal-2/ayat-3",
+                "number_label": "3",
+                "ordinal_int": 3,
+                "ordinal_suffix": "",
+                "label_display": "(3)",
+                "seq_sort_key": "0003|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 2 ayat (3)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB II",
+                    "unit_id": "UU-1945--/bab-II"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 2",
+                    "unit_id": "UU-1945--/bab-II/pasal-2"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(3)",
+                    "unit_id": "UU-1945--/bab-II/pasal-2/ayat-3"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-II/pasal-2",
+                "local_content": "Segala putusan Majelis Permusyawaratan Rakyat ditetapkan dengan suara yang terbanyak.",
+                "display_text": "(3) Segala putusan Majelis Permusyawaratan Rakyat ditetapkan dengan suara yang terbanyak.",
+                "bm25_body": "Segala putusan Majelis Permusyawaratan Rakyat ditetapkan dengan suara yang terbanyak.",
+                "span": null,
+                "children": []
+              }
+            ]
+          },
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-II/pasal-3",
+            "number_label": "3",
+            "ordinal_int": 3,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 3",
+            "seq_sort_key": "0003|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 3",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB II",
+                "unit_id": "UU-1945--/bab-II"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 3",
+                "unit_id": "UU-1945--/bab-II/pasal-3"
+              }
+            ],
+            "title": "Pasal 3",
+            "content": "Majelis Permusyawaratan Rakyat menetapkan Undang-Undang Dasar dan garis-garis besar daripada haluan negara.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": []
+          }
+        ]
+      },
+      {
+        "type": "bab",
+        "unit_id": "UU-1945--/bab-III",
+        "number_label": "III",
+        "ordinal_int": 3,
+        "ordinal_suffix": "",
+        "label_display": "BAB III",
+        "seq_sort_key": "0003|",
+        "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+        "path": [
+          {
+            "type": "dokumen",
+            "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+            "unit_id": "UU-1945--"
+          },
+          {
+            "type": "bab",
+            "label": "BAB III",
+            "unit_id": "UU-1945--/bab-III"
+          }
+        ],
+        "title": "BAB III",
+        "children": [
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-III/pasal-4",
+            "number_label": "4",
+            "ordinal_int": 4,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 4",
+            "seq_sort_key": "0004|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 4",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB III",
+                "unit_id": "UU-1945--/bab-III"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 4",
+                "unit_id": "UU-1945--/bab-III/pasal-4"
+              }
+            ],
+            "title": "Pasal 4",
+            "content": "(1) memegang kekuasaan pemerintahan menurut Undang- Undang Dasar.\n(2) Dalam melakukan kewajibannya Presiden dibantu oleh satu orang Wakil Presiden.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": [
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-III/pasal-4/ayat-1",
+                "number_label": "1",
+                "ordinal_int": 1,
+                "ordinal_suffix": "",
+                "label_display": "(1)",
+                "seq_sort_key": "0001|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 4 ayat (1)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB III",
+                    "unit_id": "UU-1945--/bab-III"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 4",
+                    "unit_id": "UU-1945--/bab-III/pasal-4"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(1)",
+                    "unit_id": "UU-1945--/bab-III/pasal-4/ayat-1"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-III/pasal-4",
+                "local_content": "memegang kekuasaan pemerintahan menurut Undang- Undang Dasar.",
+                "display_text": "(1) memegang kekuasaan pemerintahan menurut Undang- Undang Dasar.",
+                "bm25_body": "memegang kekuasaan pemerintahan menurut Undang- Undang Dasar.",
+                "span": null,
+                "children": []
+              },
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-III/pasal-4/ayat-2",
+                "number_label": "2",
+                "ordinal_int": 2,
+                "ordinal_suffix": "",
+                "label_display": "(2)",
+                "seq_sort_key": "0002|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 4 ayat (2)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB III",
+                    "unit_id": "UU-1945--/bab-III"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 4",
+                    "unit_id": "UU-1945--/bab-III/pasal-4"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(2)",
+                    "unit_id": "UU-1945--/bab-III/pasal-4/ayat-2"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-III/pasal-4",
+                "local_content": "Dalam melakukan kewajibannya Presiden dibantu oleh satu orang Wakil Presiden.",
+                "display_text": "(2) Dalam melakukan kewajibannya Presiden dibantu oleh satu orang Wakil Presiden.",
+                "bm25_body": "Dalam melakukan kewajibannya Presiden dibantu oleh satu orang Wakil Presiden.",
+                "span": null,
+                "children": []
+              }
+            ]
+          },
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-III/pasal-5",
+            "number_label": "5",
+            "ordinal_int": 5,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 5",
+            "seq_sort_key": "0005|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 5",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB III",
+                "unit_id": "UU-1945--/bab-III"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 5",
+                "unit_id": "UU-1945--/bab-III/pasal-5"
+              }
+            ],
+            "title": "Pasal 5",
+            "content": "(1) Presiden memegang kekuasaan membentuk undang-undang dengan persetujuan Dewan Perwakilan Rakyat.\n(2) Presiden menetapkan peraturan pemerintah untuk menjalankan undang-undang sebagaimana mestinya.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": [
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-III/pasal-5/ayat-1",
+                "number_label": "1",
+                "ordinal_int": 1,
+                "ordinal_suffix": "",
+                "label_display": "(1)",
+                "seq_sort_key": "0001|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 5 ayat (1)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB III",
+                    "unit_id": "UU-1945--/bab-III"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 5",
+                    "unit_id": "UU-1945--/bab-III/pasal-5"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(1)",
+                    "unit_id": "UU-1945--/bab-III/pasal-5/ayat-1"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-III/pasal-5",
+                "local_content": "Presiden memegang kekuasaan membentuk undang-undang dengan persetujuan Dewan Perwakilan Rakyat.",
+                "display_text": "(1) Presiden memegang kekuasaan membentuk undang-undang dengan persetujuan Dewan Perwakilan Rakyat.",
+                "bm25_body": "Presiden memegang kekuasaan membentuk undang-undang dengan persetujuan Dewan Perwakilan Rakyat.",
+                "span": null,
+                "children": []
+              },
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-III/pasal-5/ayat-2",
+                "number_label": "2",
+                "ordinal_int": 2,
+                "ordinal_suffix": "",
+                "label_display": "(2)",
+                "seq_sort_key": "0002|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 5 ayat (2)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB III",
+                    "unit_id": "UU-1945--/bab-III"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 5",
+                    "unit_id": "UU-1945--/bab-III/pasal-5"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(2)",
+                    "unit_id": "UU-1945--/bab-III/pasal-5/ayat-2"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-III/pasal-5",
+                "local_content": "Presiden menetapkan peraturan pemerintah untuk menjalankan undang-undang sebagaimana mestinya.",
+                "display_text": "(2) Presiden menetapkan peraturan pemerintah untuk menjalankan undang-undang sebagaimana mestinya.",
+                "bm25_body": "Presiden menetapkan peraturan pemerintah untuk menjalankan undang-undang sebagaimana mestinya.",
+                "span": null,
+                "children": []
+              }
+            ]
+          },
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-III/pasal-6",
+            "number_label": "6",
+            "ordinal_int": 6,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 6",
+            "seq_sort_key": "0006|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 6",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB III",
+                "unit_id": "UU-1945--/bab-III"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 6",
+                "unit_id": "UU-1945--/bab-III/pasal-6"
+              }
+            ],
+            "title": "Pasal 6",
+            "content": "(1) Presiden ialah orang Indonesia asli.\n(2) Presiden dan Wakil Presiden dipilih oleh Majelis Permusyawaratan Rakyat dengan suara yang terbanyak.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": [
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-III/pasal-6/ayat-1",
+                "number_label": "1",
+                "ordinal_int": 1,
+                "ordinal_suffix": "",
+                "label_display": "(1)",
+                "seq_sort_key": "0001|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 6 ayat (1)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB III",
+                    "unit_id": "UU-1945--/bab-III"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 6",
+                    "unit_id": "UU-1945--/bab-III/pasal-6"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(1)",
+                    "unit_id": "UU-1945--/bab-III/pasal-6/ayat-1"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-III/pasal-6",
+                "local_content": "Presiden ialah orang Indonesia asli.",
+                "display_text": "(1) Presiden ialah orang Indonesia asli.",
+                "bm25_body": "Presiden ialah orang Indonesia asli.",
+                "span": null,
+                "children": []
+              },
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-III/pasal-6/ayat-2",
+                "number_label": "2",
+                "ordinal_int": 2,
+                "ordinal_suffix": "",
+                "label_display": "(2)",
+                "seq_sort_key": "0002|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 6 ayat (2)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB III",
+                    "unit_id": "UU-1945--/bab-III"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 6",
+                    "unit_id": "UU-1945--/bab-III/pasal-6"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(2)",
+                    "unit_id": "UU-1945--/bab-III/pasal-6/ayat-2"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-III/pasal-6",
+                "local_content": "Presiden dan Wakil Presiden dipilih oleh Majelis Permusyawaratan Rakyat dengan suara yang terbanyak.",
+                "display_text": "(2) Presiden dan Wakil Presiden dipilih oleh Majelis Permusyawaratan Rakyat dengan suara yang terbanyak.",
+                "bm25_body": "Presiden dan Wakil Presiden dipilih oleh Majelis Permusyawaratan Rakyat dengan suara yang terbanyak.",
+                "span": null,
+                "children": []
+              }
+            ]
+          },
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-III/pasal-7",
+            "number_label": "7",
+            "ordinal_int": 7,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 7",
+            "seq_sort_key": "0007|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 7",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB III",
+                "unit_id": "UU-1945--/bab-III"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 7",
+                "unit_id": "UU-1945--/bab-III/pasal-7"
+              }
+            ],
+            "title": "Pasal 7",
+            "content": "Presiden dan Wakil Presiden memegang jabatannya selama masa lima tahun, dan sesudahnya dapat dipilih kembali.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": []
+          },
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-III/pasal-8",
+            "number_label": "8",
+            "ordinal_int": 8,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 8",
+            "seq_sort_key": "0008|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 8",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB III",
+                "unit_id": "UU-1945--/bab-III"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 8",
+                "unit_id": "UU-1945--/bab-III/pasal-8"
+              }
+            ],
+            "title": "Pasal 8",
+            "content": "Jika Presiden mangkat, berhenti, atau tidak dapat melakukan kewajibannya dalam masa jabatannya, ia diganti oleh Wakil Presiden sampai habis waktunya.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": []
+          },
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-III/pasal-9",
+            "number_label": "9",
+            "ordinal_int": 9,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 9",
+            "seq_sort_key": "0009|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 9",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB III",
+                "unit_id": "UU-1945--/bab-III"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 9",
+                "unit_id": "UU-1945--/bab-III/pasal-9"
+              }
+            ],
+            "title": "Pasal 9",
+            "content": "Sebelum memangku jabatannya, Presiden dan Wakil Presiden bersumpah menurut agama, atau berjanji dengan sungguh-sungguh di hadapan Majelis Permusyawaratan Rakyat atau Dewan Perwakilan Rakyat sebagai berikut: Sumpah Presiden (Wakil Presiden): “Demi Allah, saya bersumpah akan memenuhi kewajiban (Wakil ) dengan sebaik-baiknya dan seadil-adilnya, memegang teguh Undang-Undang Dasar dan menjalankan segala undang-undang dan peraturannya dengan selurus-lurusnya serta berbakti kepada Nusa dan Bangsa”. Janji Presiden (Wakil Presiden): “Saya berjanji dengan sungguh-sungguh akan memenuhi kewajiban (Wakil ) dengan sebaik-baiknya dan seadil-adilnya, memegang teguh Undang-Undang Dasar dan menjalankan segala undang- undang dan peraturannya dengan selurus-lurusnya serta berbakti kepada Nusa dan Bangsa”.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": []
+          },
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-III/pasal-10",
+            "number_label": "10",
+            "ordinal_int": 10,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 10",
+            "seq_sort_key": "0010|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 10",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB III",
+                "unit_id": "UU-1945--/bab-III"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 10",
+                "unit_id": "UU-1945--/bab-III/pasal-10"
+              }
+            ],
+            "title": "Pasal 10",
+            "content": "Presiden memegang kekuasaan yang tertinggi atas Angkatan Darat, Angkatan Laut dan Angkatan Udara.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": []
+          },
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-III/pasal-11",
+            "number_label": "11",
+            "ordinal_int": 11,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 11",
+            "seq_sort_key": "0011|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 11",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB III",
+                "unit_id": "UU-1945--/bab-III"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 11",
+                "unit_id": "UU-1945--/bab-III/pasal-11"
+              }
+            ],
+            "title": "Pasal 11",
+            "content": "Presiden dengan persetujuan Dewan Perwakilan Rakyat menyatakan perang, membuat perdamaian dan perjanjian dengan negara lain.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": []
+          },
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-III/pasal-12",
+            "number_label": "12",
+            "ordinal_int": 12,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 12",
+            "seq_sort_key": "0012|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 12",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB III",
+                "unit_id": "UU-1945--/bab-III"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 12",
+                "unit_id": "UU-1945--/bab-III/pasal-12"
+              }
+            ],
+            "title": "Pasal 12",
+            "content": "Presiden menyatakan keadaan bahaya. Syarat-syarat dan akibatnya keadaan bahaya ditetapkan dengan undang-undang.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": []
+          },
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-III/pasal-13",
+            "number_label": "13",
+            "ordinal_int": 13,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 13",
+            "seq_sort_key": "0013|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 13",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB III",
+                "unit_id": "UU-1945--/bab-III"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 13",
+                "unit_id": "UU-1945--/bab-III/pasal-13"
+              }
+            ],
+            "title": "Pasal 13",
+            "content": "(1) Presiden mengangkat duta dan konsul.\n(2) Presiden menerima duta negara lain.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": [
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-III/pasal-13/ayat-1",
+                "number_label": "1",
+                "ordinal_int": 1,
+                "ordinal_suffix": "",
+                "label_display": "(1)",
+                "seq_sort_key": "0001|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 13 ayat (1)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB III",
+                    "unit_id": "UU-1945--/bab-III"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 13",
+                    "unit_id": "UU-1945--/bab-III/pasal-13"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(1)",
+                    "unit_id": "UU-1945--/bab-III/pasal-13/ayat-1"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-III/pasal-13",
+                "local_content": "Presiden mengangkat duta dan konsul.",
+                "display_text": "(1) Presiden mengangkat duta dan konsul.",
+                "bm25_body": "Presiden mengangkat duta dan konsul.",
+                "span": null,
+                "children": []
+              },
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-III/pasal-13/ayat-2",
+                "number_label": "2",
+                "ordinal_int": 2,
+                "ordinal_suffix": "",
+                "label_display": "(2)",
+                "seq_sort_key": "0002|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 13 ayat (2)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB III",
+                    "unit_id": "UU-1945--/bab-III"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 13",
+                    "unit_id": "UU-1945--/bab-III/pasal-13"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(2)",
+                    "unit_id": "UU-1945--/bab-III/pasal-13/ayat-2"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-III/pasal-13",
+                "local_content": "Presiden menerima duta negara lain.",
+                "display_text": "(2) Presiden menerima duta negara lain.",
+                "bm25_body": "Presiden menerima duta negara lain.",
+                "span": null,
+                "children": []
+              }
+            ]
+          },
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-III/pasal-14",
+            "number_label": "14",
+            "ordinal_int": 14,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 14",
+            "seq_sort_key": "0014|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 14",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB III",
+                "unit_id": "UU-1945--/bab-III"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 14",
+                "unit_id": "UU-1945--/bab-III/pasal-14"
+              }
+            ],
+            "title": "Pasal 14",
+            "content": "Presiden memberi grasi, amnesti, abolisi dan.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": []
+          },
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-III/pasal-15",
+            "number_label": "15",
+            "ordinal_int": 15,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 15",
+            "seq_sort_key": "0015|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 15",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB III",
+                "unit_id": "UU-1945--/bab-III"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 15",
+                "unit_id": "UU-1945--/bab-III/pasal-15"
+              }
+            ],
+            "title": "Pasal 15",
+            "content": "Presiden memberi gelaran, tanda jasa dan lain-lain tanda kehormatan.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": []
+          }
+        ]
+      },
+      {
+        "type": "bab",
+        "unit_id": "UU-1945--/bab-IV",
+        "number_label": "IV",
+        "ordinal_int": 4,
+        "ordinal_suffix": "",
+        "label_display": "BAB IV",
+        "seq_sort_key": "0004|",
+        "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+        "path": [
+          {
+            "type": "dokumen",
+            "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+            "unit_id": "UU-1945--"
+          },
+          {
+            "type": "bab",
+            "label": "BAB IV",
+            "unit_id": "UU-1945--/bab-IV"
+          }
+        ],
+        "title": "BAB IV",
+        "children": [
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-IV/pasal-16",
+            "number_label": "16",
+            "ordinal_int": 16,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 16",
+            "seq_sort_key": "0016|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 16",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB IV",
+                "unit_id": "UU-1945--/bab-IV"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 16",
+                "unit_id": "UU-1945--/bab-IV/pasal-16"
+              }
+            ],
+            "title": "Pasal 16",
+            "content": "(1) Susunan Dewan Pertimbangan Agung ditetapkan dengan undang-undang.\n(2) Dewan ini berkewajiban memberi jawab atas pertanyaan Presiden dan berhak memajukan usul kepada pemerintah.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": [
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-IV/pasal-16/ayat-1",
+                "number_label": "1",
+                "ordinal_int": 1,
+                "ordinal_suffix": "",
+                "label_display": "(1)",
+                "seq_sort_key": "0001|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 16 ayat (1)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB IV",
+                    "unit_id": "UU-1945--/bab-IV"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 16",
+                    "unit_id": "UU-1945--/bab-IV/pasal-16"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(1)",
+                    "unit_id": "UU-1945--/bab-IV/pasal-16/ayat-1"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-IV/pasal-16",
+                "local_content": "Susunan Dewan Pertimbangan Agung ditetapkan dengan undang-undang.",
+                "display_text": "(1) Susunan Dewan Pertimbangan Agung ditetapkan dengan undang-undang.",
+                "bm25_body": "Susunan Dewan Pertimbangan Agung ditetapkan dengan undang-undang.",
+                "span": null,
+                "children": []
+              },
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-IV/pasal-16/ayat-2",
+                "number_label": "2",
+                "ordinal_int": 2,
+                "ordinal_suffix": "",
+                "label_display": "(2)",
+                "seq_sort_key": "0002|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 16 ayat (2)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB IV",
+                    "unit_id": "UU-1945--/bab-IV"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 16",
+                    "unit_id": "UU-1945--/bab-IV/pasal-16"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(2)",
+                    "unit_id": "UU-1945--/bab-IV/pasal-16/ayat-2"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-IV/pasal-16",
+                "local_content": "Dewan ini berkewajiban memberi jawab atas pertanyaan Presiden dan berhak memajukan usul kepada pemerintah.",
+                "display_text": "(2) Dewan ini berkewajiban memberi jawab atas pertanyaan Presiden dan berhak memajukan usul kepada pemerintah.",
+                "bm25_body": "Dewan ini berkewajiban memberi jawab atas pertanyaan Presiden dan berhak memajukan usul kepada pemerintah.",
+                "span": null,
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "bab",
+        "unit_id": "UU-1945--/bab-V",
+        "number_label": "V",
+        "ordinal_int": 5,
+        "ordinal_suffix": "",
+        "label_display": "BAB V",
+        "seq_sort_key": "0005|",
+        "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+        "path": [
+          {
+            "type": "dokumen",
+            "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+            "unit_id": "UU-1945--"
+          },
+          {
+            "type": "bab",
+            "label": "BAB V",
+            "unit_id": "UU-1945--/bab-V"
+          }
+        ],
+        "title": "BAB V",
+        "children": [
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-V/pasal-17",
+            "number_label": "17",
+            "ordinal_int": 17,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 17",
+            "seq_sort_key": "0017|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 17",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB V",
+                "unit_id": "UU-1945--/bab-V"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 17",
+                "unit_id": "UU-1945--/bab-V/pasal-17"
+              }
+            ],
+            "title": "Pasal 17",
+            "content": "(1) Presiden dibantu oleh menteri-menteri negara.\n(2) Menteri-menteri itu diangkat dan diperhentikan oleh Presiden.\n(3) Menteri-menteri itu memimpin departemen pemerintah.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": [
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-V/pasal-17/ayat-1",
+                "number_label": "1",
+                "ordinal_int": 1,
+                "ordinal_suffix": "",
+                "label_display": "(1)",
+                "seq_sort_key": "0001|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 17 ayat (1)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB V",
+                    "unit_id": "UU-1945--/bab-V"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 17",
+                    "unit_id": "UU-1945--/bab-V/pasal-17"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(1)",
+                    "unit_id": "UU-1945--/bab-V/pasal-17/ayat-1"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-V/pasal-17",
+                "local_content": "Presiden dibantu oleh menteri-menteri negara.",
+                "display_text": "(1) Presiden dibantu oleh menteri-menteri negara.",
+                "bm25_body": "Presiden dibantu oleh menteri-menteri negara.",
+                "span": null,
+                "children": []
+              },
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-V/pasal-17/ayat-2",
+                "number_label": "2",
+                "ordinal_int": 2,
+                "ordinal_suffix": "",
+                "label_display": "(2)",
+                "seq_sort_key": "0002|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 17 ayat (2)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB V",
+                    "unit_id": "UU-1945--/bab-V"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 17",
+                    "unit_id": "UU-1945--/bab-V/pasal-17"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(2)",
+                    "unit_id": "UU-1945--/bab-V/pasal-17/ayat-2"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-V/pasal-17",
+                "local_content": "Menteri-menteri itu diangkat dan diperhentikan oleh Presiden.",
+                "display_text": "(2) Menteri-menteri itu diangkat dan diperhentikan oleh Presiden.",
+                "bm25_body": "Menteri-menteri itu diangkat dan diperhentikan oleh Presiden.",
+                "span": null,
+                "children": []
+              },
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-V/pasal-17/ayat-3",
+                "number_label": "3",
+                "ordinal_int": 3,
+                "ordinal_suffix": "",
+                "label_display": "(3)",
+                "seq_sort_key": "0003|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 17 ayat (3)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB V",
+                    "unit_id": "UU-1945--/bab-V"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 17",
+                    "unit_id": "UU-1945--/bab-V/pasal-17"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(3)",
+                    "unit_id": "UU-1945--/bab-V/pasal-17/ayat-3"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-V/pasal-17",
+                "local_content": "Menteri-menteri itu memimpin departemen pemerintah.",
+                "display_text": "(3) Menteri-menteri itu memimpin departemen pemerintah.",
+                "bm25_body": "Menteri-menteri itu memimpin departemen pemerintah.",
+                "span": null,
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "bab",
+        "unit_id": "UU-1945--/bab-VI",
+        "number_label": "VI",
+        "ordinal_int": 6,
+        "ordinal_suffix": "",
+        "label_display": "BAB VI",
+        "seq_sort_key": "0006|",
+        "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+        "path": [
+          {
+            "type": "dokumen",
+            "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+            "unit_id": "UU-1945--"
+          },
+          {
+            "type": "bab",
+            "label": "BAB VI",
+            "unit_id": "UU-1945--/bab-VI"
+          }
+        ],
+        "title": "BAB VI",
+        "children": [
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-VI/pasal-18",
+            "number_label": "18",
+            "ordinal_int": 18,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 18",
+            "seq_sort_key": "0018|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 18",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB VI",
+                "unit_id": "UU-1945--/bab-VI"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 18",
+                "unit_id": "UU-1945--/bab-VI/pasal-18"
+              }
+            ],
+            "title": "Pasal 18",
+            "content": "Pembagian daerah Indonesia atas daerah besar dan kecil, dengan bentuk susunan pemerintahannya ditetapkan dengan undang-undang, dengan memandang dan mengingati dasar permusyawaratan dalam sistem pemerintahan negara, dan hak-hak asal-usul dalam daerah-daerah yang bersifat istimewa.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": []
+          }
+        ]
+      },
+      {
+        "type": "bab",
+        "unit_id": "UU-1945--/bab-VII",
+        "number_label": "VII",
+        "ordinal_int": 7,
+        "ordinal_suffix": "",
+        "label_display": "BAB VII",
+        "seq_sort_key": "0007|",
+        "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+        "path": [
+          {
+            "type": "dokumen",
+            "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+            "unit_id": "UU-1945--"
+          },
+          {
+            "type": "bab",
+            "label": "BAB VII",
+            "unit_id": "UU-1945--/bab-VII"
+          }
+        ],
+        "title": "BAB VII",
+        "children": [
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-VII/pasal-19",
+            "number_label": "19",
+            "ordinal_int": 19,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 19",
+            "seq_sort_key": "0019|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 19",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB VII",
+                "unit_id": "UU-1945--/bab-VII"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 19",
+                "unit_id": "UU-1945--/bab-VII/pasal-19"
+              }
+            ],
+            "title": "Pasal 19",
+            "content": "(1) Susunan Dewan Perwakilan Rakyat ditetapkan dengan undang-undang.\n(2) Dewan Perwakilan Rakyat bersidang sedikitnya sekali dalam setahun.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": [
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-VII/pasal-19/ayat-1",
+                "number_label": "1",
+                "ordinal_int": 1,
+                "ordinal_suffix": "",
+                "label_display": "(1)",
+                "seq_sort_key": "0001|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 19 ayat (1)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB VII",
+                    "unit_id": "UU-1945--/bab-VII"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 19",
+                    "unit_id": "UU-1945--/bab-VII/pasal-19"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(1)",
+                    "unit_id": "UU-1945--/bab-VII/pasal-19/ayat-1"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-VII/pasal-19",
+                "local_content": "Susunan Dewan Perwakilan Rakyat ditetapkan dengan undang-undang.",
+                "display_text": "(1) Susunan Dewan Perwakilan Rakyat ditetapkan dengan undang-undang.",
+                "bm25_body": "Susunan Dewan Perwakilan Rakyat ditetapkan dengan undang-undang.",
+                "span": null,
+                "children": []
+              },
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-VII/pasal-19/ayat-2",
+                "number_label": "2",
+                "ordinal_int": 2,
+                "ordinal_suffix": "",
+                "label_display": "(2)",
+                "seq_sort_key": "0002|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 19 ayat (2)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB VII",
+                    "unit_id": "UU-1945--/bab-VII"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 19",
+                    "unit_id": "UU-1945--/bab-VII/pasal-19"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(2)",
+                    "unit_id": "UU-1945--/bab-VII/pasal-19/ayat-2"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-VII/pasal-19",
+                "local_content": "Dewan Perwakilan Rakyat bersidang sedikitnya sekali dalam setahun.",
+                "display_text": "(2) Dewan Perwakilan Rakyat bersidang sedikitnya sekali dalam setahun.",
+                "bm25_body": "Dewan Perwakilan Rakyat bersidang sedikitnya sekali dalam setahun.",
+                "span": null,
+                "children": []
+              }
+            ]
+          },
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-VII/pasal-20",
+            "number_label": "20",
+            "ordinal_int": 20,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 20",
+            "seq_sort_key": "0020|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 20",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB VII",
+                "unit_id": "UU-1945--/bab-VII"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 20",
+                "unit_id": "UU-1945--/bab-VII/pasal-20"
+              }
+            ],
+            "title": "Pasal 20",
+            "content": "(1) Tiap-tiap undang-undang menghendaki persetujuan Dewan Perwakilan Rakyat.\n(2) Jika sesuatu rancangan undang-undang tidak mendapat persetujuan Dewan Perwakilan Rakyat, maka rancangan tadi tidak boleh dimajukan lagi dalam persidangan Dewan Perwakilan Rakyat masa itu.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": [
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-VII/pasal-20/ayat-1",
+                "number_label": "1",
+                "ordinal_int": 1,
+                "ordinal_suffix": "",
+                "label_display": "(1)",
+                "seq_sort_key": "0001|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 20 ayat (1)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB VII",
+                    "unit_id": "UU-1945--/bab-VII"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 20",
+                    "unit_id": "UU-1945--/bab-VII/pasal-20"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(1)",
+                    "unit_id": "UU-1945--/bab-VII/pasal-20/ayat-1"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-VII/pasal-20",
+                "local_content": "Tiap-tiap undang-undang menghendaki persetujuan Dewan Perwakilan Rakyat.",
+                "display_text": "(1) Tiap-tiap undang-undang menghendaki persetujuan Dewan Perwakilan Rakyat.",
+                "bm25_body": "Tiap-tiap undang-undang menghendaki persetujuan Dewan Perwakilan Rakyat.",
+                "span": null,
+                "children": []
+              },
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-VII/pasal-20/ayat-2",
+                "number_label": "2",
+                "ordinal_int": 2,
+                "ordinal_suffix": "",
+                "label_display": "(2)",
+                "seq_sort_key": "0002|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 20 ayat (2)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB VII",
+                    "unit_id": "UU-1945--/bab-VII"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 20",
+                    "unit_id": "UU-1945--/bab-VII/pasal-20"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(2)",
+                    "unit_id": "UU-1945--/bab-VII/pasal-20/ayat-2"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-VII/pasal-20",
+                "local_content": "Jika sesuatu rancangan undang-undang tidak mendapat persetujuan Dewan Perwakilan Rakyat, maka rancangan tadi tidak boleh dimajukan lagi dalam persidangan Dewan Perwakilan Rakyat masa itu.",
+                "display_text": "(2) Jika sesuatu rancangan undang-undang tidak mendapat persetujuan Dewan Perwakilan Rakyat, maka rancangan tadi tidak boleh dimajukan lagi dalam persidangan Dewan Perwakilan Rakyat masa itu.",
+                "bm25_body": "Jika sesuatu rancangan undang-undang tidak mendapat persetujuan Dewan Perwakilan Rakyat, maka rancangan tadi tidak boleh dimajukan lagi dalam persidangan Dewan Perwakilan Rakyat masa itu.",
+                "span": null,
+                "children": []
+              }
+            ]
+          },
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-VII/pasal-21",
+            "number_label": "21",
+            "ordinal_int": 21,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 21",
+            "seq_sort_key": "0021|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 21",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB VII",
+                "unit_id": "UU-1945--/bab-VII"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 21",
+                "unit_id": "UU-1945--/bab-VII/pasal-21"
+              }
+            ],
+            "title": "Pasal 21",
+            "content": "(1) Anggota-anggota Dewan Perwakilan Rakyat berhak memajukan rancangan undang- undang.\n(2) Jika rancangan itu, meskipun disetujui oleh Dewan Perwakilan Rakyat, tidak disahkan oleh Presiden, maka rancangan tadi tidak boleh dimajukan lagi dalam persidangan Dewan Perwakilan Rakyat masa itu.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": [
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-VII/pasal-21/ayat-1",
+                "number_label": "1",
+                "ordinal_int": 1,
+                "ordinal_suffix": "",
+                "label_display": "(1)",
+                "seq_sort_key": "0001|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 21 ayat (1)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB VII",
+                    "unit_id": "UU-1945--/bab-VII"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 21",
+                    "unit_id": "UU-1945--/bab-VII/pasal-21"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(1)",
+                    "unit_id": "UU-1945--/bab-VII/pasal-21/ayat-1"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-VII/pasal-21",
+                "local_content": "Anggota-anggota Dewan Perwakilan Rakyat berhak memajukan rancangan undang- undang.",
+                "display_text": "(1) Anggota-anggota Dewan Perwakilan Rakyat berhak memajukan rancangan undang- undang.",
+                "bm25_body": "Anggota-anggota Dewan Perwakilan Rakyat berhak memajukan rancangan undang- undang.",
+                "span": null,
+                "children": []
+              },
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-VII/pasal-21/ayat-2",
+                "number_label": "2",
+                "ordinal_int": 2,
+                "ordinal_suffix": "",
+                "label_display": "(2)",
+                "seq_sort_key": "0002|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 21 ayat (2)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB VII",
+                    "unit_id": "UU-1945--/bab-VII"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 21",
+                    "unit_id": "UU-1945--/bab-VII/pasal-21"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(2)",
+                    "unit_id": "UU-1945--/bab-VII/pasal-21/ayat-2"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-VII/pasal-21",
+                "local_content": "Jika rancangan itu, meskipun disetujui oleh Dewan Perwakilan Rakyat, tidak disahkan oleh Presiden, maka rancangan tadi tidak boleh dimajukan lagi dalam persidangan Dewan Perwakilan Rakyat masa itu.",
+                "display_text": "(2) Jika rancangan itu, meskipun disetujui oleh Dewan Perwakilan Rakyat, tidak disahkan oleh Presiden, maka rancangan tadi tidak boleh dimajukan lagi dalam persidangan Dewan Perwakilan Rakyat masa itu.",
+                "bm25_body": "Jika rancangan itu, meskipun disetujui oleh Dewan Perwakilan Rakyat, tidak disahkan oleh Presiden, maka rancangan tadi tidak boleh dimajukan lagi dalam persidangan Dewan Perwakilan Rakyat masa itu.",
+                "span": null,
+                "children": []
+              }
+            ]
+          },
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-VII/pasal-22",
+            "number_label": "22",
+            "ordinal_int": 22,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 22",
+            "seq_sort_key": "0022|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 22",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB VII",
+                "unit_id": "UU-1945--/bab-VII"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 22",
+                "unit_id": "UU-1945--/bab-VII/pasal-22"
+              }
+            ],
+            "title": "Pasal 22",
+            "content": "(1) Dalam hal ihwal kegentingan yang memaksa, Presiden berhak menetapkan peraturan pemerintah sebagai pengganti undang-undang.\n(2) Peraturan pemerintah itu harus mendapat persetujuan Dewan Perwakilan Rakyat dalam persidangan yang berikut.\n(3) Jika tidak mendapat persetujuan, maka peraturan pemerintah itu harus dicabut.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": [
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-VII/pasal-22/ayat-1",
+                "number_label": "1",
+                "ordinal_int": 1,
+                "ordinal_suffix": "",
+                "label_display": "(1)",
+                "seq_sort_key": "0001|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 22 ayat (1)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB VII",
+                    "unit_id": "UU-1945--/bab-VII"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 22",
+                    "unit_id": "UU-1945--/bab-VII/pasal-22"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(1)",
+                    "unit_id": "UU-1945--/bab-VII/pasal-22/ayat-1"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-VII/pasal-22",
+                "local_content": "Dalam hal ihwal kegentingan yang memaksa, Presiden berhak menetapkan peraturan pemerintah sebagai pengganti undang-undang.",
+                "display_text": "(1) Dalam hal ihwal kegentingan yang memaksa, Presiden berhak menetapkan peraturan pemerintah sebagai pengganti undang-undang.",
+                "bm25_body": "Dalam hal ihwal kegentingan yang memaksa, Presiden berhak menetapkan peraturan pemerintah sebagai pengganti undang-undang.",
+                "span": null,
+                "children": []
+              },
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-VII/pasal-22/ayat-2",
+                "number_label": "2",
+                "ordinal_int": 2,
+                "ordinal_suffix": "",
+                "label_display": "(2)",
+                "seq_sort_key": "0002|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 22 ayat (2)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB VII",
+                    "unit_id": "UU-1945--/bab-VII"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 22",
+                    "unit_id": "UU-1945--/bab-VII/pasal-22"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(2)",
+                    "unit_id": "UU-1945--/bab-VII/pasal-22/ayat-2"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-VII/pasal-22",
+                "local_content": "Peraturan pemerintah itu harus mendapat persetujuan Dewan Perwakilan Rakyat dalam persidangan yang berikut.",
+                "display_text": "(2) Peraturan pemerintah itu harus mendapat persetujuan Dewan Perwakilan Rakyat dalam persidangan yang berikut.",
+                "bm25_body": "Peraturan pemerintah itu harus mendapat persetujuan Dewan Perwakilan Rakyat dalam persidangan yang berikut.",
+                "span": null,
+                "children": []
+              },
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-VII/pasal-22/ayat-3",
+                "number_label": "3",
+                "ordinal_int": 3,
+                "ordinal_suffix": "",
+                "label_display": "(3)",
+                "seq_sort_key": "0003|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 22 ayat (3)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB VII",
+                    "unit_id": "UU-1945--/bab-VII"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 22",
+                    "unit_id": "UU-1945--/bab-VII/pasal-22"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(3)",
+                    "unit_id": "UU-1945--/bab-VII/pasal-22/ayat-3"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-VII/pasal-22",
+                "local_content": "Jika tidak mendapat persetujuan, maka peraturan pemerintah itu harus dicabut.",
+                "display_text": "(3) Jika tidak mendapat persetujuan, maka peraturan pemerintah itu harus dicabut.",
+                "bm25_body": "Jika tidak mendapat persetujuan, maka peraturan pemerintah itu harus dicabut.",
+                "span": null,
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "bab",
+        "unit_id": "UU-1945--/bab-VIII",
+        "number_label": "VIII",
+        "ordinal_int": 8,
+        "ordinal_suffix": "",
+        "label_display": "BAB VIII",
+        "seq_sort_key": "0008|",
+        "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+        "path": [
+          {
+            "type": "dokumen",
+            "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+            "unit_id": "UU-1945--"
+          },
+          {
+            "type": "bab",
+            "label": "BAB VIII",
+            "unit_id": "UU-1945--/bab-VIII"
+          }
+        ],
+        "title": "BAB VIII",
+        "children": [
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-VIII/pasal-23",
+            "number_label": "23",
+            "ordinal_int": 23,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 23",
+            "seq_sort_key": "0023|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 23",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB VIII",
+                "unit_id": "UU-1945--/bab-VIII"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 23",
+                "unit_id": "UU-1945--/bab-VIII/pasal-23"
+              }
+            ],
+            "title": "Pasal 23",
+            "content": "(1) Anggaran pendapatan dan belanja ditetapkan tiap-tiap tahun dengan undang-undang.\nApabila Dewan Perwakilan Rakyat tidak menyetujui anggaran yang diusulkan pemerintah, maka pemerintah menjalankan anggaran tahun yang lalu.\n(2) Segala pajak untuk keperluan negara berdasarkan undang-undang.\n(3) Macam dan harga mata uang ditetapkan dengan undang-undang.\n(4) Hal keuangan negara selanjutnya diatur dengan undang-undang.\n(5) Untuk memeriksa tanggung jawab tentang keuangan negara diadakan suatu Badan Pemeriksa Keuangan, yang peraturannya ditetapkan dengan undang-undang. Hasil pemeriksaan itu diberitahukan kepada Dewan Perwakilan rakyat.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": [
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-VIII/pasal-23/ayat-1",
+                "number_label": "1",
+                "ordinal_int": 1,
+                "ordinal_suffix": "",
+                "label_display": "(1)",
+                "seq_sort_key": "0001|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 23 ayat (1)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB VIII",
+                    "unit_id": "UU-1945--/bab-VIII"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 23",
+                    "unit_id": "UU-1945--/bab-VIII/pasal-23"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(1)",
+                    "unit_id": "UU-1945--/bab-VIII/pasal-23/ayat-1"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-VIII/pasal-23",
+                "local_content": "Apabila Dewan Perwakilan Rakyat tidak menyetujui anggaran yang diusulkan pemerintah, maka pemerintah menjalankan anggaran tahun yang lalu.",
+                "display_text": "(1) Apabila Dewan Perwakilan Rakyat tidak menyetujui anggaran yang diusulkan pemerintah, maka pemerintah menjalankan anggaran tahun yang lalu.",
+                "bm25_body": "Apabila Dewan Perwakilan Rakyat tidak menyetujui anggaran yang diusulkan pemerintah, maka pemerintah menjalankan anggaran tahun yang lalu.",
+                "span": null,
+                "children": []
+              },
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-VIII/pasal-23/ayat-2",
+                "number_label": "2",
+                "ordinal_int": 2,
+                "ordinal_suffix": "",
+                "label_display": "(2)",
+                "seq_sort_key": "0002|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 23 ayat (2)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB VIII",
+                    "unit_id": "UU-1945--/bab-VIII"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 23",
+                    "unit_id": "UU-1945--/bab-VIII/pasal-23"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(2)",
+                    "unit_id": "UU-1945--/bab-VIII/pasal-23/ayat-2"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-VIII/pasal-23",
+                "local_content": "Segala pajak untuk keperluan negara berdasarkan undang-undang.",
+                "display_text": "(2) Segala pajak untuk keperluan negara berdasarkan undang-undang.",
+                "bm25_body": "Segala pajak untuk keperluan negara berdasarkan undang-undang.",
+                "span": null,
+                "children": []
+              },
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-VIII/pasal-23/ayat-3",
+                "number_label": "3",
+                "ordinal_int": 3,
+                "ordinal_suffix": "",
+                "label_display": "(3)",
+                "seq_sort_key": "0003|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 23 ayat (3)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB VIII",
+                    "unit_id": "UU-1945--/bab-VIII"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 23",
+                    "unit_id": "UU-1945--/bab-VIII/pasal-23"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(3)",
+                    "unit_id": "UU-1945--/bab-VIII/pasal-23/ayat-3"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-VIII/pasal-23",
+                "local_content": "Macam dan harga mata uang ditetapkan dengan undang-undang.",
+                "display_text": "(3) Macam dan harga mata uang ditetapkan dengan undang-undang.",
+                "bm25_body": "Macam dan harga mata uang ditetapkan dengan undang-undang.",
+                "span": null,
+                "children": []
+              },
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-VIII/pasal-23/ayat-4",
+                "number_label": "4",
+                "ordinal_int": 4,
+                "ordinal_suffix": "",
+                "label_display": "(4)",
+                "seq_sort_key": "0004|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 23 ayat (4)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB VIII",
+                    "unit_id": "UU-1945--/bab-VIII"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 23",
+                    "unit_id": "UU-1945--/bab-VIII/pasal-23"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(4)",
+                    "unit_id": "UU-1945--/bab-VIII/pasal-23/ayat-4"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-VIII/pasal-23",
+                "local_content": "Hal keuangan negara selanjutnya diatur dengan undang-undang.",
+                "display_text": "(4) Hal keuangan negara selanjutnya diatur dengan undang-undang.",
+                "bm25_body": "Hal keuangan negara selanjutnya diatur dengan undang-undang.",
+                "span": null,
+                "children": []
+              },
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-VIII/pasal-23/ayat-5",
+                "number_label": "5",
+                "ordinal_int": 5,
+                "ordinal_suffix": "",
+                "label_display": "(5)",
+                "seq_sort_key": "0005|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 23 ayat (5)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB VIII",
+                    "unit_id": "UU-1945--/bab-VIII"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 23",
+                    "unit_id": "UU-1945--/bab-VIII/pasal-23"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(5)",
+                    "unit_id": "UU-1945--/bab-VIII/pasal-23/ayat-5"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-VIII/pasal-23",
+                "local_content": "Untuk memeriksa tanggung jawab tentang keuangan negara diadakan suatu Badan Pemeriksa Keuangan, yang peraturannya ditetapkan dengan undang-undang. Hasil pemeriksaan itu diberitahukan kepada Dewan Perwakilan rakyat.",
+                "display_text": "(5) Untuk memeriksa tanggung jawab tentang keuangan negara diadakan suatu Badan Pemeriksa Keuangan, yang peraturannya ditetapkan dengan undang-undang. Hasil pemeriksaan itu diberitahukan kepada Dewan Perwakilan rakyat.",
+                "bm25_body": "Untuk memeriksa tanggung jawab tentang keuangan negara diadakan suatu Badan Pemeriksa Keuangan, yang peraturannya ditetapkan dengan undang-undang. Hasil pemeriksaan itu diberitahukan kepada Dewan Perwakilan rakyat.",
+                "span": null,
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "bab",
+        "unit_id": "UU-1945--/bab-IX",
+        "number_label": "IX",
+        "ordinal_int": 9,
+        "ordinal_suffix": "",
+        "label_display": "BAB IX",
+        "seq_sort_key": "0009|",
+        "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+        "path": [
+          {
+            "type": "dokumen",
+            "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+            "unit_id": "UU-1945--"
+          },
+          {
+            "type": "bab",
+            "label": "BAB IX",
+            "unit_id": "UU-1945--/bab-IX"
+          }
+        ],
+        "title": "BAB IX",
+        "children": [
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-IX/pasal-24",
+            "number_label": "24",
+            "ordinal_int": 24,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 24",
+            "seq_sort_key": "0024|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 24",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB IX",
+                "unit_id": "UU-1945--/bab-IX"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 24",
+                "unit_id": "UU-1945--/bab-IX/pasal-24"
+              }
+            ],
+            "title": "Pasal 24",
+            "content": "(1) Kekuasaan kehakiman dilakukan oleh sebuah Mahkamah Agung dan lain-lain badan kehakiman menurut undang-undang.\n(2) Susunan dan kekuasaan badan-badan kehakiman itu diatur dengan undang-undang.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": [
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-IX/pasal-24/ayat-1",
+                "number_label": "1",
+                "ordinal_int": 1,
+                "ordinal_suffix": "",
+                "label_display": "(1)",
+                "seq_sort_key": "0001|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 24 ayat (1)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB IX",
+                    "unit_id": "UU-1945--/bab-IX"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 24",
+                    "unit_id": "UU-1945--/bab-IX/pasal-24"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(1)",
+                    "unit_id": "UU-1945--/bab-IX/pasal-24/ayat-1"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-IX/pasal-24",
+                "local_content": "Kekuasaan kehakiman dilakukan oleh sebuah Mahkamah Agung dan lain-lain badan kehakiman menurut undang-undang.",
+                "display_text": "(1) Kekuasaan kehakiman dilakukan oleh sebuah Mahkamah Agung dan lain-lain badan kehakiman menurut undang-undang.",
+                "bm25_body": "Kekuasaan kehakiman dilakukan oleh sebuah Mahkamah Agung dan lain-lain badan kehakiman menurut undang-undang.",
+                "span": null,
+                "children": []
+              },
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-IX/pasal-24/ayat-2",
+                "number_label": "2",
+                "ordinal_int": 2,
+                "ordinal_suffix": "",
+                "label_display": "(2)",
+                "seq_sort_key": "0002|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 24 ayat (2)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB IX",
+                    "unit_id": "UU-1945--/bab-IX"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 24",
+                    "unit_id": "UU-1945--/bab-IX/pasal-24"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(2)",
+                    "unit_id": "UU-1945--/bab-IX/pasal-24/ayat-2"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-IX/pasal-24",
+                "local_content": "Susunan dan kekuasaan badan-badan kehakiman itu diatur dengan undang-undang.",
+                "display_text": "(2) Susunan dan kekuasaan badan-badan kehakiman itu diatur dengan undang-undang.",
+                "bm25_body": "Susunan dan kekuasaan badan-badan kehakiman itu diatur dengan undang-undang.",
+                "span": null,
+                "children": []
+              }
+            ]
+          },
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-IX/pasal-25",
+            "number_label": "25",
+            "ordinal_int": 25,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 25",
+            "seq_sort_key": "0025|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 25",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB IX",
+                "unit_id": "UU-1945--/bab-IX"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 25",
+                "unit_id": "UU-1945--/bab-IX/pasal-25"
+              }
+            ],
+            "title": "Pasal 25",
+            "content": "Syarat-syarat untuk menjadi dan untuk diperhentikan sebagai hakim ditetapkan dengan undang-undang.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": []
+          }
+        ]
+      },
+      {
+        "type": "bab",
+        "unit_id": "UU-1945--/bab-X",
+        "number_label": "X",
+        "ordinal_int": 10,
+        "ordinal_suffix": "",
+        "label_display": "BAB X",
+        "seq_sort_key": "0010|",
+        "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+        "path": [
+          {
+            "type": "dokumen",
+            "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+            "unit_id": "UU-1945--"
+          },
+          {
+            "type": "bab",
+            "label": "BAB X",
+            "unit_id": "UU-1945--/bab-X"
+          }
+        ],
+        "title": "BAB X",
+        "children": [
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-X/pasal-26",
+            "number_label": "26",
+            "ordinal_int": 26,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 26",
+            "seq_sort_key": "0026|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 26",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB X",
+                "unit_id": "UU-1945--/bab-X"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 26",
+                "unit_id": "UU-1945--/bab-X/pasal-26"
+              }
+            ],
+            "title": "Pasal 26",
+            "content": "(1) Yang menjadi warga negara ialah orang-orang bangsa Indonesia asli dan orang-orang bangsa lain yang disahkan dengan undang-undang sebagai warga negara.\n(2) Syarat-syarat yang mengenai kewarganegaraan ditetapkan dengan undang-undang.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": [
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-X/pasal-26/ayat-1",
+                "number_label": "1",
+                "ordinal_int": 1,
+                "ordinal_suffix": "",
+                "label_display": "(1)",
+                "seq_sort_key": "0001|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 26 ayat (1)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB X",
+                    "unit_id": "UU-1945--/bab-X"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 26",
+                    "unit_id": "UU-1945--/bab-X/pasal-26"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(1)",
+                    "unit_id": "UU-1945--/bab-X/pasal-26/ayat-1"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-X/pasal-26",
+                "local_content": "Yang menjadi warga negara ialah orang-orang bangsa Indonesia asli dan orang-orang bangsa lain yang disahkan dengan undang-undang sebagai warga negara.",
+                "display_text": "(1) Yang menjadi warga negara ialah orang-orang bangsa Indonesia asli dan orang-orang bangsa lain yang disahkan dengan undang-undang sebagai warga negara.",
+                "bm25_body": "Yang menjadi warga negara ialah orang-orang bangsa Indonesia asli dan orang-orang bangsa lain yang disahkan dengan undang-undang sebagai warga negara.",
+                "span": null,
+                "children": []
+              },
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-X/pasal-26/ayat-2",
+                "number_label": "2",
+                "ordinal_int": 2,
+                "ordinal_suffix": "",
+                "label_display": "(2)",
+                "seq_sort_key": "0002|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 26 ayat (2)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB X",
+                    "unit_id": "UU-1945--/bab-X"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 26",
+                    "unit_id": "UU-1945--/bab-X/pasal-26"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(2)",
+                    "unit_id": "UU-1945--/bab-X/pasal-26/ayat-2"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-X/pasal-26",
+                "local_content": "Syarat-syarat yang mengenai kewarganegaraan ditetapkan dengan undang-undang.",
+                "display_text": "(2) Syarat-syarat yang mengenai kewarganegaraan ditetapkan dengan undang-undang.",
+                "bm25_body": "Syarat-syarat yang mengenai kewarganegaraan ditetapkan dengan undang-undang.",
+                "span": null,
+                "children": []
+              }
+            ]
+          },
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-X/pasal-27",
+            "number_label": "27",
+            "ordinal_int": 27,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 27",
+            "seq_sort_key": "0027|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 27",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB X",
+                "unit_id": "UU-1945--/bab-X"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 27",
+                "unit_id": "UU-1945--/bab-X/pasal-27"
+              }
+            ],
+            "title": "Pasal 27",
+            "content": "(1) Segala warga negara bersamaan kedudukannya di dalam hukum dan pemerintahan dan wajib menjunjung hukum dan pemerintahan itu dengan tidak ada.\n(2) Tiap-tiap warga negara berhak atas pekerjaan dan penghidupan yang layak bagi kemanusiaan.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": [
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-X/pasal-27/ayat-1",
+                "number_label": "1",
+                "ordinal_int": 1,
+                "ordinal_suffix": "",
+                "label_display": "(1)",
+                "seq_sort_key": "0001|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 27 ayat (1)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB X",
+                    "unit_id": "UU-1945--/bab-X"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 27",
+                    "unit_id": "UU-1945--/bab-X/pasal-27"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(1)",
+                    "unit_id": "UU-1945--/bab-X/pasal-27/ayat-1"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-X/pasal-27",
+                "local_content": "Segala warga negara bersamaan kedudukannya di dalam hukum dan pemerintahan dan wajib menjunjung hukum dan pemerintahan itu dengan tidak ada.",
+                "display_text": "(1) Segala warga negara bersamaan kedudukannya di dalam hukum dan pemerintahan dan wajib menjunjung hukum dan pemerintahan itu dengan tidak ada.",
+                "bm25_body": "Segala warga negara bersamaan kedudukannya di dalam hukum dan pemerintahan dan wajib menjunjung hukum dan pemerintahan itu dengan tidak ada.",
+                "span": null,
+                "children": []
+              },
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-X/pasal-27/ayat-2",
+                "number_label": "2",
+                "ordinal_int": 2,
+                "ordinal_suffix": "",
+                "label_display": "(2)",
+                "seq_sort_key": "0002|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 27 ayat (2)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB X",
+                    "unit_id": "UU-1945--/bab-X"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 27",
+                    "unit_id": "UU-1945--/bab-X/pasal-27"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(2)",
+                    "unit_id": "UU-1945--/bab-X/pasal-27/ayat-2"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-X/pasal-27",
+                "local_content": "Tiap-tiap warga negara berhak atas pekerjaan dan penghidupan yang layak bagi kemanusiaan.",
+                "display_text": "(2) Tiap-tiap warga negara berhak atas pekerjaan dan penghidupan yang layak bagi kemanusiaan.",
+                "bm25_body": "Tiap-tiap warga negara berhak atas pekerjaan dan penghidupan yang layak bagi kemanusiaan.",
+                "span": null,
+                "children": []
+              }
+            ]
+          },
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-X/pasal-28",
+            "number_label": "28",
+            "ordinal_int": 28,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 28",
+            "seq_sort_key": "0028|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 28",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB X",
+                "unit_id": "UU-1945--/bab-X"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 28",
+                "unit_id": "UU-1945--/bab-X/pasal-28"
+              }
+            ],
+            "title": "Pasal 28",
+            "content": "Kemerdekaan berserikat dan berkumpul, mengeluarkan pikiran dengan lisan dan tulisan dan sebaganya ditetapkan dengan undang-undang.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": []
+          }
+        ]
+      },
+      {
+        "type": "bab",
+        "unit_id": "UU-1945--/bab-XI",
+        "number_label": "XI",
+        "ordinal_int": 11,
+        "ordinal_suffix": "",
+        "label_display": "BAB XI",
+        "seq_sort_key": "0011|",
+        "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+        "path": [
+          {
+            "type": "dokumen",
+            "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+            "unit_id": "UU-1945--"
+          },
+          {
+            "type": "bab",
+            "label": "BAB XI",
+            "unit_id": "UU-1945--/bab-XI"
+          }
+        ],
+        "title": "BAB XI",
+        "children": [
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-XI/pasal-29",
+            "number_label": "29",
+            "ordinal_int": 29,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 29",
+            "seq_sort_key": "0029|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 29",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB XI",
+                "unit_id": "UU-1945--/bab-XI"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 29",
+                "unit_id": "UU-1945--/bab-XI/pasal-29"
+              }
+            ],
+            "title": "Pasal 29",
+            "content": "(1) Negara berdasar atas Ketuhanan Yang Maha Esa.\n(2) Negara menjamin kemerdekaan tiap-tiap penduduk untuk memeluk agamanya masing-masing dan untuk beribadat menurut agamanya dan kepercayaannya itu.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": [
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-XI/pasal-29/ayat-1",
+                "number_label": "1",
+                "ordinal_int": 1,
+                "ordinal_suffix": "",
+                "label_display": "(1)",
+                "seq_sort_key": "0001|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 29 ayat (1)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB XI",
+                    "unit_id": "UU-1945--/bab-XI"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 29",
+                    "unit_id": "UU-1945--/bab-XI/pasal-29"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(1)",
+                    "unit_id": "UU-1945--/bab-XI/pasal-29/ayat-1"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-XI/pasal-29",
+                "local_content": "Negara berdasar atas Ketuhanan Yang Maha Esa.",
+                "display_text": "(1) Negara berdasar atas Ketuhanan Yang Maha Esa.",
+                "bm25_body": "Negara berdasar atas Ketuhanan Yang Maha Esa.",
+                "span": null,
+                "children": []
+              },
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-XI/pasal-29/ayat-2",
+                "number_label": "2",
+                "ordinal_int": 2,
+                "ordinal_suffix": "",
+                "label_display": "(2)",
+                "seq_sort_key": "0002|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 29 ayat (2)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB XI",
+                    "unit_id": "UU-1945--/bab-XI"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 29",
+                    "unit_id": "UU-1945--/bab-XI/pasal-29"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(2)",
+                    "unit_id": "UU-1945--/bab-XI/pasal-29/ayat-2"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-XI/pasal-29",
+                "local_content": "Negara menjamin kemerdekaan tiap-tiap penduduk untuk memeluk agamanya masing-masing dan untuk beribadat menurut agamanya dan kepercayaannya itu.",
+                "display_text": "(2) Negara menjamin kemerdekaan tiap-tiap penduduk untuk memeluk agamanya masing-masing dan untuk beribadat menurut agamanya dan kepercayaannya itu.",
+                "bm25_body": "Negara menjamin kemerdekaan tiap-tiap penduduk untuk memeluk agamanya masing-masing dan untuk beribadat menurut agamanya dan kepercayaannya itu.",
+                "span": null,
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "bab",
+        "unit_id": "UU-1945--/bab-XII",
+        "number_label": "XII",
+        "ordinal_int": 12,
+        "ordinal_suffix": "",
+        "label_display": "BAB XII",
+        "seq_sort_key": "0012|",
+        "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+        "path": [
+          {
+            "type": "dokumen",
+            "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+            "unit_id": "UU-1945--"
+          },
+          {
+            "type": "bab",
+            "label": "BAB XII",
+            "unit_id": "UU-1945--/bab-XII"
+          }
+        ],
+        "title": "BAB XII",
+        "children": [
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-XII/pasal-30",
+            "number_label": "30",
+            "ordinal_int": 30,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 30",
+            "seq_sort_key": "0030|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 30",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB XII",
+                "unit_id": "UU-1945--/bab-XII"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 30",
+                "unit_id": "UU-1945--/bab-XII/pasal-30"
+              }
+            ],
+            "title": "Pasal 30",
+            "content": "(1) Tiap-tiap warga negara berhak dan wajib ikut serta dalam usaha pembelaan negara.\n(2) Syarat-syarat tentang pembelaan diatur dengan undang-undang.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": [
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-XII/pasal-30/ayat-1",
+                "number_label": "1",
+                "ordinal_int": 1,
+                "ordinal_suffix": "",
+                "label_display": "(1)",
+                "seq_sort_key": "0001|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 30 ayat (1)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB XII",
+                    "unit_id": "UU-1945--/bab-XII"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 30",
+                    "unit_id": "UU-1945--/bab-XII/pasal-30"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(1)",
+                    "unit_id": "UU-1945--/bab-XII/pasal-30/ayat-1"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-XII/pasal-30",
+                "local_content": "Tiap-tiap warga negara berhak dan wajib ikut serta dalam usaha pembelaan negara.",
+                "display_text": "(1) Tiap-tiap warga negara berhak dan wajib ikut serta dalam usaha pembelaan negara.",
+                "bm25_body": "Tiap-tiap warga negara berhak dan wajib ikut serta dalam usaha pembelaan negara.",
+                "span": null,
+                "children": []
+              },
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-XII/pasal-30/ayat-2",
+                "number_label": "2",
+                "ordinal_int": 2,
+                "ordinal_suffix": "",
+                "label_display": "(2)",
+                "seq_sort_key": "0002|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 30 ayat (2)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB XII",
+                    "unit_id": "UU-1945--/bab-XII"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 30",
+                    "unit_id": "UU-1945--/bab-XII/pasal-30"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(2)",
+                    "unit_id": "UU-1945--/bab-XII/pasal-30/ayat-2"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-XII/pasal-30",
+                "local_content": "Syarat-syarat tentang pembelaan diatur dengan undang-undang.",
+                "display_text": "(2) Syarat-syarat tentang pembelaan diatur dengan undang-undang.",
+                "bm25_body": "Syarat-syarat tentang pembelaan diatur dengan undang-undang.",
+                "span": null,
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "bab",
+        "unit_id": "UU-1945--/bab-XIII",
+        "number_label": "XIII",
+        "ordinal_int": 13,
+        "ordinal_suffix": "",
+        "label_display": "BAB XIII",
+        "seq_sort_key": "0013|",
+        "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+        "path": [
+          {
+            "type": "dokumen",
+            "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+            "unit_id": "UU-1945--"
+          },
+          {
+            "type": "bab",
+            "label": "BAB XIII",
+            "unit_id": "UU-1945--/bab-XIII"
+          }
+        ],
+        "title": "BAB XIII",
+        "children": [
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-XIII/pasal-31",
+            "number_label": "31",
+            "ordinal_int": 31,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 31",
+            "seq_sort_key": "0031|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 31",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB XIII",
+                "unit_id": "UU-1945--/bab-XIII"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 31",
+                "unit_id": "UU-1945--/bab-XIII/pasal-31"
+              }
+            ],
+            "title": "Pasal 31",
+            "content": "(1) Tiap-tiap warga negara berhak mendapat pengajaran.\n(2) Pemerintah mengusahakan dan menyelenggarakan satu sistem pengajaran nasional, yang diatur dengan undang-undang.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": [
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-XIII/pasal-31/ayat-1",
+                "number_label": "1",
+                "ordinal_int": 1,
+                "ordinal_suffix": "",
+                "label_display": "(1)",
+                "seq_sort_key": "0001|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 31 ayat (1)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB XIII",
+                    "unit_id": "UU-1945--/bab-XIII"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 31",
+                    "unit_id": "UU-1945--/bab-XIII/pasal-31"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(1)",
+                    "unit_id": "UU-1945--/bab-XIII/pasal-31/ayat-1"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-XIII/pasal-31",
+                "local_content": "Tiap-tiap warga negara berhak mendapat pengajaran.",
+                "display_text": "(1) Tiap-tiap warga negara berhak mendapat pengajaran.",
+                "bm25_body": "Tiap-tiap warga negara berhak mendapat pengajaran.",
+                "span": null,
+                "children": []
+              },
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-XIII/pasal-31/ayat-2",
+                "number_label": "2",
+                "ordinal_int": 2,
+                "ordinal_suffix": "",
+                "label_display": "(2)",
+                "seq_sort_key": "0002|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 31 ayat (2)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB XIII",
+                    "unit_id": "UU-1945--/bab-XIII"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 31",
+                    "unit_id": "UU-1945--/bab-XIII/pasal-31"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(2)",
+                    "unit_id": "UU-1945--/bab-XIII/pasal-31/ayat-2"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-XIII/pasal-31",
+                "local_content": "Pemerintah mengusahakan dan menyelenggarakan satu sistem pengajaran nasional, yang diatur dengan undang-undang.",
+                "display_text": "(2) Pemerintah mengusahakan dan menyelenggarakan satu sistem pengajaran nasional, yang diatur dengan undang-undang.",
+                "bm25_body": "Pemerintah mengusahakan dan menyelenggarakan satu sistem pengajaran nasional, yang diatur dengan undang-undang.",
+                "span": null,
+                "children": []
+              }
+            ]
+          },
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-XIII/pasal-32",
+            "number_label": "32",
+            "ordinal_int": 32,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 32",
+            "seq_sort_key": "0032|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 32",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB XIII",
+                "unit_id": "UU-1945--/bab-XIII"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 32",
+                "unit_id": "UU-1945--/bab-XIII/pasal-32"
+              }
+            ],
+            "title": "Pasal 32",
+            "content": "Pemerintah memajukan kebudayaan nasional Indonesia.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": []
+          }
+        ]
+      },
+      {
+        "type": "bab",
+        "unit_id": "UU-1945--/bab-XIV",
+        "number_label": "XIV",
+        "ordinal_int": 14,
+        "ordinal_suffix": "",
+        "label_display": "BAB XIV",
+        "seq_sort_key": "0014|",
+        "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+        "path": [
+          {
+            "type": "dokumen",
+            "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+            "unit_id": "UU-1945--"
+          },
+          {
+            "type": "bab",
+            "label": "BAB XIV",
+            "unit_id": "UU-1945--/bab-XIV"
+          }
+        ],
+        "title": "BAB XIV",
+        "children": [
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-XIV/pasal-33",
+            "number_label": "33",
+            "ordinal_int": 33,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 33",
+            "seq_sort_key": "0033|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 33",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB XIV",
+                "unit_id": "UU-1945--/bab-XIV"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 33",
+                "unit_id": "UU-1945--/bab-XIV/pasal-33"
+              }
+            ],
+            "title": "Pasal 33",
+            "content": "(1) Perekonomian disusun sebagai usaha bersama berdasar atas asas kekeluargaan.\n(2) Cabang-cabang produksi yang penting bagi negara dan yang menguasai hajat hidup orang banyak dikuasai oleh negara.\n(3) Bumi dan air dan kekayaan alam yang terkandung di dalamnya dikuasai oleh negara dan dipergunakan untuk sebesar-besar kemakmuran rakyat.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": [
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-XIV/pasal-33/ayat-1",
+                "number_label": "1",
+                "ordinal_int": 1,
+                "ordinal_suffix": "",
+                "label_display": "(1)",
+                "seq_sort_key": "0001|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 33 ayat (1)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB XIV",
+                    "unit_id": "UU-1945--/bab-XIV"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 33",
+                    "unit_id": "UU-1945--/bab-XIV/pasal-33"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(1)",
+                    "unit_id": "UU-1945--/bab-XIV/pasal-33/ayat-1"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-XIV/pasal-33",
+                "local_content": "Perekonomian disusun sebagai usaha bersama berdasar atas asas kekeluargaan.",
+                "display_text": "(1) Perekonomian disusun sebagai usaha bersama berdasar atas asas kekeluargaan.",
+                "bm25_body": "Perekonomian disusun sebagai usaha bersama berdasar atas asas kekeluargaan.",
+                "span": null,
+                "children": []
+              },
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-XIV/pasal-33/ayat-2",
+                "number_label": "2",
+                "ordinal_int": 2,
+                "ordinal_suffix": "",
+                "label_display": "(2)",
+                "seq_sort_key": "0002|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 33 ayat (2)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB XIV",
+                    "unit_id": "UU-1945--/bab-XIV"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 33",
+                    "unit_id": "UU-1945--/bab-XIV/pasal-33"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(2)",
+                    "unit_id": "UU-1945--/bab-XIV/pasal-33/ayat-2"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-XIV/pasal-33",
+                "local_content": "Cabang-cabang produksi yang penting bagi negara dan yang menguasai hajat hidup orang banyak dikuasai oleh negara.",
+                "display_text": "(2) Cabang-cabang produksi yang penting bagi negara dan yang menguasai hajat hidup orang banyak dikuasai oleh negara.",
+                "bm25_body": "Cabang-cabang produksi yang penting bagi negara dan yang menguasai hajat hidup orang banyak dikuasai oleh negara.",
+                "span": null,
+                "children": []
+              },
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-XIV/pasal-33/ayat-3",
+                "number_label": "3",
+                "ordinal_int": 3,
+                "ordinal_suffix": "",
+                "label_display": "(3)",
+                "seq_sort_key": "0003|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 33 ayat (3)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB XIV",
+                    "unit_id": "UU-1945--/bab-XIV"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 33",
+                    "unit_id": "UU-1945--/bab-XIV/pasal-33"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(3)",
+                    "unit_id": "UU-1945--/bab-XIV/pasal-33/ayat-3"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-XIV/pasal-33",
+                "local_content": "Bumi dan air dan kekayaan alam yang terkandung di dalamnya dikuasai oleh negara dan dipergunakan untuk sebesar-besar kemakmuran rakyat.",
+                "display_text": "(3) Bumi dan air dan kekayaan alam yang terkandung di dalamnya dikuasai oleh negara dan dipergunakan untuk sebesar-besar kemakmuran rakyat.",
+                "bm25_body": "Bumi dan air dan kekayaan alam yang terkandung di dalamnya dikuasai oleh negara dan dipergunakan untuk sebesar-besar kemakmuran rakyat.",
+                "span": null,
+                "children": []
+              }
+            ]
+          },
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-XIV/pasal-34",
+            "number_label": "34",
+            "ordinal_int": 34,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 34",
+            "seq_sort_key": "0034|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 34",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB XIV",
+                "unit_id": "UU-1945--/bab-XIV"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 34",
+                "unit_id": "UU-1945--/bab-XIV/pasal-34"
+              }
+            ],
+            "title": "Pasal 34",
+            "content": "Fakir miskin dan anak-anak yang terlantar oleh negara.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": []
+          }
+        ]
+      },
+      {
+        "type": "bab",
+        "unit_id": "UU-1945--/bab-XV",
+        "number_label": "XV",
+        "ordinal_int": 15,
+        "ordinal_suffix": "",
+        "label_display": "BAB XV",
+        "seq_sort_key": "0015|",
+        "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+        "path": [
+          {
+            "type": "dokumen",
+            "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+            "unit_id": "UU-1945--"
+          },
+          {
+            "type": "bab",
+            "label": "BAB XV",
+            "unit_id": "UU-1945--/bab-XV"
+          }
+        ],
+        "title": "BAB XV",
+        "children": [
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-XV/pasal-35",
+            "number_label": "35",
+            "ordinal_int": 35,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 35",
+            "seq_sort_key": "0035|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 35",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB XV",
+                "unit_id": "UU-1945--/bab-XV"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 35",
+                "unit_id": "UU-1945--/bab-XV/pasal-35"
+              }
+            ],
+            "title": "Pasal 35",
+            "content": "Bendera Negara Indonesia ialah Sang Merah Putih.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": []
+          },
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-XV/pasal-36",
+            "number_label": "36",
+            "ordinal_int": 36,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 36",
+            "seq_sort_key": "0036|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 36",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB XV",
+                "unit_id": "UU-1945--/bab-XV"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 36",
+                "unit_id": "UU-1945--/bab-XV/pasal-36"
+              }
+            ],
+            "title": "Pasal 36",
+            "content": "Bahasa Negara ialah Bahasa Indonesia.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": []
+          }
+        ]
+      },
+      {
+        "type": "bab",
+        "unit_id": "UU-1945--/bab-XVI",
+        "number_label": "XVI",
+        "ordinal_int": 16,
+        "ordinal_suffix": "",
+        "label_display": "BAB XVI",
+        "seq_sort_key": "0016|",
+        "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+        "path": [
+          {
+            "type": "dokumen",
+            "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+            "unit_id": "UU-1945--"
+          },
+          {
+            "type": "bab",
+            "label": "BAB XVI",
+            "unit_id": "UU-1945--/bab-XVI"
+          }
+        ],
+        "title": "BAB XVI",
+        "children": [
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-XVI/pasal-37",
+            "number_label": "37",
+            "ordinal_int": 37,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 37",
+            "seq_sort_key": "0037|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 37",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB XVI",
+                "unit_id": "UU-1945--/bab-XVI"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 37",
+                "unit_id": "UU-1945--/bab-XVI/pasal-37"
+              }
+            ],
+            "title": "Pasal 37",
+            "content": "(1) Untuk mengubah Undang-Undang Dasar sekurang-kurangnya 2/3 daripada jumlah anggota Majelis Permusyawaratan Rakyat harus hadir.\n(2) Putusan diambil dengan persetujuan sekurang-kurangnya 2/3 daripada jumlah anggota yang hadir.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": [
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-XVI/pasal-37/ayat-1",
+                "number_label": "1",
+                "ordinal_int": 1,
+                "ordinal_suffix": "",
+                "label_display": "(1)",
+                "seq_sort_key": "0001|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 37 ayat (1)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB XVI",
+                    "unit_id": "UU-1945--/bab-XVI"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 37",
+                    "unit_id": "UU-1945--/bab-XVI/pasal-37"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(1)",
+                    "unit_id": "UU-1945--/bab-XVI/pasal-37/ayat-1"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-XVI/pasal-37",
+                "local_content": "Untuk mengubah Undang-Undang Dasar sekurang-kurangnya 2/3 daripada jumlah anggota Majelis Permusyawaratan Rakyat harus hadir.",
+                "display_text": "(1) Untuk mengubah Undang-Undang Dasar sekurang-kurangnya 2/3 daripada jumlah anggota Majelis Permusyawaratan Rakyat harus hadir.",
+                "bm25_body": "Untuk mengubah Undang-Undang Dasar sekurang-kurangnya 2/3 daripada jumlah anggota Majelis Permusyawaratan Rakyat harus hadir.",
+                "span": null,
+                "children": []
+              },
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-XVI/pasal-37/ayat-2",
+                "number_label": "2",
+                "ordinal_int": 2,
+                "ordinal_suffix": "",
+                "label_display": "(2)",
+                "seq_sort_key": "0002|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 37 ayat (2)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB XVI",
+                    "unit_id": "UU-1945--/bab-XVI"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 37",
+                    "unit_id": "UU-1945--/bab-XVI/pasal-37"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(2)",
+                    "unit_id": "UU-1945--/bab-XVI/pasal-37/ayat-2"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-XVI/pasal-37",
+                "local_content": "Putusan diambil dengan persetujuan sekurang-kurangnya 2/3 daripada jumlah anggota yang hadir.",
+                "display_text": "(2) Putusan diambil dengan persetujuan sekurang-kurangnya 2/3 daripada jumlah anggota yang hadir.",
+                "bm25_body": "Putusan diambil dengan persetujuan sekurang-kurangnya 2/3 daripada jumlah anggota yang hadir.",
+                "span": null,
+                "children": []
+              }
+            ]
+          },
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-XVI/pasal-1",
+            "number_label": "1",
+            "ordinal_int": 1,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 1",
+            "seq_sort_key": "0001|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 1",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB XVI",
+                "unit_id": "UU-1945--/bab-XVI"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 1",
+                "unit_id": "UU-1945--/bab-XVI/pasal-1"
+              }
+            ],
+            "title": "Pasal 1",
+            "content": "Panitia Persiapan Kemerdekaan Indonesia mengatur dan menyelenggarakan kepindahan pemerintahan kepada Pemerintah Indonesia.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": []
+          },
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-XVI/pasal-11",
+            "number_label": "11",
+            "ordinal_int": 11,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 11",
+            "seq_sort_key": "0011|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 11",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB XVI",
+                "unit_id": "UU-1945--/bab-XVI"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 11",
+                "unit_id": "UU-1945--/bab-XVI/pasal-11"
+              }
+            ],
+            "title": "Pasal 11",
+            "content": "Segala badan negara dan peraturan yang ada masih langsung berlaku, selama belum diadakan yang baru menurut Undang-Undang Dasar ini.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": []
+          },
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-XVI/pasal-111",
+            "number_label": "111",
+            "ordinal_int": 111,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 111",
+            "seq_sort_key": "0111|",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 111",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB XVI",
+                "unit_id": "UU-1945--/bab-XVI"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 111",
+                "unit_id": "UU-1945--/bab-XVI/pasal-111"
+              }
+            ],
+            "title": "Pasal 111",
+            "content": "Untuk pertama kali Presiden dan Wakil Presiden dipilih oleh Panitia Persiapan Kemerdekaan Indonesia.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": []
+          },
+          {
+            "type": "pasal",
+            "unit_id": "UU-1945--/bab-XVI/pasal-1V",
+            "number_label": "1V",
+            "ordinal_int": 1,
+            "ordinal_suffix": "V",
+            "label_display": "Pasal 1V",
+            "seq_sort_key": "0001|V",
+            "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 1V",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                "unit_id": "UU-1945--"
+              },
+              {
+                "type": "bab",
+                "label": "BAB XVI",
+                "unit_id": "UU-1945--/bab-XVI"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 1V",
+                "unit_id": "UU-1945--/bab-XVI/pasal-1V"
+              }
+            ],
+            "title": "Pasal 1V",
+            "content": "Sebelum Majelis Permusyawaratan Rakyat, Dewan Perwakilan Rakyat, dan Dewan Pertimbangan Agung dibentuk menurut Undang-Undang Dasar ini, segala kekuasaannya dijalankan oleh Presiden dengan bantuan sebuah komite nasional. ATURAN TAMBAHAN\n(1) Dalam enam bulan sesudah akhirnya peperangan Asia Timur Raya, Presiden Indonesia mengatur dan menyelenggarakan segala hal yang ditetapkan dalam Undang-Undang Dasar ini.\n(2) Dalam enam bulan sesudah Majelis Permusyawaratan Rakyat dibentuk, Majelis itu bersidang untuk menetapkan Undang-Undang Dasar.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": [
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-XVI/pasal-1V/ayat-1",
+                "number_label": "1",
+                "ordinal_int": 1,
+                "ordinal_suffix": "",
+                "label_display": "(1)",
+                "seq_sort_key": "0001|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 1V ayat (1)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB XVI",
+                    "unit_id": "UU-1945--/bab-XVI"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 1V",
+                    "unit_id": "UU-1945--/bab-XVI/pasal-1V"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(1)",
+                    "unit_id": "UU-1945--/bab-XVI/pasal-1V/ayat-1"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-XVI/pasal-1V",
+                "local_content": "Dalam enam bulan sesudah akhirnya peperangan Asia Timur Raya, Presiden Indonesia mengatur dan menyelenggarakan segala hal yang ditetapkan dalam Undang-Undang Dasar ini.",
+                "display_text": "(1) Dalam enam bulan sesudah akhirnya peperangan Asia Timur Raya, Presiden Indonesia mengatur dan menyelenggarakan segala hal yang ditetapkan dalam Undang-Undang Dasar ini.",
+                "bm25_body": "Dalam enam bulan sesudah akhirnya peperangan Asia Timur Raya, Presiden Indonesia mengatur dan menyelenggarakan segala hal yang ditetapkan dalam Undang-Undang Dasar ini.",
+                "span": null,
+                "children": []
+              },
+              {
+                "type": "ayat",
+                "unit_id": "UU-1945--/bab-XVI/pasal-1V/ayat-2",
+                "number_label": "2",
+                "ordinal_int": 2,
+                "ordinal_suffix": "",
+                "label_display": "(2)",
+                "seq_sort_key": "0002|",
+                "citation_string": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen, Pasal 1V ayat (2)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang Dasar (UUD) Tahun 1945 dan Amandemen  Nomor -  tentang UUD 1945 dan Amandemen",
+                    "unit_id": "UU-1945--"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB XVI",
+                    "unit_id": "UU-1945--/bab-XVI"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 1V",
+                    "unit_id": "UU-1945--/bab-XVI/pasal-1V"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(2)",
+                    "unit_id": "UU-1945--/bab-XVI/pasal-1V/ayat-2"
+                  }
+                ],
+                "parent_pasal_id": "UU-1945--/bab-XVI/pasal-1V",
+                "local_content": "Dalam enam bulan sesudah Majelis Permusyawaratan Rakyat dibentuk, Majelis itu bersidang untuk menetapkan Undang-Undang Dasar.",
+                "display_text": "(2) Dalam enam bulan sesudah Majelis Permusyawaratan Rakyat dibentuk, Majelis itu bersidang untuk menetapkan Undang-Undang Dasar.",
+                "bm25_body": "Dalam enam bulan sesudah Majelis Permusyawaratan Rakyat dibentuk, Majelis itu bersidang untuk menetapkan Undang-Undang Dasar.",
+                "span": null,
+                "children": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "last_updated": "2025-08-09T20:00:01.203127",
+  "pdf_extraction_metadata": {
+    "method": "pdfplumber",
+    "confidence": 90.0,
+    "processing_time": 0.21221184730529785,
+    "text_length": 10421,
+    "original_text_length": 10663,
+    "page_count": 9,
+    "tree_nodes_count": 109
+  },
+  "pasal_metadata": null,
+  "structure_flags": null,
+  "structure_analysis": null,
+  "chapters": null,
+  "articles": null
+}
