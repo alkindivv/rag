@@ -1,4 +1,4 @@
-# TODO_NEXT.md - Legal RAG System Action Plan
+ # TODO_NEXT.md - Legal RAG System Action Plan
 
 ## 🚨 CRITICAL BLOCKERS (Fix Immediately)
 
@@ -359,7 +359,7 @@ tests/
 | Priority | Task | Assignee | Status | Due Date |
 |----------|------|----------|---------|----------|
 | CRITICAL | Fix Jina API | Backend Dev | 🔄 In Progress | Tomorrow |
-| CRITICAL | Fix SQL Queries | Backend Dev | ⏳ Pending | This Week |
+| CRITICAL | Fix SQL Queries | Backend Dev | ✅ Done | This Week |
 | HIGH | Complete Search | Backend Dev | ⏳ Pending | Next Week |
 | HIGH | FastAPI Implementation | Backend Dev | ⏳ Pending | Next Week |
 | HIGH | Testing Suite | QA Engineer | ⏳ Pending | Next Sprint |

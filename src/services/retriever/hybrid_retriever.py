@@ -266,7 +266,7 @@ class VectorSearcher:
                 SELECT
                     dv.id,
                     dv.unit_id,
-                    dv.content_type as unit_type,
+                    lu.unit_type,
                     lu.bm25_body as text,
                     lu.citation_string,
                     dv.doc_form,
@@ -324,7 +324,7 @@ class VectorSearcher:
                     citation_string=row.citation_string or f"Pasal {row.unit_id}",
                     score=float(row.score or 0.0),
                     source_type="vector",
-                    unit_type="pasal",
+                    unit_type=row.unit_type or "pasal",
                     unit_id=row.unit_id,
                     doc_form=row.doc_form,
                     doc_year=row.doc_year,
@@ -465,9 +465,13 @@ class HybridRetriever:
     Routes queries and combines results from different search methods.
     """
 
-    def __init__(self, embedder: Optional[JinaEmbedder] = None):
+    def __init__(self, embedder: Optional["JinaEmbedder"] = None):
         """Initialize hybrid retriever with optional embedder."""
-        self.embedder = embedder or JinaEmbedder()
+        if embedder is None:
+            from ..embedding.embedder import JinaEmbedder as _JinaEmbedder
+            self.embedder = _JinaEmbedder()
+        else:
+            self.embedder = embedder
         self.router = QueryRouter()
 
     def search(
