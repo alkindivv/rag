@@ -1,602 +1,330 @@
-# Legal RAG System - Agent Context Documentation
+YOURE A PROFESSIONAL RAG DEVELOPER ARCHITECTURE WITH 30 YEARS OF EXPERINCES, I WANT YOU TO HELP ME:
+Your task: Refactor for end‑to‑end consistency across crawler/PDF extraction, JSON tree, DB models, pgvector, and FTS. Focus on correctness, speed, and simplicity. No feature creep.
 
-## 🎯 Project Overview
+Refactor the codebase to enforce one canonical, complete data contract across:
+	1.	crawler/PDF extraction → 2) JSON document+tree → 3) DB schemas → 4) indexer (FTS + vectors) → 5) hybrid search.
 
-**Legal RAG System** adalah sistem Retrieval-Augmented Generation (RAG) untuk dokumen hukum Indonesia yang mengkombinasikan:
-- **Full-Text Search (FTS)** untuk pencarian eksplisit (referensi pasal spesifik)
-- **Vector Search** untuk pencarian semantik/tematik
-- **Hybrid Retrieval** dengan optional reranking untuk hasil optimal
-- **LLM Integration** untuk menjawab pertanyaan hukum dengan sitasi akurat
+Jina is already correct — do not touch embedding client configuration.
+Your mission is format alignment and consistency. No “minimal fields”. Use the full field set below.
 
-### Primary Goals
-- **Akurat & Cepat**: Hybrid retrieval (FTS leaf + vector pasal + rerank)
-- **Sederhana & Maintainable**: Modul <300 LOC/file, tipe jelas, logging terstruktur
-- **Production-ready**: Alembic migrations, retry/backoff, DI untuk HTTP client
+DELIVERABLES (must do)
+	1.	Canonical JSON contract (full fields) with pydantic validators.
+	2.	DB schema (SQLAlchemy + alembic) that maps 1:1 to the JSON and supports FTS + vectors.
+	3.	Parser/Orchestrator that always emits the canonical JSON and reconstructs pasal.content from children.
+	4.	Indexer that consumes the JSON, writes to DB, builds FTS, and inserts vectors (use existing embedder unchanged).
+	5.	Hybrid Search that respects citation‑first routing (FTS) and falls back to hybrid if needed.
+	6.	Tests that validate the contract, parsing, migrations, and search routing.
+	7.	No hardcoded settings; everything in src/config/settings.py or .env.
 
-## 🏗️ Current Architecture
+Keep each file ≤300 lines when possible. Replace prints with structured logging.
 
-```
-Rag/
-├── src/
-│   ├── main.py                    # ✅ CLI entry point
-│   ├── config/
-│   │   ├── settings.py            # ✅ Pydantic v2 settings (consolidated)
-│   │   ├── config.md              # ✅ Configuration documentation
-│   │   └── [legacy configs]       # ⚠️ Multiple legacy config files exist
-│   ├── db/
-│   │   ├── models.py              # ✅ SQLAlchemy models (complete)
-│   │   ├── session.py             # ✅ DB session management
-│   │   └── migrations/            # ✅ Alembic setup
-│   ├── pipeline/
-│   │   ├── indexer.py             # ✅ JSON→DB indexer (with deduplication)
-│   │   └── post_index.py          # ❌ TODO: Post-processing
-│   ├── services/
-│   │   ├── embedding/
-│   │   │   └── embedder.py        # ✅ Jina v4 1024-dim embeddings
-│   │   ├── search/
-│   │   │   ├── reranker.py        # ✅ Jina reranker service
-│   │   │   └── hybrid_search.py   # ✅ Main search orchestrator
-│   │   ├── retriever/
-│   │   │   └── hybrid_retriever.py # ✅ FTS + Vector + Explicit search
-│   │   ├── llm/                   # ⚠️ Exists but needs integration
-│   │   ├── api/                   # ⚠️ Exists but needs FastAPI app
-│   │   ├── crawler/               # ✅ Existing crawler (needs light refactor)
-│   │   └── pdf/                   # ✅ Existing PDF processing
-│   └── utils/
-│       ├── logging.py             # ✅ Structured JSON logging
-│       ├── http.py                # ✅ Retry/backoff HTTP client
-│       ├── text_cleaner.py        # ✅ Existing text cleaning
-│       └── pattern_manager.py     # ✅ Existing legal hierarchy patterns
-├── data/
-│   ├── json/                      # ✅ Processed JSON documents
-│   ├── pdfs/                      # ✅ Raw PDF files
-│   └── text/                      # ✅ Text extracts
-├── requirements.txt               # ✅ Updated with all dependencies
-├── alembic.ini                    # ✅ Alembic configuration
-├── .env.example                   # ✅ Environment template
-└── [docs and plans]               # ✅ Various documentation files
-```
+⸻
 
-## 📊 Database Schema
+1) CANONICAL JSON CONTRACT (FULL)
 
-### Core Tables
+Create src/schemas/document_contract.py using pydantic v2.
 
-#### `legal_documents` - Main document metadata
-```sql
-- id: UUID (PK)
-- doc_id: VARCHAR(100) UNIQUE  -- e.g., "UU-2025-2"
-- doc_form: ENUM (UU, PP, PERPU, PERPRES, POJK, PERMEN, PERDA, LAINNYA, SE)
-- doc_number, doc_year, doc_title, doc_status
-- doc_relationships: JSONB  -- Raw relationships from crawler
-- doc_uji_materi: JSONB     -- Raw court decisions
-- [metadata fields...]
-```
-
-#### `legal_units` - Hierarchical document structure
-```sql
-- id: UUID (PK)
-- document_id: UUID (FK to legal_documents)
-- unit_type: ENUM (dokumen, buku, bab, bagian, paragraf, pasal, ayat, huruf, angka, angka_amandement)
-- unit_id: VARCHAR(500) UNIQUE  -- e.g., "UU-2025-2/pasal-1/ayat-2"
-- parent_pasal_id: VARCHAR(500) -- For leaf nodes
-- content, local_content, bm25_body: TEXT
-- content_vector: TSVECTOR  -- For FTS
-- path: JSONB, citation_string: TEXT
-```
-
-#### `document_vectors` - Vector embeddings (pasal-level)
-```sql
-- id: UUID (PK)
-- document_id: UUID (FK to legal_documents)
-- unit_id: VARCHAR(500)  -- Pasal unit_id
-- embedding: VECTOR(1024)  -- Jina v4 embeddings
-- doc_form, doc_year, doc_number: Metadata for fast filtering
-- pasal_number, bab_number, ayat_number: Hierarchy metadata
-```
-
-#### `subjects` + `document_subject` - Document topics
-```sql
-- Many-to-many relationship for document categorization
-```
-
-### Key Constraints & Indexes
-- **Unique**: `(doc_form, doc_number, doc_year)` on `legal_documents`
-- **Unique**: `(document_id, unit_id)` on `legal_units`
-- **GIN**: `content_vector` for FTS on `legal_units`
-- **HNSW**: `embedding` for vector similarity on `document_vectors`
-
-## 🔄 Data Flow
-
-### 1. Ingestion Pipeline
-```
-PDF/JSON Files → Crawler/Parser → JSON Output → Indexer → Database
-```
-
-**Current JSON Structure** (from `data/json/*.json`):
-```json
+1.1 Document root
 {
-  "doc_id": "UU-2025-2",
-  "doc_form": "UU", 
-  "doc_number": "2",
-  "doc_year": "2025",
-  "doc_title": "Undang-undang...",
-  "doc_subject": ["PERTAMBANGAN MIGAS", "MINERAL DAN ENERGI"],
-  "relationships": {"mengubah": [...]},
-  "uji_materi": [...],
-  "document_tree": {
-    "doc_type": "document",
-    "children": [
-      {
-        "type": "huruf|pasal|ayat|angka",
-        "unit_id": "UU-2025-2/pasal-1/ayat-2",
-        "number_label": "2",
-        "local_content": "...",
-        "citation_string": "...",
-        "path": [...],
-        "parent_pasal_id": "UU-2025-2/pasal-1",
-        "children": [...]
-      }
-    ]
-  }
-}
-```
+  "doc_source": "BPK",
+  "doc_id": "UU-2023-6",
+  "doc_type": "Peraturan Perundang-undangan",
+  "doc_title": "Undang-undang (UU) Nomor 6 Tahun 2023 ...",
+  "doc_teu": "Indonesia, Pemerintah Pusat",
+  "doc_number": "6",
+  "doc_form": "UU",
+  "doc_form_short": "UU",
+  "doc_year": 2023,
+  "doc_place_enacted": "Jakarta",
+  "doc_date_enacted": "2023-03-31",
+  "doc_date_promulgated": "2023-03-31",
+  "doc_date_effective": "2023-03-31",
+  "doc_subject": ["CIPTA KERJA"],
+  "doc_status": "Berlaku",
+  "doc_language": "Bahasa Indonesia",
+  "doc_location": "Pemerintah Pusat",
+  "doc_field": "HUKUM UMUM",
 
-### 2. Search Pipeline
-```
-Query → Router → [Explicit|Thematic] → [FTS + Vector] → Rerank → Results
-```
+  "relationships": {
+    "mengubah": [{"regulation_reference": "...", "reference_link": "..."}],
+    "diubah_dengan": [{"regulation_reference": "...", "reference_link": "..."}],
+    "mencabut": [{"regulation_reference": "...", "reference_link": null}],
+    "dicabut_dengan": [],
+    "menetapkan": []
+  },
 
-**Query Types**:
-- **Explicit**: "pasal 1 ayat 2", "UU 4/2009" → Direct lookup via regex + SQL
-- **Thematic**: "pertambangan mineral" → Semantic vector search + FTS
+  "detail_url": "https://...",
+  "source_url": "https://...",
+  "pdf_url": "https://...",
+  "uji_materi_pdf_url": "https://... or null",
+  "uji_materi": [
+    {
+      "decision_number": "39/PUU-XXI/2023",
+      "pdf_url": "https://...",
+      "decision_content": "<full text>",
+      "pasal_affected": ["7","10"],
+      "ayat_affected": ["1","2"],
+      "huruf_affected": ["i"],
+      "decision_type": "bertentangan|ditolak|dikabulkan|... (string)",
+      "legal_basis": "UUD 1945 | ...",
+      "binding_status": "tidak mengikat|mengikat|bersyarat",
+      "conditions": "string or null",
+      "interpretation": "string or null"
+    }
+  ],
 
-## 🔧 Current Implementation Status
+  "pdf_path": "data/pdfs/undang_undang_6_2023.pdf",
+  "text_path": "data/text/undang_undang_6_2023.txt",
+  "doc_content": "<optional full flat text if available>",
+  "doc_processing_status": "pdf_downloaded|pdf_processed|txt_processed|failed",
+  "last_updated": "2025-08-08T16:57:43.592312",
 
-### ✅ COMPLETED
-1. **Database Models** - Complete SQLAlchemy models with proper relationships
-2. **Settings Management** - Pydantic v2 with environment variable loading
-3. **Indexer** - JSON→DB with deduplication logic and optional embedding skip
-4. **Hybrid Retriever** - FTS + Vector + Explicit search routing
-5. **Reranker Service** - Jina reranker integration with fallback
-6. **HTTP Client** - Retry/backoff utility with structured logging
-7. **CLI Interface** - Comprehensive CLI for testing and management
-
-### ⚠️ PARTIALLY IMPLEMENTED
-1. **Embedding Service** - Jina v4 integration (API format issues)
-2. **Search Service** - Hybrid search orchestrator (SQL query issues)
-3. **Legacy Services** - Existing crawler/PDF services need light refactoring
-
-### ❌ TODO
-1. **FastAPI Application** - REST API endpoints
-2. **LLM Integration** - Gemini/OpenAI/Anthropic providers with prompt management
-3. **Frontend** - Next.js application
-4. **Production Deployment** - Docker, environment configs
-5. **Testing Suite** - Comprehensive unit/integration tests
-
-## 🚨 Current Issues & Blockers
-
-### 1. **Jina API Integration Issues**
-- **Problem**: Jina embeddings API returning 422 errors
-- **Likely Cause**: Request format mismatch with Jina v4 API
-- **Impact**: Vector search not functional
-- **Priority**: HIGH
-
-### 2. **SQL Query Formatting**
-- **Problem**: SQL template `.format()` method failing in retriever
-- **Cause**: SQLAlchemy text() object doesn't support `.format()`
-- **Impact**: Hybrid search failing
-- **Priority**: HIGH
-
-### 3. **JSON Data Duplicates**
-- **Problem**: Crawler output contains duplicate `unit_id` entries
-- **Workaround**: Deduplication logic in indexer
-- **Root Cause**: PDF parsing logic needs review
-- **Priority**: MEDIUM
-
-### 4. **Import Path Inconsistencies**
-- **Problem**: Mixed relative/absolute imports causing module errors
-- **Status**: Partially resolved
-- **Priority**: MEDIUM
-
-## 🛠️ Service Responsibilities
-
-### **Indexer** (`src/pipeline/indexer.py`)
-- **Input**: JSON files from `data/json/`
-- **Output**: Records in `legal_documents`, `legal_units`, `document_vectors`
-- **Features**: Batch processing, deduplication, optional embedding skip
-- **Dependencies**: JinaEmbedder, Database session
-
-### **Hybrid Retriever** (`src/services/retriever/hybrid_retriever.py`)
-- **Input**: Query string + optional filters
-- **Output**: Ranked `SearchResult` objects
-- **Strategies**: 
-  - Explicit: Regex-based legal reference parsing
-  - FTS: PostgreSQL full-text search on leaf units
-  - Vector: Cosine similarity on pasal embeddings
-- **Dependencies**: Database session, JinaEmbedder
-
-### **Search Service** (`src/services/search/hybrid_search.py`)
-- **Input**: User queries
-- **Output**: Formatted search responses
-- **Features**: Query routing, result combination, logging
-- **Dependencies**: HybridRetriever, Reranker
-
-### **Embedding Service** (`src/services/embedding/embedder.py`)
-- **Provider**: Jina v4 (1024-dimensional)
-- **Features**: Batch processing, retry logic, error handling
-- **Configuration**: Configurable batch size and model
-
-### **Reranker Service** (`src/services/search/reranker.py`)
-- **Provider**: Jina reranker v1
-- **Fallback**: NoOp reranker when disabled/unavailable
-- **Features**: Top-k limiting, score normalization
-
-## 🔌 Configuration
-
-### Environment Variables (via `src/config/settings.py`)
-```bash
-# Database
-DATABASE_URL=postgresql://user:pass@localhost:5432/legal_rag
-
-# Jina AI
-JINA_API_KEY=your_key_here
-JINA_EMBED_MODEL=jina-embeddings-v4
-JINA_RERANK_MODEL=jina-reranker-v1
-
-# LLM Providers
-LLM_PROVIDER=gemini
-GEMINI_API_KEY=your_key_here
-OPENAI_API_KEY=your_key_here
-ANTHROPIC_API_KEY=your_key_here
-
-# Processing
-EMBED_BATCH_SIZE=16
-RERANK_PROVIDER=jina
-LOG_LEVEL=INFO
-```
-
-## 🧪 Testing & Usage
-
-### Database Operations
-```bash
-# Initialize fresh database
-python -m src.main init-db --reset --force
-
-# Index documents (skip embeddings for testing)
-python -m src.main index data/json --skip-embeddings
-
-# Check system status
-python -m src.main status
-```
-
-### Search Testing
-```bash
-# Test explicit search
-python -m src.main search "pasal 1 ayat 2"
-
-# Test thematic search
-python -m src.main search "pertambangan mineral"
-
-# Test with filters
-python -m src.main search "batubara" --doc-forms UU --doc-years 2009,2025
-
-# Get document outline
-python -m src.main outline UU-2025-2
-```
-
-## 📋 API Contracts (Planned)
-
-### Search Endpoints
-```
-GET  /search?q={query}&limit={n}&filters={...}  # Raw search results
-POST /ask {query, context, options}              # LLM-powered Q&A
-GET  /health                                     # System health check
-```
-
-### Data Formats
-```typescript
-// Search Result
-interface SearchResult {
-  id: string;
-  text: string;
-  citation: string;
-  score: number;
-  source_type: "fts" | "vector" | "explicit" | "reranked";
-  unit_type: string;
-  document: {
-    form: string;
-    year: number;
-    number: string;
-  };
-  metadata?: Record<string, any>;
+  "document_tree": { /* see 1.2 */ }
 }
 
-// Search Response
-interface SearchResponse {
-  results: SearchResult[];
-  total: number;
-  query: string;
-  strategy: "explicit" | "thematic" | "contextual";
-  reranked: boolean;
-  duration_ms: number;
+1.2 Tree node (uniform for ALL nodes)
+{
+  "type": "dokumen|buku|bab|bagian|paragraf|pasal|ayat|huruf|angka",
+  "unit_id": "UU-2023-6/pasal-5/ayat-1/huruf-a",
+  "number_label": "IV|Kesatu|5|1|a|1A",         // raw label as seen
+  "ordinal_int": 5,                              // normalized numeric for sorting (roman→int, a→1)
+  "ordinal_suffix": "",                          // e.g., "A" in "1A"
+  "label_display": "BAB IV|BAGIAN Kesatu|Pasal 5|(1)|a.|1.",
+  "seq_sort_key": "0005|A",                      // zero‑padded + suffix
+  "citation_string": "Undang-undang ... , Pasal 5 ayat (1) huruf a",
+  "path": [
+    {"type":"dokumen","label":"Undang-undang (UU) Nomor 6 Tahun 2023 ...","unit_id":"UU-2023-6"},
+    {"type":"bab","label":"BAB IV","unit_id":"UU-2023-6/bab-IV"},
+    {"type":"bagian","label":"BAGIAN Kesatu","unit_id":"UU-2023-6/bab-IV/bagian-kesatu"},
+    {"type":"pasal","label":"Pasal 5","unit_id":"UU-2023-6/bab-IV/bagian-kesatu/pasal-5"},
+    {"type":"ayat","label":"(1)","unit_id":"UU-2023-6/bab-IV/bagian-kesatu/pasal-5/ayat-1"},
+    {"type":"huruf","label":"a.","unit_id":"UU-2023-6/bab-IV/bagian-kesatu/pasal-5/ayat-1/huruf-a"}
+  ],
+
+  "title": "only for dokumen/buku/bab/bagian/paragraf/pasal",
+  "content": "only for pasal: full rebuilt content (title + all children flattened)",
+  "parent_pasal_id": "UU-2023-6/bab-IV/bagian-kesatu/pasal-5",   // required for ayat/huruf/angka
+  "local_content": "only for ayat/huruf/angka",
+  "display_text": "(1) ... | a. ... | 1. ...",
+  "bm25_body": "same as local_content for leaf nodes",
+  "span": null,                                   // optional char spans when extracted from long text
+  "tags_semantik": ["definisi","sanksi", ...],    // optional
+  "entities": ["Penyidik","Penyidikan"],          // optional
+
+  "children": [ /* same shape recursively */ ]
 }
-```
 
-## 🎨 Code Patterns & Standards
+Rules:
+	•	Only pasal carries full content (rebuilt).
+	•	ayat|huruf|angka carry local_content only.
+	•	Consistent citation_string: Pasal X ayat (Y) huruf z angka n (in order).
+	•	Normalize case: BAGIAN Kesatu, not BAGIAN satu.
+	•	All nodes must have seq_sort_key consistent with ordinal_int + ordinal_suffix.
+	•	path is mandatory and must resolve to the node’s unit_id.
 
-### Import Style
-```python
-# Absolute imports from project root
-from src.config.settings import settings
-from src.db.models import LegalDocument
-from src.services.embedding.embedder import JinaEmbedder
-```
+Add in document_contract.py:
+	•	class TreeNode(BaseModel), class DocumentRoot(BaseModel).
+	•	def validate_document_json(obj) -> DocumentRoot that raises explicit errors listing missing/invalid fields.
+	
+2) DB SCHEMA (SQLAlchemy + Alembic)
 
-### Error Handling
-```python
-# Structured logging with context
-try:
-    result = operation()
-except SpecificError as e:
-    logger.error(f"Operation failed: {e}", extra=log_error(e, context=context))
-    return fallback_result
-```
+Touch src/db/models.py and add migrations under src/db/migrations.
 
-### Dependency Injection
-```python
-# Accept optional dependencies for testability
-def __init__(self, client: Optional[HttpClient] = None):
-    self.client = client or HttpClient()
-```
+2.1 legal_documents
+	•	id UUID (PK, uuid5 stable from doc_form-doc_number-doc_year).
+	•	Full metadata columns mirroring all root fields:
+	•	doc_source, doc_type, doc_title, doc_teu, doc_number, doc_form, doc_form_short,
+doc_year (INT), doc_place_enacted, doc_date_enacted, doc_date_promulgated, doc_date_effective,
+doc_status, doc_language, doc_location, doc_field,
+detail_url, source_url, pdf_url, uji_materi_pdf_url,
+pdf_path, text_path,
+doc_content (TEXT),
+doc_processing_status, last_updated (TIMESTAMP).
+	•	JSONB fields with GIN index:
+	•	doc_subject JSONB (array),
+	•	relationships JSONB (object),
+	•	uji_materi JSONB (array of objects) and (optional) a normalized table (see 2.3) — pick one primary, keep the other cached if needed.
+	•	FTS:
+	•	content_vector TSVECTOR (indonesian), GIN index, populated from doc_content.
+	•	Common indexes: (doc_form, doc_year), (doc_source, doc_status).
 
-### Configuration
-```python
-# Use Pydantic settings for all config
-class ServiceConfig(BaseSettings):
-    api_key: str = Field(..., env="API_KEY")
-    batch_size: int = Field(16, env="BATCH_SIZE")
-```
+2.2 document_vectors
+	•	id UUID PK (uuid5 from document_id + hash(content_text)).
+	•	document_id UUID FK → legal_documents.id.
+	•	embedding pgvector(… your current dim …) — do not change your working Jina settings here.
+	•	content_text TEXT (the chunk body used for semantic search).
+	•	content_type ENUM(‘pasal’,‘ayat’,‘huruf’,‘angka’,‘bab’,‘bagian’,‘paragraf’,‘full_doc’).
+	•	hierarchy_path TEXT (e.g., BAB IV › Bagian Kesatu › Pasal 5 › ayat (1) › huruf a).
+	•	Denormalized filters: doc_form, doc_number, doc_year, doc_status.
+	•	Structure fields: bab_number, pasal_number, ayat_number (TEXT), token_count INT.
+	•	HNSW index on embedding (cosine), composite on (doc_form, doc_year) and (bab_number, pasal_number, ayat_number).
 
-## 🗂️ Data Hierarchy
+2.3 (optional but recommended) legal_units  — exact citation FTS
+	•	Purpose: precision for explicit queries (Pasal/ayat/huruf/angka).
+	•	Columns:
+	•	id UUID PK (uuid5 from unit_id),
+	•	document_id FK,
+	•	unit_id TEXT (unique),
+	•	type ENUM as above,
+	•	number_label, ordinal_int, ordinal_suffix,
+	•	label_display,
+	•	citation_string,
+	•	path JSONB (array of {type,label,unit_id}),
+	•	parent_pasal_id TEXT (nullable except for pasal),
+	•	local_content TEXT (for ayat/huruf/angka),
+	•	full_pasal_content TEXT (only for pasal; same as pasal.content),
+	•	bm25_body TSVECTOR (indexed GIN, indonesian),
+	•	seq_sort_key.
+	•	Create triggers or upsert logic from the indexer to keep this in sync.
 
-### Indonesian Legal Structure
-```
-Dokumen (UU-2025-2)
-├── Bab I
-│   ├── Pasal 1
-│   │   ├── Ayat (1)
-│   │   │   ├── Huruf a
-│   │   │   └── Huruf b
-│   │   └── Ayat (2)
-│   └── Pasal 2
-└── Bab II
-    └── ...
-```
+2.4 uji_materi (normalized)
 
-### Unit ID Naming Convention
-- **Document**: `UU-2025-2`
-- **Pasal**: `UU-2025-2/pasal-1`
-- **Ayat**: `UU-2025-2/pasal-1/ayat-2`
-- **Huruf**: `UU-2025-2/pasal-1/ayat-2/huruf-a`
-- **Angka**: `UU-2025-2/pasal-1/ayat-2/huruf-a/angka-1`
+If you want analytics/joins, create a table:
+	•	id UUID PK,
+	•	document_id FK,
+	•	decision_number, pdf_url, decision_content,
+	•	pasal_affected TEXT[], ayat_affected TEXT[], huruf_affected TEXT[],
+	•	decision_type, legal_basis, binding_status, conditions, interpretation.
 
-### Content Storage Strategy
-- **Leaf Units** (ayat, huruf, angka): Store in `legal_units` with FTS indexing
-- **Pasal Units**: Aggregate content + generate embeddings → `document_vectors`
-- **Hierarchy Navigation**: Use `parent_pasal_id` and `path` JSONB
+If you keep JSONB only, skip 2.4; but keep JSONB indexed with GIN.
 
-## 🔍 Search Strategies
+2.5 migrations
+	•	Ensure CREATE EXTENSION IF NOT EXISTS vector;
+	•	Ensure content_vector built with to_tsvector('indonesian', doc_content) and kept updated (trigger or refresh step in indexer).
+	•	Add all GIN/HNSW indexes described.
 
-### 1. Explicit Search (Direct References)
-```python
-# Query: "pasal 1 ayat 2" or "UU 4/2009"
-# Action: Regex parsing → Direct SQL lookup
-# Target: Exact legal units via number_label matching
-```
+⸻
 
-### 2. FTS Search (Keyword-based)
-```sql
--- Target: Leaf units (ayat, huruf, angka)
-SELECT * FROM legal_units 
-WHERE unit_type IN ('ayat','huruf','angka')
-  AND content_vector @@ plainto_tsquery('indonesian', :query)
-ORDER BY ts_rank(content_vector, plainto_tsquery('indonesian', :query)) DESC
-```
+3) PARSER / ORCHESTRATOR
 
-### 3. Vector Search (Semantic)
-```sql
--- Target: Pasal-level content
-SELECT * FROM document_vectors 
-ORDER BY embedding <=> :query_vector 
-LIMIT :k
-```
+Touch:
+	•	src/services/pdf/orchestrator.py
+	•	src/utils/text_cleaner.py
+	•	src/utils/pattern_manager.py
+	•	(new) src/utils/citation.py — single source of truth for build_citation_string(path).
 
-### 4. Hybrid Combination
-- **Thematic queries**: Combine FTS + Vector → Deduplicate → Rerank
-- **Explicit queries**: Direct lookup + FTS supplement if needed
+Requirements:
+	•	Parse headings: BUKU, BAB, BAGIAN, PARAGRAF, Pasal N[A], ayat (n), huruf a., angka 1.
+Normalize casing (BAGIAN Kesatu, etc.).
+	•	Strip watermark/noise (e.g., www.djpp.kemenkumham.go.id).
+	•	Support amendments where top‑level angka lines appear (e.g., “1. Ketentuan Pasal 1 diubah …”).
+	•	Rebuild pasal.content from title + all children (ayat/huruf/angka) with stable formatting.
+	•	Emit the canonical JSON (full fields for root + full node shape for every node).
+	•	Validate with validate_document_json(); if invalid, raise with detailed path of error.
 
-## 🧩 Key Components Integration
+⸻
 
-### Retrieval Flow
-```python
-# 1. Query Analysis
-is_explicit = QueryRouter.is_explicit_query(query)
+4) INDEXER
 
-# 2. Strategy Selection
-if is_explicit:
-    results = ExplicitSearcher.search(extracted_refs)
-else:
-    fts_results = FTSSearcher.search(query)
-    vector_results = VectorSearcher.search(query) 
-    results = combine_and_deduplicate(fts_results, vector_results)
+Touch:
+	•	pipeline/indexer.py (create or refactor)
+	•	src/db/session.py helper if needed
 
-# 3. Optional Reranking
-if rerank_enabled:
-    results = JinaReranker.rerank(query, results)
-```
+Flow:
+	1.	Load canonical JSON (DocumentRoot).
+	2.	Upsert legal_documents with full metadata (all fields).
+	3.	Compute/update doc_content (optional: concatenated clean text) → refresh content_vector FTS.
+	4.	Insert/update legal_units:
+	•	For each pasal: store full_pasal_content (rebuilt).
+	•	For ayat|huruf|angka: store local_content → FTS precision on leaf nodes.
+	5.	Insert/update document_vectors:
+	•	Chunk policy (keep simple):
+	•	One chunk per pasal using pasal.content.
+	•	Optionally short chunks for long ayat (if you already do this, keep it; don’t change embed config).
+	•	Use existing embedder; do not change Jina settings here.
+	6.	Fail fast if DB vector dimension mismatches your configured dimension.
+	7.	Logging: counts of documents, units, vectors upserted.
 
-### Database Session Pattern
-```python
-# Context manager for transactions
-with get_db_session() as db:
-    # Database operations here
-    result = db.query(Model).filter(...).all()
-    # Auto-commit on success, rollback on exception
-```
+⸻
 
-### Logging Pattern
-```python
-# Structured logging with timing
-logger.info("Operation started", extra={"query": query, "limit": limit})
-start_time = time.time()
-# ... operation ...
-duration_ms = (time.time() - start_time) * 1000
-logger.info("Operation completed", extra=log_timing("operation", duration_ms))
-```
+5) HYBRID SEARCH (routing unchanged conceptually, but align with DB)
 
-## 🎛️ Configuration Management
+Touch:
+	•	src/services/retriever/hybrid_retriever.py
+	•	src/services/search/hybrid_search.py
 
-### Settings Consolidation
-- **Current**: Multiple config files (`ai_config.py`, `crawler_config.py`, etc.)
-- **Target**: Single `settings.py` with Pydantic BaseSettings
-- **Strategy**: Extract only used variables, ignore legacy configs
+Routing:
+	•	If query matches explicit citation (Pasal \d+[A-Z]?, ayat \(d+\), huruf [a-z], angka \d+):
+	•	Use legal_units FTS first (bm25 over bm25_body for leaf; or over full_pasal_content for pasal).
+	•	If ≥k_min, return early (format citations from stored citation_string).
+	•	Else fallback to hybrid (vectors from document_vectors + doc‑level FTS).
+	•	Otherwise:
+	•	Hybrid = dense from document_vectors + doc‑level FTS from legal_documents.
+	•	(If you already have a reranker wired, keep it as is; do not change Jina config.)
 
-### Environment Handling
-- **Development**: `.env` file loading
-- **Production**: Environment variables
-- **Testing**: Override settings for test isolation
+⸻
 
-## 📚 External Dependencies
+6) CONFIG & LOGGING
 
-### Required Services
-- **PostgreSQL 16+** with pgvector extension
-- **Jina AI API** for embeddings and reranking
-- **LLM APIs** (Gemini 2.0, OpenAI GPT-4, Anthropic Claude)
+Touch:
+	•	src/config/settings.py
+	•	Centralize all keys used by crawler/extractor/orchestrator/indexer/search/DB.
+	•	No hardcoded paths, models, or dimensions anywhere else.
+	•	src/utils/logging.py
+	•	Provide a small structured logger initializer used across modules.
 
-### Optional Services
-- **Neo4j** for graph relationships (future)
-- **Redis** for caching (future)
+⸻
 
-## 🚀 Deployment Architecture (Planned)
+7) TESTS (fix & add)
 
-### Backend Services
-```
-FastAPI App → Uvicorn → Nginx (Reverse Proxy)
-│
-├── PostgreSQL (Primary Data)
-├── Redis (Caching)
-└── External APIs (Jina, LLMs)
-```
+Touch tests you listed:
+	•	tests/test_pdf_orchestrator.py
+	•	Cases: “Pasal 1A”, amendment top‑level “angka”, leaf nodes’ parent_pasal_id, citation_string, seq_sort_key, normalization of “BAGIAN Kesatu”.
+	•	tests/unit/test_embedding_service.py
+	•	Keep as is if Jina is fixed. Only ensure no regression on payload shape if the client is mocked.
+	•	tests/unit/test_hybrid_retriever.py
+	•	Test citation‑first routing (hits legal_units) and thematic routing (hybrid).
+	•	tests/e2e/test_complete_workflow.py
+	•	Fix indentation at the failing with patch(...): line; assert full pipeline green path.
+	•	tests/run_tests.py and tests/conftest.py
+	•	Keep; just make sure they load new config/validators.
 
-### Frontend
-```
-Next.js App Router → Vercel/Docker
-│
-└── Backend API (REST/WebSocket)
-```
+Acceptance:
+	•	python tests/run_tests.py --unit → 100%
+	•	python tests/run_tests.py --quick → 100%
+	•	python -m src.main search "pertambangan mineral":
+	•	logs show routing path (citation‑first vs hybrid),
+	•	results return with valid citation_string, and consistent unit paths.
 
-## 🎯 Success Metrics
+⸻
 
-### Performance Targets
-- **Search Latency**: <500ms for hybrid search
-- **Indexing Speed**: >100 documents/minute
-- **Accuracy**: >90% for explicit references, >80% for thematic
+8) FILES TO TOUCH (and/or create)
+	•	src/schemas/document_contract.py  (new)
+	•	src/utils/citation.py              (new)  (build_citation_string/path helpers)
+	•	src/utils/pattern_manager.py
+	•	src/utils/text_cleaner.py
+	•	src/services/pdf/orchestrator.py
+	•	src/config/settings.py
+	•	src/utils/logging.py
+	•	src/db/models.py
+	•	src/db/migrations/* (alembic revisions)
+	•	pipeline/indexer.py
+	•	src/services/retriever/hybrid_retriever.py
+	•	src/services/search/hybrid_search.py
+	•	tests/test_pdf_orchestrator.py
+	•	tests/unit/test_hybrid_retriever.py
+	•	tests/e2e/test_complete_workflow.py
+	•	keep existing embedding code untouched (Jina is fixed).
 
-### Quality Metrics
-- **Code Coverage**: >95%
-- **Module Size**: <300 LOC per file
-- **API Compatibility**: 100% backward compatible
+⸻
 
-## 🔗 Key Integration Points
+9) IMPLEMENTATION NOTES
+	•	Do not invent new partial formats. Every producer (crawler/PDF) and consumer (indexer/search) must use the canonical JSON contract exactly.
+	•	Prefer upserts for DB writes (idempotent indexer).
+	•	Keep parsing logic simple and robust; move legal patterns to pattern_manager.py.
+	•	Centralize citation formatting in utils/citation.py; use it in orchestrator, indexer, and result formatter.
+	•	Ensure no hardcoded config left in code; refer to settings.py and .env.
 
-### Between Services
-- **Indexer ↔ Embedder**: Batch embedding generation
-- **Retriever ↔ Database**: Complex queries with filtering
-- **Search ↔ Reranker**: Result score optimization
-- **API ↔ Search**: JSON serialization and error handling
+⸻
 
-### With External Systems
-- **Crawler Output**: JSON files in `data/json/`
-- **PDF Processing**: Document tree extraction
-- **LLM APIs**: Prompt management and response handling
-- **Vector Database**: Embedding storage and similarity search
+DONE WHEN
+	•	The JSON produced by orchestrator validates against DocumentRoot.
+	•	DB rows reflect all fields; FTS on legal_documents and legal_units are usable.
+	•	Indexer runs idempotently and reports counts.
+	•	Hybrid search routes correctly and returns stable citations.
+	•	All tests pass.
 
-## 📝 Development Guidelines
+Follow this spec exactly. No shortcuts. No dropping fields.
 
-### Adding New Features
-1. **Read existing code** to understand patterns
-2. **Follow established interfaces** (abstract base classes)
-3. **Add comprehensive tests** before implementation
-4. **Use dependency injection** for external services
-5. **Document breaking changes** in migration notes
 
-### Debugging Tips
-1. **Use CLI commands** for isolated testing
-2. **Enable structured logging** with DEBUG level
-3. **Test components separately** before integration
-4. **Check database state** with direct SQL queries
 
-### Refactoring Rules
-1. **Preserve external API compatibility**
-2. **Extract configurations** from hardcoded values
-3. **Eliminate code duplication** aggressively
-4. **Split large files** into focused modules
-5. **Add type hints** and error handling
-
-## 🎪 Testing Strategy
-
-### Unit Tests (Planned)
-- **Models**: Database schema and relationships
-- **Services**: Business logic with mocked dependencies
-- **Utils**: Text processing and HTTP utilities
-
-### Integration Tests (Planned)
-- **Indexing**: End-to-end JSON→DB→Search pipeline
-- **Search**: Multi-strategy search with real database
-- **API**: HTTP endpoints with realistic payloads
-
-### Performance Tests (Planned)
-- **Search Latency**: Response time under load
-- **Indexing Throughput**: Documents per minute
-- **Memory Usage**: Large document processing
-
----
-
-## 🎯 AI Agent Instructions
-
-### When Working on This Project:
-
-1. **ALWAYS** check existing code before implementing new features
-2. **PRESERVE** external API compatibility during refactoring
-3. **USE** the CLI (`python -m src.main`) for testing database/search operations
-4. **FOLLOW** the established patterns for logging, error handling, and DI
-5. **UPDATE** this AGENTS.md when making significant architectural changes
-
-### Common Tasks:
-
-#### Fixing Search Issues
-```bash
-# Test database connectivity
-python -m src.main status
-
-# Test indexing without embeddings
-python -m src.main index data/json/sample.json --skip-embeddings
-
-# Test FTS-only search
-python -m src.main search "pertambangan" --no-rerank
-```
-
-#### Adding New Services
-1. Create abstract base class in appropriate `services/` subdirectory
-2. Implement concrete class with dependency injection
-3. Add factory function for easy instantiation
-4. Update settings.py with relevant configuration
-5. Add CLI command for testing
-
-#### Database Changes
-1. Update models in `src/db/models.py`
-2. Create Alembic migration: `alembic revision --autogenerate -m "description"`
-3. Apply migration: `alembic upgrade head`
-4. Update indexer logic if needed
-
-Remember: This is a **production-ready system** - prioritize reliability, maintainability, and clear error handling over quick hacks.
