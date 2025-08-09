@@ -58,30 +58,23 @@ class QueryRouter:
 
     # Enhanced patterns for explicit legal references with smart routing
     EXPLICIT_PATTERNS = [
-        # Pasal references: "pasal 1", "Pasal 1A", etc.
-        r'[Pp]asal\s+\d+[A-Z]?',
-
-        # Ayat references: "ayat (1)", "ayat 2", etc.
-        r'ayat\s*\(\d+\)',
-        r'ayat\s+\d+',
-
-        # Huruf references: "huruf a", "huruf b", etc.
-        r'huruf\s*[a-z]',
-
-        # Angka references: "angka 1", "angka 2", etc.
-        r'angka\s*\d+',
-
-        # Combined pasal references: "pasal 1 ayat 2", etc.
-        r'pasal\s+(\d+)(?:\s+ayat\s+(\d+))?(?:\s+huruf\s+([a-z]))?(?:\s+angka\s+(\d+))?',
-
-        # Article references: "artikel 1", "article 1", etc.
-        r'artikel?\s+(\d+)(?:\s+ayat\s+(\d+))?',
-
-        # Direct document references: "UU 1/2023", "PP No. 1 Tahun 2023"
-        r'(UU|PP|PERPU|PERPRES)\s+(?:No\.?\s*)?(\d+)(?:/|\s+[Tt]ahun\s+)(\d{4})',
-
-        # Bab references: "bab 1", "bab I"
-        r'bab\s+([IVX]+|\d+)',
+        # Comprehensive pasal/ayat combinations
+        r'(?:pasal|pasal\s+)?(\d+[A-Z]?)\s*(?:ayat\s*(\d+))?(?:\s*huruf\s*([a-z]))?(?:\s*angka\s*(\d+))?',
+        
+        # Specific pasal references with document context
+        r'(?:uu|undang-undang)\s+(?:no\.?\s*)?(\d+)(?:/|\s+tahun\s+)(\d{4})\s*(?:pasal\s+(\d+))?(?:\s+ayat\s+(\d+))?',
+        
+        # PP references with pasal
+        r'(?:pp|peraturan\s+pemerintah)\s+(?:no\.?\s*)?(\d+)(?:/|\s+tahun\s+)(\d{4})\s*(?:pasal\s+(\d+))?(?:\s+ayat\s+(\d+))?',
+        
+        # Explicit pasal/ayat/huruf combinations
+        r'pasal\s+(\d+(?:[A-Z])?)\s*(?:ayat\s*(\d+))?(?:\s*huruf\s*([a-z]))?',
+        
+        # Direct citation format: "UU 4/2009 Pasal 121 Ayat 1"
+        r'(UU|PP|PERPU)\s+(\d+)/(\d{4})\s+pasal\s+(\d+(?:[A-Z])?)(?:\s+ayat\s+(\d+))?',
+        
+        # Flexible citation format
+        r'(?:pasal|pasal\s+)?(\d+[A-Z]?)\s*(?:ayat\s*\(?\s*(\d+)\s*\)?)?(?:\s*huruf\s*([a-z]))?',
     ]
 
     def __init__(self):
@@ -106,39 +99,72 @@ class QueryRouter:
 
     def extract_explicit_references(self, query: str) -> Dict[str, Any]:
         """
-        Extract explicit legal references from query.
+        Extract explicit legal references from query with comprehensive parsing.
 
         Args:
             query: Search query
 
         Returns:
-            Dictionary of extracted references
+            Dictionary with extracted references
         """
-        references = {}
+        references = {
+            'pasal': None,
+            'ayat': None,
+            'huruf': None,
+            'angka': None,
+            'doc_form': None,
+            'doc_number': None,
+            'doc_year': None
+        }
 
-        for pattern in self.patterns:
-            match = pattern.search(query)
-            if match:
-                groups = match.groups()
+        clean_query = query.lower().strip()
 
-                # Parse based on pattern type
-                if 'pasal' in pattern.pattern:
-                    references['pasal'] = groups[0] if groups[0] else None
-                    references['ayat'] = groups[1] if len(groups) > 1 and groups[1] else None
-                    references['huruf'] = groups[2] if len(groups) > 2 and groups[2] else None
-                    references['angka'] = groups[3] if len(groups) > 3 and groups[3] else None
-                elif any(doc_type in pattern.pattern for doc_type in ['UU', 'PP', 'PERPU', 'PERPRES']):
-                    references['doc_form'] = groups[0] if groups[0] else None
-                    references['doc_number'] = groups[1] if len(groups) > 1 and groups[1] else None
-                    references['doc_year'] = int(groups[2]) if len(groups) > 2 and groups[2] else None
-                elif 'bab' in pattern.pattern:
-                    references['bab'] = groups[0] if groups[0] else None
-                elif 'ayat' in pattern.pattern:
-                    references['ayat'] = groups[0] if groups[0] else None
-                elif 'huruf' in pattern.pattern:
-                    references['huruf'] = groups[0] if groups[0] else None
-                elif 'angka' in pattern.pattern:
-                    references['angka'] = groups[0] if groups[0] else None
+        # Comprehensive pattern matching for legal citations
+        
+        # Pattern 1: UU 4/2009 Pasal 121 Ayat 1
+        pattern1 = r'(?:uu|undang-undang)\s+(?:no\.?\s*)?(\d+)(?:/|\s+tahun\s+)(\d{4})\s+pasal\s+(\d+(?:[A-Z])?)(?:\s+ayat\s+(\d+))?'
+        match1 = re.search(pattern1, clean_query, re.IGNORECASE)
+        if match1:
+            references['doc_form'] = 'UU'
+            references['doc_number'] = match1.group(1)
+            references['doc_year'] = int(match1.group(2))
+            references['pasal'] = match1.group(3)
+            if match1.group(4):
+                references['ayat'] = match1.group(4)
+            return references
+
+        # Pattern 2: Pasal 121 Ayat 1 UU 4/2009
+        pattern2 = r'pasal\s+(\d+(?:[A-Z])?)\s*(?:ayat\s*(\d+))?\s*(?:uu|undang-undang)\s+(\d+)/(\d{4})'
+        match2 = re.search(pattern2, clean_query, re.IGNORECASE)
+        if match2:
+            references['pasal'] = match2.group(1)
+            if match2.group(2):
+                references['ayat'] = match2.group(2)
+            references['doc_form'] = 'UU'
+            references['doc_number'] = match2.group(3)
+            references['doc_year'] = int(match2.group(4))
+            return references
+
+        # Pattern 3: Flexible pasal/ayat combinations
+        pattern3 = r'pasal\s+(\d+(?:[A-Z])?)(?:\s+ayat\s*(\d+))?(?:\s+huruf\s*([a-z]))?(?:\s+angka\s*(\d+))?'
+        match3 = re.search(pattern3, clean_query, re.IGNORECASE)
+        if match3:
+            references['pasal'] = match3.group(1)
+            if match3.group(2):
+                references['ayat'] = match3.group(2)
+            if match3.group(3):
+                references['huruf'] = match3.group(3)
+            if match3.group(4):
+                references['angka'] = match3.group(4)
+
+        # Pattern 4: Document references without pasal
+        pattern4 = r'(uu|pp|perpu|perpres)\s+(?:no\.?\s*)?(\d+)(?:/|\s+tahun\s+)(\d{4})'
+        match4 = re.search(pattern4, clean_query, re.IGNORECASE)
+        if match4:
+            doc_type = match4.group(1).upper()
+            references['doc_form'] = doc_type
+            references['doc_number'] = match4.group(2)
+            references['doc_year'] = int(match4.group(3))
 
         return references
 
@@ -285,7 +311,7 @@ class VectorSearcher:
                     dv.doc_year,
                     dv.doc_number,
                     dv.hierarchy_path,
-                    1 - (dv.embedding <=> :query_vector) as score
+                    1 - (dv.embedding <=> CAST(:query_vector AS vector)) as score
                 FROM document_vectors dv
                 LEFT JOIN legal_units lu ON dv.unit_id = lu.unit_id AND lu.unit_type = 'PASAL'
                 WHERE 1=1
@@ -320,7 +346,7 @@ class VectorSearcher:
                 query_str += f" {filters_clause}"
 
             query_str += """
-                ORDER BY dv.embedding <=> :query_vector
+                ORDER BY dv.embedding <=> CAST(:query_vector AS vector)
                 LIMIT :limit
             """
 
@@ -395,23 +421,49 @@ class ExplicitSearcher:
             conditions.append("ld.doc_year = :doc_year")
             query_params["doc_year"] = references["doc_year"]
 
-        # Handle unit-level references
+        # Handle unit-level references with hierarchical matching
         unit_conditions = []
 
-        if references.get("pasal"):
+        # Build hierarchical query for specific pasal/ayat combinations
+        if references.get("pasal") and references.get("ayat"):
+            # Target specific ayat within pasal using JOIN approach
+            unit_conditions.append("""
+                lu.unit_type = 'AYAT' 
+                AND lu.number_label = :ayat
+                AND lu.parent_pasal_id IN (
+                    SELECT unit_id FROM legal_units 
+                    WHERE unit_type = 'PASAL' AND number_label = :pasal
+                )
+            """)
+            query_params["pasal"] = references["pasal"]
+            query_params["ayat"] = references["ayat"]
+        elif references.get("pasal"):
+            # Target specific pasal
             unit_conditions.append("lu.number_label = :pasal AND lu.unit_type = 'PASAL'")
             query_params["pasal"] = references["pasal"]
 
-        if references.get("ayat"):
-            unit_conditions.append("lu.number_label = :ayat AND lu.unit_type = 'AYAT'")
-            query_params["ayat"] = references["ayat"]
-
         if references.get("huruf"):
-            unit_conditions.append("lu.number_label = :huruf AND lu.unit_type = 'HURUF'")
+            # Target specific huruf within ayat
+            unit_conditions.append("""
+                lu.unit_type = 'HURUF' 
+                AND lu.number_label = :huruf
+                AND lu.parent_pasal_id IN (
+                    SELECT unit_id FROM legal_units 
+                    WHERE unit_type = 'AYAT' AND number_label = :ayat
+                )
+            """)
             query_params["huruf"] = references["huruf"]
 
         if references.get("angka"):
-            unit_conditions.append("lu.number_label = :angka AND lu.unit_type = 'ANGKA'")
+            # Target specific angka within huruf
+            unit_conditions.append("""
+                lu.unit_type = 'ANGKA' 
+                AND lu.number_label = :angka
+                AND lu.parent_pasal_id IN (
+                    SELECT unit_id FROM legal_units 
+                    WHERE unit_type = 'HURUF' AND number_label = :huruf
+                )
+            """)
             query_params["angka"] = references["angka"]
 
         # Combine conditions

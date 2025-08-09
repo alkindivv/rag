@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     enable_reranker: bool = Field(default=True, env="ENABLE_RERANKER")
 
     llm_provider: str = Field(default="gemini", env="LLM_PROVIDER")
+    llm_model: str = Field(default="gemini-2.0-flash-exp", env="LLM_MODEL")
     gemini_api_key: str | None = Field(default=None, env="GEMINI_API_KEY")
     openai_api_key: str | None = Field(default=None, env="OPENAI_API_KEY")
     anthropic_api_key: str | None = Field(default=None, env="ANTHROPIC_API_KEY")
