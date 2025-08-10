@@ -408,161 +408,180 @@ class ExplicitSearcher:
         self,
         references: Dict[str, Any],
         filters: Optional[SearchFilters] = None,
-        limit: int = 20,
+        limit: int = 20
     ) -> List[SearchResult]:
-        """Deterministic explicit retrieval via parent-anchored chain.
-
-        Chain: PASAL -> AYAT -> HURUF -> ANGKA using number_label and parent_* IDs.
-        Returns the most specific unit found.
         """
+        Search for explicit legal references.
+
+        Args:
+            references: Extracted legal references
+            filters: Optional search filters
+            limit: Maximum number of results
+
+        Returns:
+            List of search results
+        """
+        search_results = []
+
+        # Build query conditions based on references
+        conditions = []
+        query_params = {"limit": limit}
+
+        # Handle document-level references
+        if references.get("doc_form"):
+            # Compare enum by casting to text to avoid type mismatch
+            conditions.append("ld.doc_form::text = :doc_form")
+            query_params["doc_form"] = references["doc_form"]
+
+        # Allow filtering using short form (e.g., UUD)
+        if references.get("doc_form_short"):
+            conditions.append("ld.doc_form_short = :doc_form_short")
+            query_params["doc_form_short"] = references["doc_form_short"]
+
+        if references.get("doc_number"):
+            conditions.append("ld.doc_number = :doc_number")
+            query_params["doc_number"] = references["doc_number"]
+
+        if references.get("doc_year"):
+            conditions.append("ld.doc_year = :doc_year")
+            query_params["doc_year"] = references["doc_year"]
+
+        # Handle unit-level references with hierarchical matching
+        unit_conditions = []
+
+        # Build hierarchical query for specific pasal/ayat combinations
+        if references.get("pasal") and references.get("ayat"):
+            # Target specific ayat within pasal using JOIN approach
+            unit_conditions.append("""
+                LOWER(lu.unit_type::text) = 'ayat' 
+                AND lu.number_label = :ayat
+                AND lu.parent_pasal_id IN (
+                    SELECT unit_id FROM legal_units 
+                    WHERE LOWER(unit_type::text) = 'pasal' AND number_label = :pasal
+                )
+            """)
+            query_params["pasal"] = references["pasal"]
+            query_params["ayat"] = references["ayat"]
+        elif references.get("pasal"):
+            # Target specific pasal
+            unit_conditions.append("lu.number_label = :pasal AND LOWER(lu.unit_type::text) = 'pasal'")
+            query_params["pasal"] = references["pasal"]
+
+        if references.get("huruf"):
+            # Target specific huruf within a specific ayat of a pasal
+            # Use correct parent_ayat_id linkage and anchor through pasal -> ayat -> huruf
+            unit_conditions.append("""
+                LOWER(lu.unit_type::text) = 'huruf'
+                AND lu.number_label = :huruf
+                AND lu.parent_ayat_id IN (
+                    SELECT ay.unit_id FROM legal_units ay
+                    WHERE LOWER(ay.unit_type::text) = 'ayat' AND ay.number_label = :ayat
+                      AND ay.parent_pasal_id IN (
+                          SELECT pa.unit_id FROM legal_units pa
+                          WHERE LOWER(pa.unit_type::text) = 'pasal' AND pa.number_label = :pasal
+                      )
+                )
+            """)
+            query_params["huruf"] = references["huruf"]
+
+        if references.get("angka"):
+            # Target specific angka within a specific huruf within a specific ayat of a pasal
+            # Chain: pasal -> ayat -> huruf -> angka, using correct parent_* columns
+            unit_conditions.append("""
+                LOWER(lu.unit_type::text) = 'angka'
+                AND lu.number_label = :angka
+                AND lu.parent_huruf_id IN (
+                    SELECT hu.unit_id FROM legal_units hu
+                    WHERE LOWER(hu.unit_type::text) = 'huruf' AND hu.number_label = :huruf
+                      AND hu.parent_ayat_id IN (
+                          SELECT ay.unit_id FROM legal_units ay
+                          WHERE LOWER(ay.unit_type::text) = 'ayat' AND ay.number_label = :ayat
+                            AND ay.parent_pasal_id IN (
+                                SELECT pa.unit_id FROM legal_units pa
+                                WHERE LOWER(pa.unit_type::text) = 'pasal' AND pa.number_label = :pasal
+                            )
+                      )
+                )
+            """)
+            query_params["angka"] = references["angka"]
+
+        # Combine conditions
+        where_clause = ""
+        if conditions:
+            where_clause = "WHERE " + " AND ".join(conditions)
+
+        if unit_conditions:
+            unit_clause = "(" + " OR ".join(unit_conditions) + ")"
+            if where_clause:
+                where_clause += f" AND {unit_clause}"
+            else:
+                where_clause = f"WHERE {unit_clause}"
+
+        # Build and execute query
+        explicit_query = text(f"""
+            SELECT
+                lu.id,
+                lu.unit_id,
+                lu.unit_type,
+                COALESCE(agg.text, lu.local_content, lu.content, lu.display_text, lu.bm25_body) as text,
+                lu.citation_string,
+                ld.doc_form,
+                ld.doc_year,
+                ld.doc_number,
+                1.0 as score
+            FROM legal_units lu
+            JOIN legal_documents ld ON lu.document_id = ld.id
+            LEFT JOIN LATERAL (
+                SELECT string_agg(
+                    CASE
+                        WHEN LOWER(c.unit_type::text) = 'ayat' THEN '(' || COALESCE(c.number_label,'') || ') ' || COALESCE(c.local_content, c.content, c.display_text, c.bm25_body)
+                        ELSE COALESCE(c.local_content, c.content, c.display_text, c.bm25_body)
+                    END,
+                    E'\n\n'
+                ORDER BY c.ordinal_int, c.ordinal_suffix
+                ) AS text
+                FROM legal_units c
+                WHERE c.parent_pasal_id = lu.unit_id
+            ) agg ON TRUE
+            {where_clause}
+            ORDER BY ld.doc_year DESC, lu.ordinal_int ASC
+            LIMIT :limit
+        """)
+
         try:
-            params: Dict[str, Any] = {}
+            results = self.db.execute(explicit_query, query_params).fetchall()
 
-            # Optional document constraint
-            doc_clause = ""
-            if references.get("doc_form") or references.get("doc_number") or references.get("doc_year"):
-                dq = ["SELECT id FROM legal_documents WHERE 1=1"]
-                has_num = bool(references.get("doc_number"))
-                has_year = bool(references.get("doc_year"))
-                # Prefer precise selection by number/year; only use form when num/year incomplete
-                if references.get("doc_form") and not (has_num and has_year):
-                    # Cast to text to avoid domain/enum lower() errors and compare case-insensitively
-                    dq.append("AND (doc_form::text) ILIKE :doc_form")
-                    params["doc_form"] = references["doc_form"]
-                if has_num:
-                    dq.append("AND doc_number = :doc_number")
-                    params["doc_number"] = references["doc_number"]
-                if has_year:
-                    dq.append("AND doc_year = :doc_year")
-                    params["doc_year"] = references["doc_year"]
-                dq.append("ORDER BY doc_year DESC LIMIT 1")
-                row = self.db.execute(text("\n".join(dq)), params).fetchone()
-                if not row:
-                    return []
-                params["doc_id"] = row.id
-                doc_clause = " AND document_id = :doc_id"
+            for row in results:
+                search_results.append(SearchResult(
+                    id=str(row.id),
+                    text=row.text or "",
+                    citation_string=row.citation_string or "",
+                    score=1.0,  # Explicit matches get perfect score
+                    source_type="explicit",
+                    unit_type=row.unit_type,
+                    unit_id=row.unit_id,
+                    doc_form=row.doc_form,
+                    doc_year=row.doc_year,
+                    doc_number=row.doc_number,
+                ))
 
-            # PASAL
-            pasal_id: Optional[str] = None
-            if references.get("pasal"):
-                q = text(
-                    f"""
-                    SELECT unit_id FROM legal_units
-                    WHERE LOWER(unit_type::text) = 'pasal' AND number_label = :pasal{doc_clause}
-                    ORDER BY ordinal_int ASC
-                    LIMIT 1
-                    """
-                )
-                params["pasal"] = references["pasal"]
-                r = self.db.execute(q, params).fetchone()
-                if not r:
-                    return []
-                pasal_id = r.unit_id
+            logger.debug(f"Explicit search returned {len(search_results)} results")
 
-            # AYAT
-            ayat_id: Optional[str] = None
-            if references.get("ayat"):
-                if not pasal_id:
-                    return []
-                q = text(
-                    """
-                    SELECT unit_id FROM legal_units
-                    WHERE LOWER(unit_type::text) = 'ayat' AND number_label = :ayat
-                      AND parent_pasal_id = :pasal_id
-                    ORDER BY ordinal_int ASC
-                    LIMIT 1
-                    """
-                )
-                r = self.db.execute(q, {"ayat": references["ayat"], "pasal_id": pasal_id}).fetchone()
-                if not r:
-                    return []
-                ayat_id = r.unit_id
-
-            # HURUF
-            huruf_id: Optional[str] = None
-            if references.get("huruf"):
-                if not ayat_id:
-                    return []
-                q = text(
-                    """
-                    SELECT unit_id FROM legal_units
-                    WHERE LOWER(unit_type::text) = 'huruf' AND number_label = :huruf
-                      AND parent_ayat_id = :ayat_id
-                    ORDER BY ordinal_int ASC
-                    LIMIT 1
-                    """
-                )
-                r = self.db.execute(q, {"huruf": references["huruf"], "ayat_id": ayat_id}).fetchone()
-                if not r:
-                    return []
-                huruf_id = r.unit_id
-
-            # ANGKA
-            angka_id: Optional[str] = None
-            if references.get("angka"):
-                if not huruf_id:
-                    return []
-                q = text(
-                    """
-                    SELECT unit_id FROM legal_units
-                    WHERE LOWER(unit_type::text) = 'angka' AND number_label = :angka
-                      AND parent_huruf_id = :huruf_id
-                    ORDER BY ordinal_int ASC
-                    LIMIT 1
-                    """
-                )
-                r = self.db.execute(q, {"angka": references["angka"], "huruf_id": huruf_id}).fetchone()
-                if not r:
-                    return []
-                angka_id = r.unit_id
-
-            final_unit_id = angka_id or huruf_id or ayat_id or pasal_id
-            if not final_unit_id:
-                return []
-
-            # Fetch final unit
-            q = text(
-                """
-                SELECT
-                    lu.id,
-                    lu.unit_id,
-                    lu.unit_type,
-                    COALESCE(lu.local_content, lu.content, lu.display_text, lu.bm25_body) AS text,
-                    lu.citation_string,
-                    ld.doc_form,
-                    ld.doc_year,
-                    ld.doc_number
-                FROM legal_units lu
-                JOIN legal_documents ld ON ld.id = lu.document_id
-                WHERE lu.unit_id = :uid
-                """
-            )
-            row = self.db.execute(q, {"uid": final_unit_id}).fetchone()
-            if not row:
-                return []
-
-            return [SearchResult(
-                id=str(row.id),
-                text=row.text or "",
-                citation_string=row.citation_string or "",
-                score=1.0,
-                source_type="explicit",
-                unit_type=row.unit_type,
-                unit_id=row.unit_id,
-                doc_form=row.doc_form,
-                doc_year=row.doc_year,
-                doc_number=row.doc_number,
-            )]
         except Exception as e:
             logger.error(f"Explicit search failed: {e}")
-            return []
+
+        return search_results
+
+
 class HybridRetriever:
     """
     Main hybrid retriever orchestrating FTS, vector, and explicit search.
-    Routes queries and combines results with fast-fail/fallback logic.
+
+    Routes queries and combines results from different search methods.
     """
 
     def __init__(self, embedder: Optional["JinaV4Embedder"] = None):
+        """Initialize hybrid retriever with optional embedder."""
         if embedder is None:
             from ..embedding.embedder import JinaV4Embedder as _JinaV4Embedder
             self.embedder = _JinaV4Embedder()
@@ -579,51 +598,95 @@ class HybridRetriever:
         vector_weight: float = 0.6,
         strategy: str = "auto",
     ) -> List[SearchResult]:
+        """
+        Perform hybrid search combining multiple strategies.
+
+        Args:
+            query: Search query
+            filters: Optional search filters
+            limit: Maximum number of results
+            fts_weight: Weight for FTS results in hybrid scoring
+            vector_weight: Weight for vector results in hybrid scoring
+            strategy: Search strategy ('auto', 'explicit', 'fts', 'vector', 'hybrid')
+
+        Returns:
+            List of ranked search results
+        """
         import time
-        start = time.time()
+        start_time = time.time()
+
         try:
             from ...db.session import get_db_session
             with get_db_session() as db:
-                # Manual strategies
                 if strategy == "explicit":
                     return self._explicit_search(db, query, filters, limit)
                 if strategy == "fts":
                     return FTSSearcher(db).search(query, filters, limit)
                 if strategy == "vector":
                     return VectorSearcher(db, self.embedder).search(query, filters, limit)
+                if strategy == "hybrid":
+                    return self._thematic_search(
+                        db, query, filters, limit, fts_weight, vector_weight
+                    )
 
-                # Auto routing
+                # Auto strategy: FTS-first for explicit queries
                 if self.router.is_explicit_query(query):
-                    results = self._explicit_search(db, query, filters, limit)
-                    if results:
-                        return results[:limit]
-                    # FTS-only fallback
-                    fts_results = FTSSearcher(db).search(query, filters, limit)
-                    if fts_results:
-                        return self._deduplicate_and_rank(fts_results)[:limit]
-                    # Vector last resort
-                    vector_results = VectorSearcher(db, self.embedder).search(query, filters, limit)
-                    return self._deduplicate_and_rank(vector_results)[:limit]
+                    # Try FTS first with higher limit
+                    fts_searcher = FTSSearcher(db)
+                    fts_results = fts_searcher.search(query, filters, limit=30)
 
-                # Thematic/semantic hybrid
-                return self._thematic_search(db, query, filters, limit, fts_weight, vector_weight)
+                    # If FTS finds sufficient results (>=limit), use FTS-only
+                    if len(fts_results) >= limit:
+                        logger.debug(f"FTS-only strategy: found {len(fts_results)} results")
+                        return fts_results[:limit]
+
+                    # Otherwise fall back to hybrid search
+                    logger.debug(f"FTS-only insufficient ({len(fts_results)} results), falling back to hybrid")
+                    return self._thematic_search(
+                        db, query, filters, limit, fts_weight, vector_weight
+                    )
+
+                # Non-explicit queries use hybrid search
+                return self._thematic_search(
+                    db, query, filters, limit, fts_weight, vector_weight
+                )
+
         except Exception as e:
             logger.error(f"Hybrid search failed: {e}")
             return []
+
         finally:
-            duration_ms = (time.time() - start) * 1000
-            logger.info("Hybrid search completed", extra=log_timing("hybrid_search", duration_ms, query_length=len(query)))
+            duration_ms = (time.time() - start_time) * 1000
+            logger.info(
+                "Hybrid search completed",
+                extra=log_timing("hybrid_search", duration_ms, query_length=len(query))
+            )
 
     def _explicit_search(
         self,
         db: Session,
         query: str,
         filters: Optional[SearchFilters],
-        limit: int,
+        limit: int
     ) -> List[SearchResult]:
+        """Handle explicit legal reference queries."""
+        logger.info(f"Processing explicit query: {query}")
+
+        # Extract references from query
         references = self.router.extract_explicit_references(query)
         logger.debug(f"Extracted references: {references}")
-        return ExplicitSearcher(db).search(references, filters, limit)
+
+        # Search using explicit searcher
+        explicit_searcher = ExplicitSearcher(db)
+        results = explicit_searcher.search(references, filters, limit)
+
+        # If explicit search returns few results, supplement with FTS
+        if len(results) < limit // 2:
+            fts_searcher = FTSSearcher(db)
+            fts_results = fts_searcher.search(query, filters, limit - len(results))
+            results.extend(fts_results)
+
+        return self._deduplicate_and_rank(results)[:limit]
 
     def _thematic_search(
         self,
@@ -637,7 +700,7 @@ class HybridRetriever:
         """Handle thematic/semantic queries."""
         logger.info(f"Processing thematic query: {query}")
 
-        all_results: List[SearchResult] = []
+        all_results = []
 
         # Vector search (pasal level)
         vector_searcher = VectorSearcher(db, self.embedder)
@@ -673,7 +736,7 @@ class HybridRetriever:
             Deduplicated and ranked results
         """
         # Deduplicate by unit_id, keeping highest scoring result
-        seen_units: Dict[str, SearchResult] = {}
+        seen_units = {}
         for result in results:
             if result.unit_id not in seen_units or result.score > seen_units[result.unit_id].score:
                 seen_units[result.unit_id] = result
@@ -739,7 +802,7 @@ class HybridRetriever:
 
                 results = db.execute(query, {"pasal_id": pasal_id}).fetchall()
 
-                search_results: List[SearchResult] = []
+                search_results = []
                 for row in results:
                     search_results.append(SearchResult(
                         id=str(row.id),
