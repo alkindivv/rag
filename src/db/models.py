@@ -191,6 +191,8 @@ class LegalUnit(Base):
     path = Column(JSONB)                        # Full path from root
     citation_string = Column(Text)              # Human-readable citation
     parent_pasal_id = Column(String(500), index=True, nullable=True)  # Parent pasal for leaf nodes
+    parent_ayat_id = Column(String(500), index=True, nullable=True)   # Parent ayat for huruf/angka
+    parent_huruf_id = Column(String(500), index=True, nullable=True)  # Parent huruf for angka
     hierarchy_path = Column(Text, index=True)   # Text hierarchy path
 
     # Full-text search vector
@@ -208,6 +210,9 @@ class LegalUnit(Base):
         UniqueConstraint('document_id', 'unit_id', name='uq_units_doc_unitid'),
         Index('idx_units_type_ord', 'unit_type', 'ordinal_int'),
         Index('idx_units_content_vector_gin', 'content_vector', postgresql_using='gin'),
+        Index('idx_units_parent_pasal', 'parent_pasal_id'),
+        Index('idx_units_parent_ayat', 'parent_ayat_id'),
+        Index('idx_units_parent_huruf', 'parent_huruf_id'),
     )
 
 

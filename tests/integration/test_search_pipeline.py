@@ -26,7 +26,7 @@ from unittest.mock import patch, MagicMock
 
 from src.config.settings import settings
 from src.db.models import LegalDocument, LegalUnit, DocumentVector, Subject
-from src.pipeline.indexer import DocumentIndexer
+from src.pipeline.indexer import LegalDocumentIndexer as DocumentIndexer
 from src.services.retriever.hybrid_retriever import HybridRetriever, SearchFilters
 from src.services.search.hybrid_search import HybridSearchService
 from src.services.search.reranker import JinaReranker
@@ -1119,7 +1119,7 @@ class TestSystemRobustness:
                 with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
                     # Create unique document for this thread
                     doc = sample_json_document.copy()
-+                    doc["doc_id"] = "UU-2025-WRITER"
+                    doc["doc_id"] = "UU-2025-WRITER"
                     json.dump(doc, f, ensure_ascii=False)
                     temp_path = Path(f.name)
 
@@ -1452,5 +1452,3 @@ class TestSystemIntegrationSmokeTests:
 
         finally:
             temp_path.unlink(missing_ok=True)
-
-    def test

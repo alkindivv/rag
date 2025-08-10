@@ -500,7 +500,7 @@ def ensure_test_data_dir(test_data_dir):
 @pytest.fixture
 def indexer_with_mocks(mock_db_session, mock_jina_embedder):
     """Indexer with mocked dependencies for integration testing."""
-    from src.pipeline.indexer import DocumentIndexer
+    from src.pipeline.indexer import LegalDocumentIndexer as DocumentIndexer
 
     with patch('src.services.embedding.embedder.JinaEmbedder', return_value=mock_jina_embedder):
         indexer = DocumentIndexer(skip_embeddings=True)  # Skip embeddings for speed

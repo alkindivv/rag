@@ -267,7 +267,12 @@ class LegalDocumentIndexer:
         pasal_contents = {}  # unit_id -> full_content for embedding
         processed_unit_ids: set[str] = set()
 
-        def process_node(node: Dict[str, Any], parent_pasal_id: Optional[str] = None) -> None:
+        def process_node(
+            node: Dict[str, Any],
+            parent_pasal_id: Optional[str] = None,
+            current_ayat_id: Optional[str] = None,
+            current_huruf_id: Optional[str] = None,
+        ) -> None:
             """Recursively process tree nodes."""
 
             # Map type to enum
@@ -293,11 +298,11 @@ class LegalDocumentIndexer:
                 return
             processed_unit_ids.add(unit_id)
 
-            # Create unit
+            # Create unit with strict parent anchors
             unit = LegalUnit(
                 document_id=doc.id,
-                unit_type=unit_type,
                 unit_id=unit_id,
+                unit_type=unit_type,
                 number_label=node.get("number_label"),
                 ordinal_int=node.get("ordinal_int", 0),
                 ordinal_suffix=node.get("ordinal_suffix", ""),
@@ -311,21 +316,32 @@ class LegalDocumentIndexer:
                 path=node.get("path"),
                 citation_string=node.get("citation_string"),
                 parent_pasal_id=parent_pasal_id,
+                parent_ayat_id=(node.get("parent_ayat_id") or current_ayat_id),
+                parent_huruf_id=(node.get("parent_huruf_id") or current_huruf_id),
                 hierarchy_path=self._build_hierarchy_path(node.get("path", [])),
             )
 
             db.add(unit)
             units.append(unit)
 
-            # If this is a pasal, collect content for embedding
-            current_pasal_id = parent_pasal_id
-            if unit_type == UnitType.PASAL:
-                current_pasal_id = unit.unit_id
-                pasal_contents[unit.unit_id] = unit.content or ""
+            # Advance anchors
+            next_pasal_id = parent_pasal_id
+            next_ayat_id = current_ayat_id
+            next_huruf_id = current_huruf_id
 
-            # Process children
+            if unit_type == UnitType.PASAL:
+                next_pasal_id = unit.unit_id
+                next_ayat_id = None
+                next_huruf_id = None
+                pasal_contents[unit.unit_id] = unit.content or ""
+            elif unit_type == UnitType.AYAT:
+                next_ayat_id = unit.unit_id
+                next_huruf_id = None
+            elif unit_type == UnitType.HURUF:
+                next_huruf_id = unit.unit_id
+
             for child in node.get("children", []):
-                process_node(child, current_pasal_id)
+                process_node(child, next_pasal_id, next_ayat_id, next_huruf_id)
 
         # Start processing from root
         if tree.get("children"):

@@ -389,6 +389,8 @@ class PDFOrchestrator:
         path: Optional[List[Dict[str, str]]] = None,
         pasal_id: Optional[str] = None,
         used_ids: Optional[set[str]] = None,
+        current_ayat_id: Optional[str] = None,
+        current_huruf_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Serialize LegalNode tree to specification-compliant structure."""
 
@@ -461,6 +463,7 @@ class PDFOrchestrator:
 
         if node.type in ["ayat", "huruf", "angka"]:
             local_content = self._extract_inline_content(node)
+            # Base linkage to pasal
             data.update(
                 {
                     "parent_pasal_id": pasal_id,
@@ -470,13 +473,39 @@ class PDFOrchestrator:
                     "span": None,
                 }
             )
+            # Additional strict parent links per level
+            if node.type == "huruf":
+                data["parent_ayat_id"] = current_ayat_id
+            if node.type == "angka":
+                data["parent_ayat_id"] = current_ayat_id
+                data["parent_huruf_id"] = current_huruf_id
 
         child_pasal_id = pasal_id
+        child_ayat_id = current_ayat_id
+        child_huruf_id = current_huruf_id
         if node.type == "pasal":
             child_pasal_id = unit_id
+            # reset lower anchors when entering a new pasal
+            child_ayat_id = None
+            child_huruf_id = None
+        elif node.type == "ayat":
+            child_ayat_id = unit_id
+            child_huruf_id = None
+        elif node.type == "huruf":
+            child_huruf_id = unit_id
 
         data["children"] = [
-            self._serialize_tree(child, doc_id, doc_title, unit_id, current_path, child_pasal_id, used_ids)
+            self._serialize_tree(
+                child,
+                doc_id,
+                doc_title,
+                unit_id,
+                current_path,
+                child_pasal_id,
+                used_ids,
+                child_ayat_id,
+                child_huruf_id,
+            )
             for child in node.children
         ]
 

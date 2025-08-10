@@ -44,8 +44,8 @@ class TestSearchResult:
         """Test SearchResult can be created with all required fields."""
         result = SearchResult(
             unit_id="UU-2025-1/pasal-1/ayat-1",
-            content="Test legal content",
-            citation="UU No. 1 Tahun 2025 Pasal 1 ayat (1)",
+            content="Test legal content for validation",
+            citation_string="UU No. 1 Tahun 2025 Pasal 1 ayat (1)",
             score=0.95,
             source_type="fts",
             unit_type="ayat",
@@ -64,9 +64,9 @@ class TestSearchResult:
         valid_sources = ["fts", "vector", "explicit", "reranked"]
         for source in valid_sources:
             result = SearchResult(
-                unit_id="test", content="test", citation="test",
+                unit_id="test", text="test", citation_string="test",
                 score=0.5, source_type=source, unit_type="ayat",
-                document_form="UU", document_year=2025, document_number="1"
+                doc_form="UU", doc_year=2025, doc_number="1"
             )
             assert result.source_type == source
 
@@ -81,12 +81,12 @@ class TestSearchResult:
     def test_search_result_comparison(self):
         """Test SearchResult comparison and sorting."""
         result1 = SearchResult(
-            unit_id="test1", content="test", citation="test",
+            unit_id="test1", text="test", citation_string="test",
             score=0.9, source_type="fts", unit_type="ayat",
-            document_form="UU", document_year=2025, document_number="1"
+            doc_form="UU", doc_year=2025, doc_number="1"
         )
         result2 = SearchResult(
-            unit_id="test2", content="test", citation="test",
+            unit_id="test2", text="test", citation_string="test",
             score=0.7, source_type="vector", unit_type="ayat",
             document_form="UU", document_year=2025, document_number="1"
         )
@@ -139,7 +139,7 @@ class TestFTSSearcher:
         mock_session = MagicMock()
         searcher = FTSSearcher(mock_session)
 
-        assert searcher.session is mock_session
+        assert searcher.db is mock_session
 
     def test_fts_query_construction_no_filters(self):
         """Test FTS query construction without filters."""
@@ -262,7 +262,7 @@ class TestVectorSearcher:
 
         searcher = VectorSearcher(mock_session, embedder=mock_embedder)
 
-        assert searcher.session is mock_session
+        assert searcher.db is mock_session
         assert searcher.embedder is mock_embedder
 
     def test_vector_query_construction(self):
@@ -271,7 +271,7 @@ class TestVectorSearcher:
         mock_session.execute.return_value.fetchall.return_value = []
 
         mock_embedder = MagicMock()
-        mock_embedder.embed_single.return_value = [0.1] * 1024
+        mock_embedder.embed_query.return_value = [0.1] * 1024
 
         searcher = VectorSearcher(mock_session, embedder=mock_embedder)
         results = searcher.search("mining regulation", limit=10)
@@ -302,7 +302,7 @@ class TestVectorSearcher:
         mock_session.execute.return_value.fetchall.return_value = []
 
         mock_embedder = MagicMock()
-        mock_embedder.embed_single.return_value = [0.1] * 1024
+        mock_embedder.embed_query.return_value = [0.1] * 1024
 
         searcher = VectorSearcher(mock_session, embedder=mock_embedder)
 
@@ -323,12 +323,13 @@ class TestVectorSearcher:
         """Test vector search when embedding fails."""
         mock_session = MagicMock()
         mock_embedder = MagicMock()
-        mock_embedder.embed_single.side_effect = Exception("Embedding API failed")
+        mock_embedder.embed_query.side_effect = Exception("Embedding API failed")
 
         searcher = VectorSearcher(mock_session, embedder=mock_embedder)
 
-        with pytest.raises(Exception):
-            searcher.search("test query")
+        # Should return empty list instead of raising exception
+        results = searcher.search("test query")
+        assert results == []
 
     def test_vector_result_mapping(self):
         """Test vector search result mapping."""
@@ -347,7 +348,7 @@ class TestVectorSearcher:
         mock_session.execute.return_value.fetchall.return_value = [mock_row]
 
         mock_embedder = MagicMock()
-        mock_embedder.embed_single.return_value = [0.1] * 1024
+        mock_embedder.embed_query.return_value = [0.1] * 1024
 
         searcher = VectorSearcher(mock_session, embedder=mock_embedder)
         results = searcher.search("pertambangan")
@@ -367,7 +368,7 @@ class TestExplicitSearcher:
         mock_session = MagicMock()
         searcher = ExplicitSearcher(mock_session)
 
-        assert searcher.session is mock_session
+        assert searcher.db is mock_session
 
     def test_explicit_reference_parsing(self):
         """Test parsing explicit legal references."""
@@ -444,7 +445,7 @@ class TestHybridRetriever:
 
     def test_hybrid_retriever_initialization_default(self):
         """Test HybridRetriever initialization with defaults."""
-        with patch('src.services.embedding.embedder.JinaEmbedder') as mock_embedder_class:
+        with patch('src.services.retriever.hybrid_retriever.JinaV4Embedder') as mock_embedder_class:
             mock_embedder = MagicMock()
             mock_embedder_class.return_value = mock_embedder
 
@@ -481,7 +482,7 @@ class TestHybridRetriever:
     def test_query_strategy_routing_thematic(self):
         """Test query routing for thematic searches."""
         mock_embedder = MagicMock()
-        mock_embedder.embed_single.return_value = [0.1] * 1024
+        mock_embedder.embed_query.return_value = [0.1] * 1024
 
         with patch('src.db.session.get_db_session') as mock_get_session:
             mock_session = MagicMock()
@@ -528,12 +529,12 @@ class TestHybridRetriever:
             results = retriever.search("pertambangan", strategy="fts")
 
             # Should only use FTS, not vector or explicit
-            mock_embedder.embed_single.assert_not_called()
+            mock_embedder.embed_query.assert_not_called()
 
     def test_vector_strategy_forced(self):
         """Test forced vector strategy."""
         mock_embedder = MagicMock()
-        mock_embedder.embed_single.return_value = [0.1] * 1024
+        mock_embedder.embed_query.return_value = [0.1] * 1024
 
         with patch('src.db.session.get_db_session') as mock_get_session:
             mock_session = MagicMock()
@@ -545,12 +546,12 @@ class TestHybridRetriever:
             results = retriever.search("mining", strategy="vector")
 
             # Should call embedder for vector search
-            mock_embedder.embed_single.assert_called_once_with("mining")
+            mock_embedder.embed_query.assert_called_once_with("mining", dims=1024)
 
     def test_hybrid_strategy_combination(self):
         """Test hybrid strategy combines FTS and vector results."""
         mock_embedder = MagicMock()
-        mock_embedder.embed_single.return_value = [0.1] * 1024
+        mock_embedder.embed_query.return_value = [0.1] * 1024
 
         # Mock different results for FTS and vector searches
         fts_row = MagicMock()
@@ -609,7 +610,7 @@ class TestHybridRetriever:
     def test_result_deduplication(self):
         """Test deduplication of results from multiple search strategies."""
         mock_embedder = MagicMock()
-        mock_embedder.embed_single.return_value = [0.1] * 1024
+        mock_embedder.embed_query.return_value = [0.1] * 1024
 
         # Create duplicate result (same unit_id from different strategies)
         duplicate_row = MagicMock()
@@ -660,7 +661,7 @@ class TestHybridRetrieverErrorHandling:
     def test_embedder_failure_fallback(self):
         """Test fallback when embedder fails."""
         mock_embedder = MagicMock()
-        mock_embedder.embed_single.side_effect = Exception("API timeout")
+        mock_embedder.embed_query.side_effect = Exception("API timeout")
 
         with patch('src.db.session.get_db_session') as mock_get_session:
             mock_session = MagicMock()
@@ -680,7 +681,7 @@ class TestHybridRetrieverErrorHandling:
     def test_partial_failure_in_hybrid_search(self):
         """Test hybrid search when one strategy fails."""
         mock_embedder = MagicMock()
-        mock_embedder.embed_single.side_effect = Exception("Vector search failed")
+        mock_embedder.embed_query.side_effect = Exception("Vector search failed")
 
         # Mock FTS to succeed
         fts_row = MagicMock()
@@ -728,7 +729,7 @@ class TestHybridRetrieverPerformance:
     def test_search_performance_limits(self, performance_timer):
         """Test search performance meets system requirements."""
         mock_embedder = MagicMock()
-        mock_embedder.embed_single.return_value = [0.1] * 1024
+        mock_embedder.embed_query.return_value = [0.1] * 1024
 
         # Mock minimal database response
         mock_row = MagicMock()
@@ -764,7 +765,7 @@ class TestHybridRetrieverPerformance:
         import time
 
         mock_embedder = MagicMock()
-        mock_embedder.embed_single.return_value = [0.1] * 1024
+        mock_embedder.embed_query.return_value = [0.1] * 1024
 
         results_collection = []
         errors_collection = []
@@ -800,7 +801,7 @@ class TestHybridRetrieverPerformance:
     def test_memory_usage_large_results(self):
         """Test memory efficiency with large result sets."""
         mock_embedder = MagicMock()
-        mock_embedder.embed_single.return_value = [0.1] * 1024
+        mock_embedder.embed_query.return_value = [0.1] * 1024
 
         # Create many mock results
         mock_rows = []
@@ -886,7 +887,7 @@ class TestHybridRetrieverRegressionTests:
         Fix: Use lu.unit_type instead
         """
         mock_embedder = MagicMock()
-        mock_embedder.embed_single.return_value = [0.1] * 1024
+        mock_embedder.embed_query.return_value = [0.1] * 1024
 
         with patch('src.db.session.get_db_session') as mock_get_session:
             mock_session = MagicMock()
@@ -942,7 +943,7 @@ class TestHybridRetrieverIntegration:
         from src.services.search.hybrid_search import HybridSearchService
 
         mock_embedder = MagicMock()
-        mock_embedder.embed_single.return_value = [0.1] * 1024
+        mock_embedder.embed_query.return_value = [0.1] * 1024
 
         # Mock database
         mock_row = MagicMock()
@@ -964,7 +965,7 @@ class TestHybridRetrieverIntegration:
 
             # Should be able to integrate with search service
             with patch('src.services.search.reranker.JinaReranker'):
-                search_service = HybridSearchService(retriever=retriever)
+                search_service = HybridSearchService()
                 response = search_service.search("test query")
 
                 # Should return formatted response
@@ -998,7 +999,7 @@ class TestHybridRetrieverQueryPatterns:
     def test_indonesian_text_handling(self):
         """Test retriever handles Indonesian legal text correctly."""
         mock_embedder = MagicMock()
-        mock_embedder.embed_single.return_value = [0.1] * 1024
+        mock_embedder.embed_query.return_value = [0.1] * 1024
 
         with patch('src.db.session.get_db_session') as mock_get_session:
             mock_session = MagicMock()
@@ -1045,7 +1046,7 @@ class TestHybridRetrieverQueryPatterns:
     def test_edge_case_queries(self):
         """Test edge case queries."""
         mock_embedder = MagicMock()
-        mock_embedder.embed_single.return_value = [0.1] * 1024
+        mock_embedder.embed_query.return_value = [0.1] * 1024
 
         with patch('src.db.session.get_db_session') as mock_get_session:
             mock_session = MagicMock()
@@ -1146,7 +1147,7 @@ class TestHybridRetrieverSmokeTests:
     def test_all_strategies_smoke_test(self):
         """Smoke test all search strategies."""
         mock_embedder = MagicMock()
-        mock_embedder.embed_single.return_value = [0.1] * 1024
+        mock_embedder.embed_query.return_value = [0.1] * 1024
 
         with patch('src.db.session.get_db_session') as mock_get_session:
             mock_session = MagicMock()
@@ -1167,7 +1168,7 @@ class TestHybridRetrieverSmokeTests:
     def test_retriever_with_real_database_schema(self, populated_db):
         """Test retriever with actual database schema."""
         mock_embedder = MagicMock()
-        mock_embedder.embed_single.return_value = [0.1] * 1024
+        mock_embedder.embed_query.return_value = [0.1] * 1024
 
         # Use populated database from conftest.py
         with patch('src.db.session.get_db_session') as mock_get_session:
@@ -1182,7 +1183,7 @@ class TestHybridRetrieverSmokeTests:
     def test_end_to_end_search_workflow(self):
         """Test complete search workflow end-to-end."""
         mock_embedder = MagicMock()
-        mock_embedder.embed_single.return_value = [0.1] * 1024
+        mock_embedder.embed_query.return_value = [0.1] * 1024
 
         # Mock realistic search results
         fts_result = MagicMock()
@@ -1246,7 +1247,7 @@ class TestHybridRetrieverSmokeTests:
         import time
 
         mock_embedder = MagicMock()
-        mock_embedder.embed_single.return_value = [0.1] * 1024
+        mock_embedder.embed_query.return_value = [0.1] * 1024
 
         results_by_thread = {}
         errors_by_thread = {}

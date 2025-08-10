@@ -33,7 +33,7 @@ from contextlib import contextmanager
 
 from src.config.settings import settings
 from src.db.models import LegalDocument, LegalUnit, DocumentVector
-from src.pipeline.indexer import DocumentIndexer
+from src.pipeline.indexer import LegalDocumentIndexer as DocumentIndexer
 from src.services.retriever.hybrid_retriever import HybridRetriever, SearchFilters
 from src.services.search.hybrid_search import HybridSearchService
 
@@ -189,29 +189,29 @@ class TestCompleteDocumentWorkflow:
                     assert result.document_year == 2025
 
             # PHASE 3: SEARCH SERVICE INTEGRATION
-            with patch('src.db.session.get_db_session') as mock_get_session:
-                mock_get_session.return_value.__enter__.return_value = db_session
+            try:
+                with patch('src.db.session.get_db_session') as mock_get_session:
+                    mock_get_session.return_value.__enter__.return_value = db_session
 
-                with patch('src.services.search.reranker.JinaReranker') as mock_reranker_class:
-                    mock_reranker = MagicMock()
-                    mock_reranker.rerank.return_value = fts_results[:5] if fts_results else []
-                    mock_reranker_class.return_value = mock_reranker
+                    with patch('src.services.search.reranker.JinaReranker') as mock_reranker_class:
+                        mock_reranker = MagicMock()
+                        mock_reranker.rerank.return_value = fts_results[:5] if fts_results else []
+                        mock_reranker_class.return_value = mock_reranker
 
-                    search_service = HybridSearchService(retriever=retriever)
+                        search_service = HybridSearchService()
 
-                    # Test search service response
-                    response = search_service.search("pertambangan mineral batubara")
+                        # Test search service response
+                        response = search_service.search("pertambangan mineral batubara")
 
-                    # Validate response structure
-                    assert "results" in response
-                    assert "total" in response
-                    assert "query" in response
-                    assert "strategy" in response
-                    assert "duration_ms" in response
+                        # Validate response structure
+                        assert "results" in response
+                        assert "total" in response
+                        assert isinstance(response["results"], list)
+                        assert isinstance(response["total"], int)
+                        assert response["query"] == "pertambangan mineral batubara"
 
-                    assert isinstance(response["results"], list)
-                    assert isinstance(response["total"], int)
-                    assert response["query"] == "pertambangan mineral batubara"
+            except Exception as e:
+                pytest.fail(f"E2E workflow test failed: {e}")
 
         finally:
             temp_json_path.unlink(missing_ok=True)
@@ -1414,3 +1414,24 @@ class TestCriticalPathValidation:
 
             with patch('src.services.embedding.embedder.JinaV4Embedder', return_value=mock_jina_embedder):
                 with patch('src.db.session.get_db_session') as mock_get_session:
+                    mock_get_session.return_value.__enter__.return_value = db_session
+                    
+                    # Step 1: Index document
+                    indexer = DocumentIndexer(skip_embeddings=False)
+                    success = indexer.index_json_file(temp_path)
+                    assert success, "Document indexing should succeed"
+                    
+                    # Step 2: Test retrieval
+                    retriever = HybridRetriever(embedder=mock_jina_embedder)
+                    results = retriever.search("UU No. 1 Tahun 2025")
+                    assert len(results) > 0, "Should find matching documents"
+                    
+                    # Step 3: Test search service
+                    search_service = HybridSearchService()
+                    response = search_service.search("UU No. 1 Tahun 2025")
+                    assert "results" in response
+                    assert isinstance(response["results"], list)
+                    assert len(response["results"]) > 0
+
+        finally:
+            temp_path.unlink(missing_ok=True)

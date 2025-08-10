@@ -12,7 +12,7 @@ from src.services.llm.base import BaseLLMProvider, LLMResponse
 class GeminiProvider(BaseLLMProvider):
     """Gemini Flash 2.0 provider implementation"""
     
-    def __init__(self, model: str = "gemini-2.0-flash-exp", api_key: Optional[str] = None, **kwargs):
+    def __init__(self, model: str = "gemini-2.0-flash-lite", api_key: Optional[str] = None, **kwargs):
         super().__init__(model, api_key or settings.gemini_api_key, **kwargs)
         self.base_url = "https://generativelanguage.googleapis.com/v1beta"
         self.model_name = model
