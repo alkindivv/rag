@@ -1,0 +1,1598 @@
+{
+  "doc_source": "BPK",
+  "doc_id": "UU-2024-149",
+  "doc_type": "Peraturan Perundang-undangan",
+  "doc_title": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+  "doc_teu": "Indonesia, Pemerintah Pusat",
+  "doc_number": "149",
+  "doc_form": "UU",
+  "doc_form_short": "UU",
+  "doc_year": "2024",
+  "doc_place_enacted": "Jakarta",
+  "doc_date_enacted": "2024-10-28",
+  "doc_date_promulgated": "2024-10-28",
+  "doc_date_effective": "2024-10-28",
+  "doc_subject": [
+    "OTONOMI DAERAH DAN PEMERINTAH DAERAH"
+  ],
+  "doc_status": "Berlaku",
+  "doc_language": "Bahasa Indonesia",
+  "doc_location": "Pemerintah Pusat",
+  "doc_field": "HUKUM ADMINISTRASI NEGARA",
+  "doc_content": null,
+  "doc_processing_status": "pdf_processed",
+  "relationships": {
+    "mencabut_sebagian": [
+      {
+        "regulation_reference": "UU No. 29 Tahun 1959 tentang Pembentukan Daerah Tingkat II Di Sulawesi Ketentuan yang mengatur mengenai Kabupaten Mamuju dalam Undang-Undang Nomor 29 Tahun 1959, dicabut dan dinyatakan tidak berlaku.",
+        "reference_link": "https://peraturan.bpk.go.id/Details/51529/uu-no-29-tahun-1959"
+      }
+    ]
+  },
+  "detail_url": "https://peraturan.bpk.go.id/Details/307196/uu-no-149-tahun-2024",
+  "source_url": "https://peraturan.bpk.go.id/Details/307196/uu-no-149-tahun-2024",
+  "pdf_url": "https://peraturan.bpk.go.id/Download/367589/UU%20Nomor%20149%20Tahun%202024.pdf",
+  "uji_materi_pdf_url": null,
+  "uji_materi": [],
+  "pdf_path": "data/pdfs/undang_undang_149_2024.pdf",
+  "text_path": null,
+  "document_tree": {
+    "type": "dokumen",
+    "unit_id": "UU-2024-149",
+    "number_label": null,
+    "ordinal_int": null,
+    "ordinal_suffix": "",
+    "label_display": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+    "seq_sort_key": null,
+    "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+    "path": [
+      {
+        "type": "dokumen",
+        "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+        "unit_id": "UU-2024-149"
+      }
+    ],
+    "title": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+    "content": null,
+    "children": [
+      {
+        "type": "huruf",
+        "unit_id": "UU-2024-149/huruf-b",
+        "number_label": "b",
+        "ordinal_int": 2,
+        "ordinal_suffix": "",
+        "label_display": "b.",
+        "seq_sort_key": "0002|",
+        "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, huruf b",
+        "path": [
+          {
+            "type": "dokumen",
+            "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+            "unit_id": "UU-2024-149"
+          },
+          {
+            "type": "huruf",
+            "label": "b.",
+            "unit_id": "UU-2024-149/huruf-b"
+          }
+        ],
+        "parent_pasal_id": null,
+        "local_content": "bahwa pembangunan Kabupaten Mamuju diselenggarakan secara berkelanjutan dalam satu kesatuan wilayah dengan memperhatikan karakteristik daerah untuk mencapai kesejahteraan masyarakat Kabupaten Mamuju di Provinsi Sulawesi Barat;",
+        "display_text": "b. bahwa pembangunan Kabupaten Mamuju diselenggarakan secara berkelanjutan dalam satu kesatuan wilayah dengan memperhatikan karakteristik daerah untuk mencapai kesejahteraan masyarakat Kabupaten Mamuju di Provinsi Sulawesi Barat;",
+        "bm25_body": "bahwa pembangunan Kabupaten Mamuju diselenggarakan secara berkelanjutan dalam satu kesatuan wilayah dengan memperhatikan karakteristik daerah untuk mencapai kesejahteraan masyarakat Kabupaten Mamuju di Provinsi Sulawesi Barat;",
+        "span": null,
+        "parent_ayat_id": null,
+        "children": []
+      },
+      {
+        "type": "huruf",
+        "unit_id": "UU-2024-149/huruf-c",
+        "number_label": "c",
+        "ordinal_int": 3,
+        "ordinal_suffix": "",
+        "label_display": "c.",
+        "seq_sort_key": "0003|",
+        "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, huruf c",
+        "path": [
+          {
+            "type": "dokumen",
+            "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+            "unit_id": "UU-2024-149"
+          },
+          {
+            "type": "huruf",
+            "label": "c.",
+            "unit_id": "UU-2024-149/huruf-c"
+          }
+        ],
+        "parent_pasal_id": null,
+        "local_content": "bahwa Undang-Undang Nomor 29 Tahun 1959 tentang Pembentukan Daerah Tingkat II di Sulawesi, yang menjadi dasar pembentukan Kabupaten Mamuju, sudah tidak sesuai lagi dengan perkembangan hukum sehingga perlu diganti;",
+        "display_text": "c. bahwa Undang-Undang Nomor 29 Tahun 1959 tentang Pembentukan Daerah Tingkat II di Sulawesi, yang menjadi dasar pembentukan Kabupaten Mamuju, sudah tidak sesuai lagi dengan perkembangan hukum sehingga perlu diganti;",
+        "bm25_body": "bahwa Undang-Undang Nomor 29 Tahun 1959 tentang Pembentukan Daerah Tingkat II di Sulawesi, yang menjadi dasar pembentukan Kabupaten Mamuju, sudah tidak sesuai lagi dengan perkembangan hukum sehingga perlu diganti;",
+        "span": null,
+        "parent_ayat_id": null,
+        "children": []
+      },
+      {
+        "type": "huruf",
+        "unit_id": "UU-2024-149/huruf-d",
+        "number_label": "d",
+        "ordinal_int": 4,
+        "ordinal_suffix": "",
+        "label_display": "d.",
+        "seq_sort_key": "0004|",
+        "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, huruf d",
+        "path": [
+          {
+            "type": "dokumen",
+            "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+            "unit_id": "UU-2024-149"
+          },
+          {
+            "type": "huruf",
+            "label": "d.",
+            "unit_id": "UU-2024-149/huruf-d"
+          }
+        ],
+        "parent_pasal_id": null,
+        "local_content": "bahwa berdasarkan pertimbangan sebagaimana dimaksud dalam huruf a, huruf b, dan huruf c, perlu membentuk Undang-Undang tentang Kabupaten Mamuju di Provinsi Sulawesi Barat; Pasal 18, Pasal 18A, Pasal 188 ayat (2), Pasal 20, Pasal 21, dan Pasal 22D ayat (2) Undang-Undang Dasar Negara Tahun 1945; Dengan Persetujuan Bersama UNDANG-UNDANG TENTANG KABUPATEN MAMUJU DI PROVINSI SULAWESI BARAT.",
+        "display_text": "d. bahwa berdasarkan pertimbangan sebagaimana dimaksud dalam huruf a, huruf b, dan huruf c, perlu membentuk Undang-Undang tentang Kabupaten Mamuju di Provinsi Sulawesi Barat; Pasal 18, Pasal 18A, Pasal 188 ayat (2), Pasal 20, Pasal 21, dan Pasal 22D ayat (2) Undang-Undang Dasar Negara Tahun 1945; Dengan Persetujuan Bersama UNDANG-UNDANG TENTANG KABUPATEN MAMUJU DI PROVINSI SULAWESI BARAT.",
+        "bm25_body": "bahwa berdasarkan pertimbangan sebagaimana dimaksud dalam huruf a, huruf b, dan huruf c, perlu membentuk Undang-Undang tentang Kabupaten Mamuju di Provinsi Sulawesi Barat; Pasal 18, Pasal 18A, Pasal 188 ayat (2), Pasal 20, Pasal 21, dan Pasal 22D ayat (2) Undang-Undang Dasar Negara Tahun 1945; Dengan Persetujuan Bersama UNDANG-UNDANG TENTANG KABUPATEN MAMUJU DI PROVINSI SULAWESI BARAT.",
+        "span": null,
+        "parent_ayat_id": null,
+        "children": []
+      },
+      {
+        "type": "bab",
+        "unit_id": "UU-2024-149/bab-I",
+        "number_label": "I",
+        "ordinal_int": 1,
+        "ordinal_suffix": "",
+        "label_display": "BAB I",
+        "seq_sort_key": "0001|",
+        "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+        "path": [
+          {
+            "type": "dokumen",
+            "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+            "unit_id": "UU-2024-149"
+          },
+          {
+            "type": "bab",
+            "label": "BAB I",
+            "unit_id": "UU-2024-149/bab-I"
+          }
+        ],
+        "title": "BAB I",
+        "children": [
+          {
+            "type": "pasal",
+            "unit_id": "UU-2024-149/bab-I/pasal-1",
+            "number_label": "1",
+            "ordinal_int": 1,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 1",
+            "seq_sort_key": "0001|",
+            "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, Pasal 1",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                "unit_id": "UU-2024-149"
+              },
+              {
+                "type": "bab",
+                "label": "BAB I",
+                "unit_id": "UU-2024-149/bab-I"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 1",
+                "unit_id": "UU-2024-149/bab-I/pasal-1"
+              }
+            ],
+            "title": "Pasal 1",
+            "content": "Dalam Undang-Undang ini yang dimaksud dengan: 1. Provinsi Sulawesi Barat adalah bagian dari wilayah Negara Kesatuan berdasarkan Undang- Undang Nomor 26 Tahun 2OO4 tentang Pembentukan Provinsi Sulawesi Barat.\n2. Kabupaten Mamuju adalah daerah kabupaten yang berada di wilayah Provinsi Sulawesi Barat yang dibentuk berdasarkan Undang-Undang Nomor 29 Tahun 1959 tentang Pembentukan Daerah Tingkat II di Sulawesi.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": [
+              {
+                "type": "angka",
+                "unit_id": "UU-2024-149/bab-I/pasal-1/angka-2",
+                "number_label": "2",
+                "ordinal_int": 2,
+                "ordinal_suffix": "",
+                "label_display": "2.",
+                "seq_sort_key": "0002|",
+                "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, Pasal 1 angka 2",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                    "unit_id": "UU-2024-149"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB I",
+                    "unit_id": "UU-2024-149/bab-I"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 1",
+                    "unit_id": "UU-2024-149/bab-I/pasal-1"
+                  },
+                  {
+                    "type": "angka",
+                    "label": "2.",
+                    "unit_id": "UU-2024-149/bab-I/pasal-1/angka-2"
+                  }
+                ],
+                "parent_pasal_id": "UU-2024-149/bab-I/pasal-1",
+                "local_content": "Kabupaten Mamuju adalah daerah kabupaten yang berada di wilayah Provinsi Sulawesi Barat yang dibentuk berdasarkan Undang-Undang Nomor 29 Tahun 1959 tentang Pembentukan Daerah Tingkat II di Sulawesi.",
+                "display_text": "2. Kabupaten Mamuju adalah daerah kabupaten yang berada di wilayah Provinsi Sulawesi Barat yang dibentuk berdasarkan Undang-Undang Nomor 29 Tahun 1959 tentang Pembentukan Daerah Tingkat II di Sulawesi.",
+                "bm25_body": "Kabupaten Mamuju adalah daerah kabupaten yang berada di wilayah Provinsi Sulawesi Barat yang dibentuk berdasarkan Undang-Undang Nomor 29 Tahun 1959 tentang Pembentukan Daerah Tingkat II di Sulawesi.",
+                "span": null,
+                "parent_ayat_id": null,
+                "parent_huruf_id": null,
+                "children": []
+              }
+            ]
+          },
+          {
+            "type": "angka",
+            "unit_id": "UU-2024-149/bab-I/angka-3",
+            "number_label": "3",
+            "ordinal_int": 3,
+            "ordinal_suffix": "",
+            "label_display": "3.",
+            "seq_sort_key": "0003|",
+            "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, angka 3",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                "unit_id": "UU-2024-149"
+              },
+              {
+                "type": "bab",
+                "label": "BAB I",
+                "unit_id": "UU-2024-149/bab-I"
+              },
+              {
+                "type": "angka",
+                "label": "3.",
+                "unit_id": "UU-2024-149/bab-I/angka-3"
+              }
+            ],
+            "parent_pasal_id": null,
+            "local_content": "Kecamatan adalah kecamatan yang ada di wilayah Kabupaten Mamuju.",
+            "display_text": "3. Kecamatan adalah kecamatan yang ada di wilayah Kabupaten Mamuju.",
+            "bm25_body": "Kecamatan adalah kecamatan yang ada di wilayah Kabupaten Mamuju.",
+            "span": null,
+            "parent_ayat_id": null,
+            "parent_huruf_id": null,
+            "children": [
+              {
+                "type": "pasal",
+                "unit_id": "UU-2024-149/bab-I/angka-3/pasal-2",
+                "number_label": "2",
+                "ordinal_int": 2,
+                "ordinal_suffix": "",
+                "label_display": "Pasal 2",
+                "seq_sort_key": "0002|",
+                "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, angka 3 Pasal 2",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                    "unit_id": "UU-2024-149"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB I",
+                    "unit_id": "UU-2024-149/bab-I"
+                  },
+                  {
+                    "type": "angka",
+                    "label": "3.",
+                    "unit_id": "UU-2024-149/bab-I/angka-3"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 2",
+                    "unit_id": "UU-2024-149/bab-I/angka-3/pasal-2"
+                  }
+                ],
+                "title": "Pasal 2",
+                "content": "",
+                "tags_semantik": [],
+                "entities": [],
+                "children": []
+              },
+              {
+                "type": "pasal",
+                "unit_id": "UU-2024-149/bab-I/angka-3/pasal-2-2",
+                "number_label": "2",
+                "ordinal_int": 2,
+                "ordinal_suffix": "",
+                "label_display": "Pasal 2",
+                "seq_sort_key": "0002|",
+                "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, angka 3 Pasal 2",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                    "unit_id": "UU-2024-149"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB I",
+                    "unit_id": "UU-2024-149/bab-I"
+                  },
+                  {
+                    "type": "angka",
+                    "label": "3.",
+                    "unit_id": "UU-2024-149/bab-I/angka-3"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 2",
+                    "unit_id": "UU-2024-149/bab-I/angka-3/pasal-2-2"
+                  }
+                ],
+                "title": "Pasal 2",
+                "content": "Tanggal 4 Juli 1959 merupakan tanggal pembentukan Kabupaten Mamuju berdasarkan Undang-Undang Nomor 29 Tahun 1959 tentang Pembentukan Daerah Tingkat II di Sulawesi (Lembaran Negara Tahun 1959 Nomor 74, Tambahan Lembaran Negara Nomor 1822).",
+                "tags_semantik": [],
+                "entities": [],
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "bab",
+        "unit_id": "UU-2024-149/bab-II",
+        "number_label": "II",
+        "ordinal_int": 2,
+        "ordinal_suffix": "",
+        "label_display": "BAB II",
+        "seq_sort_key": "0002|",
+        "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+        "path": [
+          {
+            "type": "dokumen",
+            "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+            "unit_id": "UU-2024-149"
+          },
+          {
+            "type": "bab",
+            "label": "BAB II",
+            "unit_id": "UU-2024-149/bab-II"
+          }
+        ],
+        "title": "BAB II",
+        "children": [
+          {
+            "type": "pasal",
+            "unit_id": "UU-2024-149/bab-II/pasal-3",
+            "number_label": "3",
+            "ordinal_int": 3,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 3",
+            "seq_sort_key": "0003|",
+            "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, Pasal 3",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                "unit_id": "UU-2024-149"
+              },
+              {
+                "type": "bab",
+                "label": "BAB II",
+                "unit_id": "UU-2024-149/bab-II"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 3",
+                "unit_id": "UU-2024-149/bab-II/pasal-3"
+              }
+            ],
+            "title": "Pasal 3",
+            "content": "Kabupaten Mamuju terdiri atas 11 (sebelas) Kecamatan, yaitu\na. Kecamatan Mamuju;\nb. Kecamatan Tapalang;\nc. Kecamatan Kalukku;\nd. Kecamatan Kalumpang;\ne. Kecamatan Papalang;\nf. Kecamatan Sampaga;\ng. Kecamatan Tommo;\nh. Kecamatan Simboro;\ni. Kecamatan Tapalang Barat;\nj. Kecamatan Bonehau; dan\nk. Kecamatan Kepulauan Bala Balakang.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": [
+              {
+                "type": "huruf",
+                "unit_id": "UU-2024-149/bab-II/pasal-3/huruf-a",
+                "number_label": "a",
+                "ordinal_int": 1,
+                "ordinal_suffix": "",
+                "label_display": "a.",
+                "seq_sort_key": "0001|",
+                "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, Pasal 3 huruf a",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                    "unit_id": "UU-2024-149"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB II",
+                    "unit_id": "UU-2024-149/bab-II"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 3",
+                    "unit_id": "UU-2024-149/bab-II/pasal-3"
+                  },
+                  {
+                    "type": "huruf",
+                    "label": "a.",
+                    "unit_id": "UU-2024-149/bab-II/pasal-3/huruf-a"
+                  }
+                ],
+                "parent_pasal_id": "UU-2024-149/bab-II/pasal-3",
+                "local_content": "Kecamatan Mamuju;",
+                "display_text": "a. Kecamatan Mamuju;",
+                "bm25_body": "Kecamatan Mamuju;",
+                "span": null,
+                "parent_ayat_id": null,
+                "children": []
+              },
+              {
+                "type": "huruf",
+                "unit_id": "UU-2024-149/bab-II/pasal-3/huruf-b",
+                "number_label": "b",
+                "ordinal_int": 2,
+                "ordinal_suffix": "",
+                "label_display": "b.",
+                "seq_sort_key": "0002|",
+                "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, Pasal 3 huruf b",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                    "unit_id": "UU-2024-149"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB II",
+                    "unit_id": "UU-2024-149/bab-II"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 3",
+                    "unit_id": "UU-2024-149/bab-II/pasal-3"
+                  },
+                  {
+                    "type": "huruf",
+                    "label": "b.",
+                    "unit_id": "UU-2024-149/bab-II/pasal-3/huruf-b"
+                  }
+                ],
+                "parent_pasal_id": "UU-2024-149/bab-II/pasal-3",
+                "local_content": "Kecamatan Tapalang;",
+                "display_text": "b. Kecamatan Tapalang;",
+                "bm25_body": "Kecamatan Tapalang;",
+                "span": null,
+                "parent_ayat_id": null,
+                "children": []
+              },
+              {
+                "type": "huruf",
+                "unit_id": "UU-2024-149/bab-II/pasal-3/huruf-c",
+                "number_label": "c",
+                "ordinal_int": 3,
+                "ordinal_suffix": "",
+                "label_display": "c.",
+                "seq_sort_key": "0003|",
+                "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, Pasal 3 huruf c",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                    "unit_id": "UU-2024-149"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB II",
+                    "unit_id": "UU-2024-149/bab-II"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 3",
+                    "unit_id": "UU-2024-149/bab-II/pasal-3"
+                  },
+                  {
+                    "type": "huruf",
+                    "label": "c.",
+                    "unit_id": "UU-2024-149/bab-II/pasal-3/huruf-c"
+                  }
+                ],
+                "parent_pasal_id": "UU-2024-149/bab-II/pasal-3",
+                "local_content": "Kecamatan Kalukku;",
+                "display_text": "c. Kecamatan Kalukku;",
+                "bm25_body": "Kecamatan Kalukku;",
+                "span": null,
+                "parent_ayat_id": null,
+                "children": []
+              },
+              {
+                "type": "huruf",
+                "unit_id": "UU-2024-149/bab-II/pasal-3/huruf-d",
+                "number_label": "d",
+                "ordinal_int": 4,
+                "ordinal_suffix": "",
+                "label_display": "d.",
+                "seq_sort_key": "0004|",
+                "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, Pasal 3 huruf d",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                    "unit_id": "UU-2024-149"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB II",
+                    "unit_id": "UU-2024-149/bab-II"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 3",
+                    "unit_id": "UU-2024-149/bab-II/pasal-3"
+                  },
+                  {
+                    "type": "huruf",
+                    "label": "d.",
+                    "unit_id": "UU-2024-149/bab-II/pasal-3/huruf-d"
+                  }
+                ],
+                "parent_pasal_id": "UU-2024-149/bab-II/pasal-3",
+                "local_content": "Kecamatan Kalumpang;",
+                "display_text": "d. Kecamatan Kalumpang;",
+                "bm25_body": "Kecamatan Kalumpang;",
+                "span": null,
+                "parent_ayat_id": null,
+                "children": []
+              },
+              {
+                "type": "huruf",
+                "unit_id": "UU-2024-149/bab-II/pasal-3/huruf-e",
+                "number_label": "e",
+                "ordinal_int": 5,
+                "ordinal_suffix": "",
+                "label_display": "e.",
+                "seq_sort_key": "0005|",
+                "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, Pasal 3 huruf e",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                    "unit_id": "UU-2024-149"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB II",
+                    "unit_id": "UU-2024-149/bab-II"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 3",
+                    "unit_id": "UU-2024-149/bab-II/pasal-3"
+                  },
+                  {
+                    "type": "huruf",
+                    "label": "e.",
+                    "unit_id": "UU-2024-149/bab-II/pasal-3/huruf-e"
+                  }
+                ],
+                "parent_pasal_id": "UU-2024-149/bab-II/pasal-3",
+                "local_content": "Kecamatan Papalang;",
+                "display_text": "e. Kecamatan Papalang;",
+                "bm25_body": "Kecamatan Papalang;",
+                "span": null,
+                "parent_ayat_id": null,
+                "children": []
+              },
+              {
+                "type": "huruf",
+                "unit_id": "UU-2024-149/bab-II/pasal-3/huruf-f",
+                "number_label": "f",
+                "ordinal_int": 6,
+                "ordinal_suffix": "",
+                "label_display": "f.",
+                "seq_sort_key": "0006|",
+                "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, Pasal 3 huruf f",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                    "unit_id": "UU-2024-149"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB II",
+                    "unit_id": "UU-2024-149/bab-II"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 3",
+                    "unit_id": "UU-2024-149/bab-II/pasal-3"
+                  },
+                  {
+                    "type": "huruf",
+                    "label": "f.",
+                    "unit_id": "UU-2024-149/bab-II/pasal-3/huruf-f"
+                  }
+                ],
+                "parent_pasal_id": "UU-2024-149/bab-II/pasal-3",
+                "local_content": "Kecamatan Sampaga;",
+                "display_text": "f. Kecamatan Sampaga;",
+                "bm25_body": "Kecamatan Sampaga;",
+                "span": null,
+                "parent_ayat_id": null,
+                "children": []
+              },
+              {
+                "type": "huruf",
+                "unit_id": "UU-2024-149/bab-II/pasal-3/huruf-g",
+                "number_label": "g",
+                "ordinal_int": 7,
+                "ordinal_suffix": "",
+                "label_display": "g.",
+                "seq_sort_key": "0007|",
+                "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, Pasal 3 huruf g",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                    "unit_id": "UU-2024-149"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB II",
+                    "unit_id": "UU-2024-149/bab-II"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 3",
+                    "unit_id": "UU-2024-149/bab-II/pasal-3"
+                  },
+                  {
+                    "type": "huruf",
+                    "label": "g.",
+                    "unit_id": "UU-2024-149/bab-II/pasal-3/huruf-g"
+                  }
+                ],
+                "parent_pasal_id": "UU-2024-149/bab-II/pasal-3",
+                "local_content": "Kecamatan Tommo;",
+                "display_text": "g. Kecamatan Tommo;",
+                "bm25_body": "Kecamatan Tommo;",
+                "span": null,
+                "parent_ayat_id": null,
+                "children": []
+              },
+              {
+                "type": "huruf",
+                "unit_id": "UU-2024-149/bab-II/pasal-3/huruf-h",
+                "number_label": "h",
+                "ordinal_int": 8,
+                "ordinal_suffix": "",
+                "label_display": "h.",
+                "seq_sort_key": "0008|",
+                "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, Pasal 3 huruf h",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                    "unit_id": "UU-2024-149"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB II",
+                    "unit_id": "UU-2024-149/bab-II"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 3",
+                    "unit_id": "UU-2024-149/bab-II/pasal-3"
+                  },
+                  {
+                    "type": "huruf",
+                    "label": "h.",
+                    "unit_id": "UU-2024-149/bab-II/pasal-3/huruf-h"
+                  }
+                ],
+                "parent_pasal_id": "UU-2024-149/bab-II/pasal-3",
+                "local_content": "Kecamatan Simboro;",
+                "display_text": "h. Kecamatan Simboro;",
+                "bm25_body": "Kecamatan Simboro;",
+                "span": null,
+                "parent_ayat_id": null,
+                "children": []
+              },
+              {
+                "type": "huruf",
+                "unit_id": "UU-2024-149/bab-II/pasal-3/huruf-i",
+                "number_label": "i",
+                "ordinal_int": 9,
+                "ordinal_suffix": "",
+                "label_display": "i.",
+                "seq_sort_key": "0009|",
+                "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, Pasal 3 huruf i",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                    "unit_id": "UU-2024-149"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB II",
+                    "unit_id": "UU-2024-149/bab-II"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 3",
+                    "unit_id": "UU-2024-149/bab-II/pasal-3"
+                  },
+                  {
+                    "type": "huruf",
+                    "label": "i.",
+                    "unit_id": "UU-2024-149/bab-II/pasal-3/huruf-i"
+                  }
+                ],
+                "parent_pasal_id": "UU-2024-149/bab-II/pasal-3",
+                "local_content": "Kecamatan Tapalang Barat;",
+                "display_text": "i. Kecamatan Tapalang Barat;",
+                "bm25_body": "Kecamatan Tapalang Barat;",
+                "span": null,
+                "parent_ayat_id": null,
+                "children": []
+              },
+              {
+                "type": "huruf",
+                "unit_id": "UU-2024-149/bab-II/pasal-3/huruf-j",
+                "number_label": "j",
+                "ordinal_int": 10,
+                "ordinal_suffix": "",
+                "label_display": "j.",
+                "seq_sort_key": "0010|",
+                "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, Pasal 3 huruf j",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                    "unit_id": "UU-2024-149"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB II",
+                    "unit_id": "UU-2024-149/bab-II"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 3",
+                    "unit_id": "UU-2024-149/bab-II/pasal-3"
+                  },
+                  {
+                    "type": "huruf",
+                    "label": "j.",
+                    "unit_id": "UU-2024-149/bab-II/pasal-3/huruf-j"
+                  }
+                ],
+                "parent_pasal_id": "UU-2024-149/bab-II/pasal-3",
+                "local_content": "Kecamatan Bonehau; dan",
+                "display_text": "j. Kecamatan Bonehau; dan",
+                "bm25_body": "Kecamatan Bonehau; dan",
+                "span": null,
+                "parent_ayat_id": null,
+                "children": []
+              },
+              {
+                "type": "huruf",
+                "unit_id": "UU-2024-149/bab-II/pasal-3/huruf-k",
+                "number_label": "k",
+                "ordinal_int": 11,
+                "ordinal_suffix": "",
+                "label_display": "k.",
+                "seq_sort_key": "0011|",
+                "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, Pasal 3 huruf k",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                    "unit_id": "UU-2024-149"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB II",
+                    "unit_id": "UU-2024-149/bab-II"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 3",
+                    "unit_id": "UU-2024-149/bab-II/pasal-3"
+                  },
+                  {
+                    "type": "huruf",
+                    "label": "k.",
+                    "unit_id": "UU-2024-149/bab-II/pasal-3/huruf-k"
+                  }
+                ],
+                "parent_pasal_id": "UU-2024-149/bab-II/pasal-3",
+                "local_content": "Kecamatan Kepulauan Bala Balakang.",
+                "display_text": "k. Kecamatan Kepulauan Bala Balakang.",
+                "bm25_body": "Kecamatan Kepulauan Bala Balakang.",
+                "span": null,
+                "parent_ayat_id": null,
+                "children": []
+              }
+            ]
+          },
+          {
+            "type": "pasal",
+            "unit_id": "UU-2024-149/bab-II/pasal-4",
+            "number_label": "4",
+            "ordinal_int": 4,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 4",
+            "seq_sort_key": "0004|",
+            "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, Pasal 4",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                "unit_id": "UU-2024-149"
+              },
+              {
+                "type": "bab",
+                "label": "BAB II",
+                "unit_id": "UU-2024-149/bab-II"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 4",
+                "unit_id": "UU-2024-149/bab-II/pasal-4"
+              }
+            ],
+            "title": "Pasal 4.",
+            "content": ".\nREFUBLIK IHDONESIA",
+            "tags_semantik": [],
+            "entities": [],
+            "children": []
+          },
+          {
+            "type": "pasal",
+            "unit_id": "UU-2024-149/bab-II/pasal-4-2",
+            "number_label": "4",
+            "ordinal_int": 4,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 4",
+            "seq_sort_key": "0004|",
+            "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, Pasal 4",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                "unit_id": "UU-2024-149"
+              },
+              {
+                "type": "bab",
+                "label": "BAB II",
+                "unit_id": "UU-2024-149/bab-II"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 4",
+                "unit_id": "UU-2024-149/bab-II/pasal-4-2"
+              }
+            ],
+            "title": "Pasal 4",
+            "content": "(1) Kabupaten Mamuju mempunyai batas daerah:\n  a. sebelah utara berbatasan dengan Kabupaten Mamuju Tengah;\n  b. sebelah timur berbatasan dengan Kabupaten Luwu Utara Provinsi Sulawesi Selatan;\n  c. sebelah selatan berbatasan dengan Kabupaten Toraja Utara dan Kabupaten Tana Toraja Provinsi Sulawesi Selatan, Kabupaten Mamasa, dan Kabupaten Majene;\n  d. sebelah barat berbatasan dengan Selat Makassar dan Teluk Mamuju.\n(2) Penegasan batas daerah Kabupaten Mamuju sebagaimana dimaksud pada ayat (1) secara pasti di lapangan ditetapkan dengan Peraturan Menteri Dalam Negeri.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": [
+              {
+                "type": "ayat",
+                "unit_id": "UU-2024-149/bab-II/pasal-4-2/ayat-1",
+                "number_label": "1",
+                "ordinal_int": 1,
+                "ordinal_suffix": "",
+                "label_display": "(1)",
+                "seq_sort_key": "0001|",
+                "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, Pasal 4 ayat (1)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                    "unit_id": "UU-2024-149"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB II",
+                    "unit_id": "UU-2024-149/bab-II"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 4",
+                    "unit_id": "UU-2024-149/bab-II/pasal-4-2"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(1)",
+                    "unit_id": "UU-2024-149/bab-II/pasal-4-2/ayat-1"
+                  }
+                ],
+                "parent_pasal_id": "UU-2024-149/bab-II/pasal-4-2",
+                "local_content": "Kabupaten Mamuju mempunyai batas daerah:",
+                "display_text": "(1) Kabupaten Mamuju mempunyai batas daerah:",
+                "bm25_body": "Kabupaten Mamuju mempunyai batas daerah:",
+                "span": null,
+                "children": [
+                  {
+                    "type": "huruf",
+                    "unit_id": "UU-2024-149/bab-II/pasal-4-2/ayat-1/huruf-a",
+                    "number_label": "a",
+                    "ordinal_int": 1,
+                    "ordinal_suffix": "",
+                    "label_display": "a.",
+                    "seq_sort_key": "0001|",
+                    "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, Pasal 4 ayat (1) huruf a",
+                    "path": [
+                      {
+                        "type": "dokumen",
+                        "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                        "unit_id": "UU-2024-149"
+                      },
+                      {
+                        "type": "bab",
+                        "label": "BAB II",
+                        "unit_id": "UU-2024-149/bab-II"
+                      },
+                      {
+                        "type": "pasal",
+                        "label": "Pasal 4",
+                        "unit_id": "UU-2024-149/bab-II/pasal-4-2"
+                      },
+                      {
+                        "type": "ayat",
+                        "label": "(1)",
+                        "unit_id": "UU-2024-149/bab-II/pasal-4-2/ayat-1"
+                      },
+                      {
+                        "type": "huruf",
+                        "label": "a.",
+                        "unit_id": "UU-2024-149/bab-II/pasal-4-2/ayat-1/huruf-a"
+                      }
+                    ],
+                    "parent_pasal_id": "UU-2024-149/bab-II/pasal-4-2",
+                    "local_content": "sebelah utara berbatasan dengan Kabupaten Mamuju Tengah;",
+                    "display_text": "a. sebelah utara berbatasan dengan Kabupaten Mamuju Tengah;",
+                    "bm25_body": "sebelah utara berbatasan dengan Kabupaten Mamuju Tengah;",
+                    "span": null,
+                    "parent_ayat_id": "UU-2024-149/bab-II/pasal-4-2/ayat-1",
+                    "children": []
+                  },
+                  {
+                    "type": "huruf",
+                    "unit_id": "UU-2024-149/bab-II/pasal-4-2/ayat-1/huruf-b",
+                    "number_label": "b",
+                    "ordinal_int": 2,
+                    "ordinal_suffix": "",
+                    "label_display": "b.",
+                    "seq_sort_key": "0002|",
+                    "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, Pasal 4 ayat (1) huruf b",
+                    "path": [
+                      {
+                        "type": "dokumen",
+                        "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                        "unit_id": "UU-2024-149"
+                      },
+                      {
+                        "type": "bab",
+                        "label": "BAB II",
+                        "unit_id": "UU-2024-149/bab-II"
+                      },
+                      {
+                        "type": "pasal",
+                        "label": "Pasal 4",
+                        "unit_id": "UU-2024-149/bab-II/pasal-4-2"
+                      },
+                      {
+                        "type": "ayat",
+                        "label": "(1)",
+                        "unit_id": "UU-2024-149/bab-II/pasal-4-2/ayat-1"
+                      },
+                      {
+                        "type": "huruf",
+                        "label": "b.",
+                        "unit_id": "UU-2024-149/bab-II/pasal-4-2/ayat-1/huruf-b"
+                      }
+                    ],
+                    "parent_pasal_id": "UU-2024-149/bab-II/pasal-4-2",
+                    "local_content": "sebelah timur berbatasan dengan Kabupaten Luwu Utara Provinsi Sulawesi Selatan;",
+                    "display_text": "b. sebelah timur berbatasan dengan Kabupaten Luwu Utara Provinsi Sulawesi Selatan;",
+                    "bm25_body": "sebelah timur berbatasan dengan Kabupaten Luwu Utara Provinsi Sulawesi Selatan;",
+                    "span": null,
+                    "parent_ayat_id": "UU-2024-149/bab-II/pasal-4-2/ayat-1",
+                    "children": []
+                  },
+                  {
+                    "type": "huruf",
+                    "unit_id": "UU-2024-149/bab-II/pasal-4-2/ayat-1/huruf-c",
+                    "number_label": "c",
+                    "ordinal_int": 3,
+                    "ordinal_suffix": "",
+                    "label_display": "c.",
+                    "seq_sort_key": "0003|",
+                    "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, Pasal 4 ayat (1) huruf c",
+                    "path": [
+                      {
+                        "type": "dokumen",
+                        "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                        "unit_id": "UU-2024-149"
+                      },
+                      {
+                        "type": "bab",
+                        "label": "BAB II",
+                        "unit_id": "UU-2024-149/bab-II"
+                      },
+                      {
+                        "type": "pasal",
+                        "label": "Pasal 4",
+                        "unit_id": "UU-2024-149/bab-II/pasal-4-2"
+                      },
+                      {
+                        "type": "ayat",
+                        "label": "(1)",
+                        "unit_id": "UU-2024-149/bab-II/pasal-4-2/ayat-1"
+                      },
+                      {
+                        "type": "huruf",
+                        "label": "c.",
+                        "unit_id": "UU-2024-149/bab-II/pasal-4-2/ayat-1/huruf-c"
+                      }
+                    ],
+                    "parent_pasal_id": "UU-2024-149/bab-II/pasal-4-2",
+                    "local_content": "sebelah selatan berbatasan dengan Kabupaten Toraja Utara dan Kabupaten Tana Toraja Provinsi Sulawesi Selatan, Kabupaten Mamasa, dan Kabupaten Majene;",
+                    "display_text": "c. sebelah selatan berbatasan dengan Kabupaten Toraja Utara dan Kabupaten Tana Toraja Provinsi Sulawesi Selatan, Kabupaten Mamasa, dan Kabupaten Majene;",
+                    "bm25_body": "sebelah selatan berbatasan dengan Kabupaten Toraja Utara dan Kabupaten Tana Toraja Provinsi Sulawesi Selatan, Kabupaten Mamasa, dan Kabupaten Majene;",
+                    "span": null,
+                    "parent_ayat_id": "UU-2024-149/bab-II/pasal-4-2/ayat-1",
+                    "children": []
+                  },
+                  {
+                    "type": "huruf",
+                    "unit_id": "UU-2024-149/bab-II/pasal-4-2/ayat-1/huruf-d",
+                    "number_label": "d",
+                    "ordinal_int": 4,
+                    "ordinal_suffix": "",
+                    "label_display": "d.",
+                    "seq_sort_key": "0004|",
+                    "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, Pasal 4 ayat (1) huruf d",
+                    "path": [
+                      {
+                        "type": "dokumen",
+                        "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                        "unit_id": "UU-2024-149"
+                      },
+                      {
+                        "type": "bab",
+                        "label": "BAB II",
+                        "unit_id": "UU-2024-149/bab-II"
+                      },
+                      {
+                        "type": "pasal",
+                        "label": "Pasal 4",
+                        "unit_id": "UU-2024-149/bab-II/pasal-4-2"
+                      },
+                      {
+                        "type": "ayat",
+                        "label": "(1)",
+                        "unit_id": "UU-2024-149/bab-II/pasal-4-2/ayat-1"
+                      },
+                      {
+                        "type": "huruf",
+                        "label": "d.",
+                        "unit_id": "UU-2024-149/bab-II/pasal-4-2/ayat-1/huruf-d"
+                      }
+                    ],
+                    "parent_pasal_id": "UU-2024-149/bab-II/pasal-4-2",
+                    "local_content": "sebelah barat berbatasan dengan Selat Makassar dan Teluk Mamuju.",
+                    "display_text": "d. sebelah barat berbatasan dengan Selat Makassar dan Teluk Mamuju.",
+                    "bm25_body": "sebelah barat berbatasan dengan Selat Makassar dan Teluk Mamuju.",
+                    "span": null,
+                    "parent_ayat_id": "UU-2024-149/bab-II/pasal-4-2/ayat-1",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "type": "ayat",
+                "unit_id": "UU-2024-149/bab-II/pasal-4-2/ayat-2",
+                "number_label": "2",
+                "ordinal_int": 2,
+                "ordinal_suffix": "",
+                "label_display": "(2)",
+                "seq_sort_key": "0002|",
+                "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, Pasal 4 ayat (2)",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                    "unit_id": "UU-2024-149"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB II",
+                    "unit_id": "UU-2024-149/bab-II"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 4",
+                    "unit_id": "UU-2024-149/bab-II/pasal-4-2"
+                  },
+                  {
+                    "type": "ayat",
+                    "label": "(2)",
+                    "unit_id": "UU-2024-149/bab-II/pasal-4-2/ayat-2"
+                  }
+                ],
+                "parent_pasal_id": "UU-2024-149/bab-II/pasal-4-2",
+                "local_content": "Penegasan batas daerah Kabupaten Mamuju sebagaimana dimaksud pada ayat (1) secara pasti di lapangan ditetapkan dengan Peraturan Menteri Dalam Negeri.",
+                "display_text": "(2) Penegasan batas daerah Kabupaten Mamuju sebagaimana dimaksud pada ayat (1) secara pasti di lapangan ditetapkan dengan Peraturan Menteri Dalam Negeri.",
+                "bm25_body": "Penegasan batas daerah Kabupaten Mamuju sebagaimana dimaksud pada ayat (1) secara pasti di lapangan ditetapkan dengan Peraturan Menteri Dalam Negeri.",
+                "span": null,
+                "children": [],
+                "reference_contents": [
+                  {
+                    "ref": "sebagaimana dimaksud pada ayat (1)",
+                    "unit_id": "UU-2024-149/bab-II/pasal-4-2/ayat-1",
+                    "content": "Kabupaten Mamuju mempunyai batas daerah:"
+                  }
+                ],
+                "reference_content": "Kabupaten Mamuju mempunyai batas daerah:"
+              }
+            ],
+            "reference_contents": [
+              {
+                "ref": "sebagaimana dimaksud pada ayat (1)",
+                "unit_id": "UU-2024-149/bab-II/pasal-4-2/ayat-1",
+                "content": "Kabupaten Mamuju mempunyai batas daerah:"
+              }
+            ],
+            "reference_content": "Kabupaten Mamuju mempunyai batas daerah:"
+          },
+          {
+            "type": "pasal",
+            "unit_id": "UU-2024-149/bab-II/pasal-5",
+            "number_label": "5",
+            "ordinal_int": 5,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 5",
+            "seq_sort_key": "0005|",
+            "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, Pasal 5",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                "unit_id": "UU-2024-149"
+              },
+              {
+                "type": "bab",
+                "label": "BAB II",
+                "unit_id": "UU-2024-149/bab-II"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 5",
+                "unit_id": "UU-2024-149/bab-II/pasal-5"
+              }
+            ],
+            "title": "Pasal 5",
+            "content": "Ibu Kota Kabupaten Kecamatan Mamuju. Mamuju berkedudukan di",
+            "tags_semantik": [],
+            "entities": [],
+            "children": []
+          },
+          {
+            "type": "pasal",
+            "unit_id": "UU-2024-149/bab-II/pasal-6",
+            "number_label": "6",
+            "ordinal_int": 6,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 6",
+            "seq_sort_key": "0006|",
+            "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, Pasal 6",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                "unit_id": "UU-2024-149"
+              },
+              {
+                "type": "bab",
+                "label": "BAB II",
+                "unit_id": "UU-2024-149/bab-II"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 6",
+                "unit_id": "UU-2024-149/bab-II/pasal-6"
+              }
+            ],
+            "title": "Pasal 6",
+            "content": "Kabupaten Mamuju karakteristik, yaitu\na. dengan ciri geografis yang terdiri atas wilayah pesisir dan laut, daratan, dan pegunungan;\nb. potensi sumber daya alam berupa perikanan dan kelautan, pertanian, perkebunan, peternakan, pertambangan dan energi, kehutanan, dan pariwisata; dan\nc. suku bangsa dan budaya terdiri atas keragaman suku, kekayaan sejarah, bahasa, kesenian, upacara adat, situs budaya, dan kearifan lokal yang menunjukkan karakter religius dan berbudaya menjunjung tinggi adat istiadat masyarakat dan kelestarian lingkungan.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": [
+              {
+                "type": "huruf",
+                "unit_id": "UU-2024-149/bab-II/pasal-6/huruf-a",
+                "number_label": "a",
+                "ordinal_int": 1,
+                "ordinal_suffix": "",
+                "label_display": "a.",
+                "seq_sort_key": "0001|",
+                "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, Pasal 6 huruf a",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                    "unit_id": "UU-2024-149"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB II",
+                    "unit_id": "UU-2024-149/bab-II"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 6",
+                    "unit_id": "UU-2024-149/bab-II/pasal-6"
+                  },
+                  {
+                    "type": "huruf",
+                    "label": "a.",
+                    "unit_id": "UU-2024-149/bab-II/pasal-6/huruf-a"
+                  }
+                ],
+                "parent_pasal_id": "UU-2024-149/bab-II/pasal-6",
+                "local_content": "dengan ciri geografis yang terdiri atas wilayah pesisir dan laut, daratan, dan pegunungan;",
+                "display_text": "a. dengan ciri geografis yang terdiri atas wilayah pesisir dan laut, daratan, dan pegunungan;",
+                "bm25_body": "dengan ciri geografis yang terdiri atas wilayah pesisir dan laut, daratan, dan pegunungan;",
+                "span": null,
+                "parent_ayat_id": null,
+                "children": []
+              },
+              {
+                "type": "huruf",
+                "unit_id": "UU-2024-149/bab-II/pasal-6/huruf-b",
+                "number_label": "b",
+                "ordinal_int": 2,
+                "ordinal_suffix": "",
+                "label_display": "b.",
+                "seq_sort_key": "0002|",
+                "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, Pasal 6 huruf b",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                    "unit_id": "UU-2024-149"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB II",
+                    "unit_id": "UU-2024-149/bab-II"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 6",
+                    "unit_id": "UU-2024-149/bab-II/pasal-6"
+                  },
+                  {
+                    "type": "huruf",
+                    "label": "b.",
+                    "unit_id": "UU-2024-149/bab-II/pasal-6/huruf-b"
+                  }
+                ],
+                "parent_pasal_id": "UU-2024-149/bab-II/pasal-6",
+                "local_content": "potensi sumber daya alam berupa perikanan dan kelautan, pertanian, perkebunan, peternakan, pertambangan dan energi, kehutanan, dan pariwisata; dan",
+                "display_text": "b. potensi sumber daya alam berupa perikanan dan kelautan, pertanian, perkebunan, peternakan, pertambangan dan energi, kehutanan, dan pariwisata; dan",
+                "bm25_body": "potensi sumber daya alam berupa perikanan dan kelautan, pertanian, perkebunan, peternakan, pertambangan dan energi, kehutanan, dan pariwisata; dan",
+                "span": null,
+                "parent_ayat_id": null,
+                "children": []
+              },
+              {
+                "type": "huruf",
+                "unit_id": "UU-2024-149/bab-II/pasal-6/huruf-c",
+                "number_label": "c",
+                "ordinal_int": 3,
+                "ordinal_suffix": "",
+                "label_display": "c.",
+                "seq_sort_key": "0003|",
+                "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, Pasal 6 huruf c",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                    "unit_id": "UU-2024-149"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB II",
+                    "unit_id": "UU-2024-149/bab-II"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 6",
+                    "unit_id": "UU-2024-149/bab-II/pasal-6"
+                  },
+                  {
+                    "type": "huruf",
+                    "label": "c.",
+                    "unit_id": "UU-2024-149/bab-II/pasal-6/huruf-c"
+                  }
+                ],
+                "parent_pasal_id": "UU-2024-149/bab-II/pasal-6",
+                "local_content": "suku bangsa dan budaya terdiri atas keragaman suku, kekayaan sejarah, bahasa, kesenian, upacara adat, situs budaya, dan kearifan lokal yang menunjukkan karakter religius dan berbudaya menjunjung tinggi adat istiadat masyarakat dan kelestarian lingkungan.",
+                "display_text": "c. suku bangsa dan budaya terdiri atas keragaman suku, kekayaan sejarah, bahasa, kesenian, upacara adat, situs budaya, dan kearifan lokal yang menunjukkan karakter religius dan berbudaya menjunjung tinggi adat istiadat masyarakat dan kelestarian lingkungan.",
+                "bm25_body": "suku bangsa dan budaya terdiri atas keragaman suku, kekayaan sejarah, bahasa, kesenian, upacara adat, situs budaya, dan kearifan lokal yang menunjukkan karakter religius dan berbudaya menjunjung tinggi adat istiadat masyarakat dan kelestarian lingkungan.",
+                "span": null,
+                "parent_ayat_id": null,
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "bab",
+        "unit_id": "UU-2024-149/bab-III",
+        "number_label": "III",
+        "ordinal_int": 3,
+        "ordinal_suffix": "",
+        "label_display": "BAB III",
+        "seq_sort_key": "0003|",
+        "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+        "path": [
+          {
+            "type": "dokumen",
+            "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+            "unit_id": "UU-2024-149"
+          },
+          {
+            "type": "bab",
+            "label": "BAB III",
+            "unit_id": "UU-2024-149/bab-III"
+          }
+        ],
+        "title": "BAB III",
+        "children": []
+      },
+      {
+        "type": "bab",
+        "unit_id": "UU-2024-149/bab-III-2",
+        "number_label": "III",
+        "ordinal_int": 3,
+        "ordinal_suffix": "",
+        "label_display": "BAB III",
+        "seq_sort_key": "0003|",
+        "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+        "path": [
+          {
+            "type": "dokumen",
+            "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+            "unit_id": "UU-2024-149"
+          },
+          {
+            "type": "bab",
+            "label": "BAB III",
+            "unit_id": "UU-2024-149/bab-III-2"
+          }
+        ],
+        "title": "BAB III",
+        "children": [
+          {
+            "type": "pasal",
+            "unit_id": "UU-2024-149/bab-III-2/pasal-7",
+            "number_label": "7",
+            "ordinal_int": 7,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 7",
+            "seq_sort_key": "0007|",
+            "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, Pasal 7",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                "unit_id": "UU-2024-149"
+              },
+              {
+                "type": "bab",
+                "label": "BAB III",
+                "unit_id": "UU-2024-149/bab-III-2"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 7",
+                "unit_id": "UU-2024-149/bab-III-2/pasal-7"
+              }
+            ],
+            "title": "Pasal 7",
+            "content": "Ketentuan mengenai susunan dan tata cara penyelenggaraan pemerintahan daerah diatur sesuai dengan ketentuan peraturan perundang-undangan.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": []
+          },
+          {
+            "type": "pasal",
+            "unit_id": "UU-2024-149/bab-III-2/pasal-8",
+            "number_label": "8",
+            "ordinal_int": 8,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 8",
+            "seq_sort_key": "0008|",
+            "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, Pasal 8",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                "unit_id": "UU-2024-149"
+              },
+              {
+                "type": "bab",
+                "label": "BAB III",
+                "unit_id": "UU-2024-149/bab-III-2"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 8",
+                "unit_id": "UU-2024-149/bab-III-2/pasal-8"
+              }
+            ],
+            "title": "Pasal 8",
+            "content": "Pada saat Undang-Undang ini mulai berlaku, semua peraturan perundang-undangan yang merupakan peraturan pelaksanaan dari Undang-Undang Nomor 29 Tahun 1959 tentang Pembentukan Daerah Tingkat II di Sulawesi (Lembaran Negara Tahun 1959 Nomor 74, Tambahan Lembaran Negara Nomor 1822), dinyatakan masih tetap berlaku sepanjang tidak bertentangan dengan ketentuan dalam Undang-Undang ini.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": []
+          },
+          {
+            "type": "pasal",
+            "unit_id": "UU-2024-149/bab-III-2/pasal-9",
+            "number_label": "9",
+            "ordinal_int": 9,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 9",
+            "seq_sort_key": "0009|",
+            "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, Pasal 9",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                "unit_id": "UU-2024-149"
+              },
+              {
+                "type": "bab",
+                "label": "BAB III",
+                "unit_id": "UU-2024-149/bab-III-2"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 9",
+                "unit_id": "UU-2024-149/bab-III-2/pasal-9"
+              }
+            ],
+            "title": "Pasal 9",
+            "content": "Pada saat Undang-Undang ini mulai berlaku, ketentuan yang mengatur mengenai Kabupaten Mamuju dalam Undang- Undang Nomor 29 Tahun 1959 tentang Pembentukan Daerah Tingkat II di Sulawesi (Lembaran Negara Tahun 1959 Nomor T4, Tambahan Lembaran Negara Nomor 1822ll, dicabut dan dinyatakan tidak berlaku. diundangkan.",
+            "tags_semantik": [],
+            "entities": [],
+            "children": []
+          },
+          {
+            "type": "pasal",
+            "unit_id": "UU-2024-149/bab-III-2/pasal-10",
+            "number_label": "10",
+            "ordinal_int": 10,
+            "ordinal_suffix": "",
+            "label_display": "Pasal 10",
+            "seq_sort_key": "0010|",
+            "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, Pasal 10",
+            "path": [
+              {
+                "type": "dokumen",
+                "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                "unit_id": "UU-2024-149"
+              },
+              {
+                "type": "bab",
+                "label": "BAB III",
+                "unit_id": "UU-2024-149/bab-III-2"
+              },
+              {
+                "type": "pasal",
+                "label": "Pasal 10",
+                "unit_id": "UU-2024-149/bab-III-2/pasal-10"
+              }
+            ],
+            "title": "Pasal 10",
+            "content": "berlaku pada tanggal Agar setiap Indonesia. orang mengetahuinya, memerintahkan Undang-Undang ini dalam Lembaran Negara Republik Disahkan di Jakarta pada tanggal 28 Oktober 2024, PRABOWO SUBIANTO Diundangkan di Jakarta pada tanggal 28 Oktober 2024 MENTERI SEKRETARIS NEGARA, PRASETYO HADI LEMBARAN NEGARA TAHUN 2024 NOMOR 335 Salinan sesuai dengan aslinya KEMENTERIAN SEKRETARIAT NEGARA Perundang-undangan dan trasi Hukum, ilvanna Djaman UNDANG-UNDANG NOMOR 149 TAHUN 2024 KABUPATEN MAMUJU DI PROVINSI SULAWESI BARAT\nI. UMUM Penyelenggaraan pemerintahan dan pembangunan yang dilaksanakan oleh Pemerintah Pusat dan Pemerintah Daerah sejatinya adalah untuk mewujudkan tujuan negara. Salah satu tujuan negara tertuang dalam Pembukaan Undang-Undang Dasar Negara Tahun 1945, yaitu untuk melindungi segenap bangsa Indonesia dan seluruh tumpah darah Indonesia dan untuk memajukan kesejahteraan umum.\nUMUM Penyelenggaraan pemerintahan dan pembangunan yang dilaksanakan oleh Pemerintah Pusat dan Pemerintah Daerah sejatinya adalah untuk mewujudkan tujuan negara. Salah satu tujuan negara tertuang dalam Pembukaan Undang-Undang Dasar Negara Tahun 1945, yaitu untuk melindungi segenap bangsa Indonesia dan seluruh tumpah darah Indonesia dan untuk memajukan kesejahteraan umum. Dalam rangka mencapai tujuan tersebut dan penyesuaian terhadap dinamika perubahan peraturan perundang-undangan yang mengatur mengenai pemerintahan daerah serta peraturan perundang-undangan terkait lainnya, diperlukan upaya untuk menegaskan kembali kedudukan Kabupaten Mamuju dalam kerangka Negara Kesatuan. Hal ini ditegaskan dalam ketentuan Pasal 1 ayat (1) Undang-Undang Dasar Negara Tahun 1945, yang menyatakan \"Negara Indonesia ialah Negara Kesatuan, yang berbentuk Republik. \" Kedudukan Kabupaten Mamuju sebagai sebuah daerah otonom selama ini didasarkan pada Undang-Undang Nomor 29 Tahun 1959 tentang Pembentukan Daerah Tingkat II di Sulawesi. Desain pengaturan Kabupaten Mamuju berdasarkan Undang-Undang tersebut masih menggunakan Undang-Undang Dasar Sementara 1950 dan Undang-Undang Nomor 1 Tahun 1957 tentang Pokok-Pokok Pemerintahan Daerah sebagai acuan, yang pada dasarnya tidak relevan lagi dengan dinamika dan perubahan hukum di masyarakat. Berkaitan dengan itu, Undang-Undang ini dibentuk untuk menggantikan ketentuan yang mengatur mengenai Kabupaten Mamuju dalam Undang-Undang Nomor 29 Tahun 1959 tentang Pembentukan Daerah Tingkat II di Sulawesi, yang memuat penyempurnaan dasar hukum, penyesuaian cakupan wilayah dan batas daerah, penegasan karakteristik, serta sinkronisasi ketentuan peraturan perundang-undangan. II. PASAL II. PASAL DEMI Pasal 1 Cukup jelas. Cukup jelas. Cukup jelas. Cukup jelas. Cukup jelas. Cukup jelas. Cukup jelas. Cukup jelas. Cukup jelas. 10 Cukup jelas. TAMBAHAN LEMBARAN NEGARA NOMOR 7086",
+            "tags_semantik": [],
+            "entities": [],
+            "children": [
+              {
+                "type": "huruf",
+                "unit_id": "UU-2024-149/bab-III-2/pasal-10/huruf-I",
+                "number_label": "I",
+                "ordinal_int": 1,
+                "ordinal_suffix": "",
+                "label_display": "I.",
+                "seq_sort_key": "0001|",
+                "citation_string": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat, Pasal 10 huruf i",
+                "path": [
+                  {
+                    "type": "dokumen",
+                    "label": "Undang-undang (UU)  Nomor 149 Tahun 2024 tentang Kabupaten Mamuju di Provinsi Sulawesi Barat",
+                    "unit_id": "UU-2024-149"
+                  },
+                  {
+                    "type": "bab",
+                    "label": "BAB III",
+                    "unit_id": "UU-2024-149/bab-III-2"
+                  },
+                  {
+                    "type": "pasal",
+                    "label": "Pasal 10",
+                    "unit_id": "UU-2024-149/bab-III-2/pasal-10"
+                  },
+                  {
+                    "type": "huruf",
+                    "label": "I.",
+                    "unit_id": "UU-2024-149/bab-III-2/pasal-10/huruf-I"
+                  }
+                ],
+                "parent_pasal_id": "UU-2024-149/bab-III-2/pasal-10",
+                "local_content": "UMUM Penyelenggaraan pemerintahan dan pembangunan yang dilaksanakan oleh Pemerintah Pusat dan Pemerintah Daerah sejatinya adalah untuk mewujudkan tujuan negara. Salah satu tujuan negara tertuang dalam Pembukaan Undang-Undang Dasar Negara Tahun 1945, yaitu untuk melindungi segenap bangsa Indonesia dan seluruh tumpah darah Indonesia dan untuk memajukan kesejahteraan umum. Dalam rangka mencapai tujuan tersebut dan penyesuaian terhadap dinamika perubahan peraturan perundang-undangan yang mengatur mengenai pemerintahan daerah serta peraturan perundang-undangan terkait lainnya, diperlukan upaya untuk menegaskan kembali kedudukan Kabupaten Mamuju dalam kerangka Negara Kesatuan. Hal ini ditegaskan dalam ketentuan Pasal 1 ayat (1) Undang-Undang Dasar Negara Tahun 1945, yang menyatakan \"Negara Indonesia ialah Negara Kesatuan, yang berbentuk Republik. \" Kedudukan Kabupaten Mamuju sebagai sebuah daerah otonom selama ini didasarkan pada Undang-Undang Nomor 29 Tahun 1959 tentang Pembentukan Daerah Tingkat II di Sulawesi. Desain pengaturan Kabupaten Mamuju berdasarkan Undang-Undang tersebut masih menggunakan Undang-Undang Dasar Sementara 1950 dan Undang-Undang Nomor 1 Tahun 1957 tentang Pokok-Pokok Pemerintahan Daerah sebagai acuan, yang pada dasarnya tidak relevan lagi dengan dinamika dan perubahan hukum di masyarakat. Berkaitan dengan itu, Undang-Undang ini dibentuk untuk menggantikan ketentuan yang mengatur mengenai Kabupaten Mamuju dalam Undang-Undang Nomor 29 Tahun 1959 tentang Pembentukan Daerah Tingkat II di Sulawesi, yang memuat penyempurnaan dasar hukum, penyesuaian cakupan wilayah dan batas daerah, penegasan karakteristik, serta sinkronisasi ketentuan peraturan perundang-undangan. II. PASAL II. PASAL DEMI Pasal 1 Cukup jelas. Cukup jelas. Cukup jelas. Cukup jelas. Cukup jelas. Cukup jelas. Cukup jelas. Cukup jelas. Cukup jelas. 10 Cukup jelas. TAMBAHAN LEMBARAN NEGARA NOMOR 7086",
+                "display_text": "I. UMUM Penyelenggaraan pemerintahan dan pembangunan yang dilaksanakan oleh Pemerintah Pusat dan Pemerintah Daerah sejatinya adalah untuk mewujudkan tujuan negara. Salah satu tujuan negara tertuang dalam Pembukaan Undang-Undang Dasar Negara Tahun 1945, yaitu untuk melindungi segenap bangsa Indonesia dan seluruh tumpah darah Indonesia dan untuk memajukan kesejahteraan umum. Dalam rangka mencapai tujuan tersebut dan penyesuaian terhadap dinamika perubahan peraturan perundang-undangan yang mengatur mengenai pemerintahan daerah serta peraturan perundang-undangan terkait lainnya, diperlukan upaya untuk menegaskan kembali kedudukan Kabupaten Mamuju dalam kerangka Negara Kesatuan. Hal ini ditegaskan dalam ketentuan Pasal 1 ayat (1) Undang-Undang Dasar Negara Tahun 1945, yang menyatakan \"Negara Indonesia ialah Negara Kesatuan, yang berbentuk Republik. \" Kedudukan Kabupaten Mamuju sebagai sebuah daerah otonom selama ini didasarkan pada Undang-Undang Nomor 29 Tahun 1959 tentang Pembentukan Daerah Tingkat II di Sulawesi. Desain pengaturan Kabupaten Mamuju berdasarkan Undang-Undang tersebut masih menggunakan Undang-Undang Dasar Sementara 1950 dan Undang-Undang Nomor 1 Tahun 1957 tentang Pokok-Pokok Pemerintahan Daerah sebagai acuan, yang pada dasarnya tidak relevan lagi dengan dinamika dan perubahan hukum di masyarakat. Berkaitan dengan itu, Undang-Undang ini dibentuk untuk menggantikan ketentuan yang mengatur mengenai Kabupaten Mamuju dalam Undang-Undang Nomor 29 Tahun 1959 tentang Pembentukan Daerah Tingkat II di Sulawesi, yang memuat penyempurnaan dasar hukum, penyesuaian cakupan wilayah dan batas daerah, penegasan karakteristik, serta sinkronisasi ketentuan peraturan perundang-undangan. II. PASAL II. PASAL DEMI Pasal 1 Cukup jelas. Cukup jelas. Cukup jelas. Cukup jelas. Cukup jelas. Cukup jelas. Cukup jelas. Cukup jelas. Cukup jelas. 10 Cukup jelas. TAMBAHAN LEMBARAN NEGARA NOMOR 7086",
+                "bm25_body": "UMUM Penyelenggaraan pemerintahan dan pembangunan yang dilaksanakan oleh Pemerintah Pusat dan Pemerintah Daerah sejatinya adalah untuk mewujudkan tujuan negara. Salah satu tujuan negara tertuang dalam Pembukaan Undang-Undang Dasar Negara Tahun 1945, yaitu untuk melindungi segenap bangsa Indonesia dan seluruh tumpah darah Indonesia dan untuk memajukan kesejahteraan umum. Dalam rangka mencapai tujuan tersebut dan penyesuaian terhadap dinamika perubahan peraturan perundang-undangan yang mengatur mengenai pemerintahan daerah serta peraturan perundang-undangan terkait lainnya, diperlukan upaya untuk menegaskan kembali kedudukan Kabupaten Mamuju dalam kerangka Negara Kesatuan. Hal ini ditegaskan dalam ketentuan Pasal 1 ayat (1) Undang-Undang Dasar Negara Tahun 1945, yang menyatakan \"Negara Indonesia ialah Negara Kesatuan, yang berbentuk Republik. \" Kedudukan Kabupaten Mamuju sebagai sebuah daerah otonom selama ini didasarkan pada Undang-Undang Nomor 29 Tahun 1959 tentang Pembentukan Daerah Tingkat II di Sulawesi. Desain pengaturan Kabupaten Mamuju berdasarkan Undang-Undang tersebut masih menggunakan Undang-Undang Dasar Sementara 1950 dan Undang-Undang Nomor 1 Tahun 1957 tentang Pokok-Pokok Pemerintahan Daerah sebagai acuan, yang pada dasarnya tidak relevan lagi dengan dinamika dan perubahan hukum di masyarakat. Berkaitan dengan itu, Undang-Undang ini dibentuk untuk menggantikan ketentuan yang mengatur mengenai Kabupaten Mamuju dalam Undang-Undang Nomor 29 Tahun 1959 tentang Pembentukan Daerah Tingkat II di Sulawesi, yang memuat penyempurnaan dasar hukum, penyesuaian cakupan wilayah dan batas daerah, penegasan karakteristik, serta sinkronisasi ketentuan peraturan perundang-undangan. II. PASAL II. PASAL DEMI Pasal 1 Cukup jelas. Cukup jelas. Cukup jelas. Cukup jelas. Cukup jelas. Cukup jelas. Cukup jelas. Cukup jelas. Cukup jelas. 10 Cukup jelas. TAMBAHAN LEMBARAN NEGARA NOMOR 7086",
+                "span": null,
+                "parent_ayat_id": null,
+                "children": [],
+                "reference_contents": [
+                  {
+                    "ref": "Pasal 1",
+                    "unit_id": "UU-2024-149/bab-I/pasal-1",
+                    "content": "Dalam Undang-Undang ini yang dimaksud dengan: 1. Provinsi Sulawesi Barat adalah bagian dari wilayah Negara Kesatuan berdasarkan Undang- Undang Nomor 26 Tahun 2OO4 tentang Pembentukan Provinsi Sulawesi Barat.\n2. Kabupaten Mamuju adalah daerah kabupaten yang berada di wilayah Provinsi Sulawesi Barat yang dibentuk berdasarkan Undang-Undang Nomor 29 Tahun 1959 tentang Pembentukan Daerah Tingkat II di Sulawesi."
+                  }
+                ],
+                "reference_content": "Dalam Undang-Undang ini yang dimaksud dengan: 1. Provinsi Sulawesi Barat adalah bagian dari wilayah Negara Kesatuan berdasarkan Undang- Undang Nomor 26 Tahun 2OO4 tentang Pembentukan Provinsi Sulawesi Barat.\n2. Kabupaten Mamuju adalah daerah kabupaten yang berada di wilayah Provinsi Sulawesi Barat yang dibentuk berdasarkan Undang-Undang Nomor 29 Tahun 1959 tentang Pembentukan Daerah Tingkat II di Sulawesi."
+              }
+            ],
+            "reference_contents": [
+              {
+                "ref": "Pasal 1",
+                "unit_id": "UU-2024-149/bab-I/pasal-1",
+                "content": "Dalam Undang-Undang ini yang dimaksud dengan: 1. Provinsi Sulawesi Barat adalah bagian dari wilayah Negara Kesatuan berdasarkan Undang- Undang Nomor 26 Tahun 2OO4 tentang Pembentukan Provinsi Sulawesi Barat.\n2. Kabupaten Mamuju adalah daerah kabupaten yang berada di wilayah Provinsi Sulawesi Barat yang dibentuk berdasarkan Undang-Undang Nomor 29 Tahun 1959 tentang Pembentukan Daerah Tingkat II di Sulawesi."
+              }
+            ],
+            "reference_content": "Dalam Undang-Undang ini yang dimaksud dengan: 1. Provinsi Sulawesi Barat adalah bagian dari wilayah Negara Kesatuan berdasarkan Undang- Undang Nomor 26 Tahun 2OO4 tentang Pembentukan Provinsi Sulawesi Barat.\n2. Kabupaten Mamuju adalah daerah kabupaten yang berada di wilayah Provinsi Sulawesi Barat yang dibentuk berdasarkan Undang-Undang Nomor 29 Tahun 1959 tentang Pembentukan Daerah Tingkat II di Sulawesi."
+          }
+        ]
+      }
+    ]
+  },
+  "last_updated": "2025-08-11T23:57:15.602463",
+  "pdf_extraction_metadata": null,
+  "pasal_metadata": null,
+  "structure_flags": null,
+  "structure_analysis": null,
+  "chapters": null,
+  "articles": null
+}

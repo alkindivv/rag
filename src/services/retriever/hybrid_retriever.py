@@ -60,19 +60,19 @@ class QueryRouter:
     EXPLICIT_PATTERNS = [
         # Comprehensive pasal/ayat combinations
         r'(?:pasal|pasal\s+)?(\d+[A-Z]?)\s*(?:ayat\s*(\d+))?(?:\s*huruf\s*([a-z]))?(?:\s*angka\s*(\d+))?',
-        
+
         # Specific pasal references with document context
         r'(?:uu|undang-undang)\s+(?:no\.?\s*)?(\d+)(?:/|\s+tahun\s+)(\d{4})\s*(?:pasal\s+(\d+))?(?:\s+ayat\s+(\d+))?',
-        
+
         # PP references with pasal
         r'(?:pp|peraturan\s+pemerintah)\s+(?:no\.?\s*)?(\d+)(?:/|\s+tahun\s+)(\d{4})\s*(?:pasal\s+(\d+))?(?:\s+ayat\s+(\d+))?',
-        
+
         # Explicit pasal/ayat/huruf combinations
         r'pasal\s+(\d+(?:[A-Z])?)\s*(?:ayat\s*(\d+))?(?:\s*huruf\s*([a-z]))?',
-        
+
         # Direct citation format: "UU 4/2009 Pasal 121 Ayat 1"
         r'(UU|PP|PERPU)\s+(\d+)/(\d{4})\s+pasal\s+(\d+(?:[A-Z])?)(?:\s+ayat\s+(\d+))?',
-        
+
         # Flexible citation format
         r'(?:pasal|pasal\s+)?(\d+[A-Z]?)\s*(?:ayat\s*\(?\s*(\d+)\s*\)?)?(?:\s*huruf\s*([a-z]))?',
     ]
@@ -121,7 +121,7 @@ class QueryRouter:
         clean_query = query.lower().strip()
 
         # Comprehensive pattern matching for legal citations
-        
+
         # Pattern 1: UU 4/2009 Pasal 121 Ayat 1
         pattern1 = r'(?:uu|undang-undang)\s+(?:no\.?\s*)?(\d+)(?:/|\s+tahun\s+)(\d{4})\s+pasal\s+(\d+(?:[A-Z])?)(?:\s+ayat\s+(\d+))?'
         match1 = re.search(pattern1, clean_query, re.IGNORECASE)
@@ -453,10 +453,10 @@ class ExplicitSearcher:
         if references.get("pasal") and references.get("ayat"):
             # Target specific ayat within pasal using JOIN approach
             unit_conditions.append("""
-                LOWER(lu.unit_type::text) = 'ayat' 
+                LOWER(lu.unit_type::text) = 'ayat'
                 AND lu.number_label = :ayat
                 AND lu.parent_pasal_id IN (
-                    SELECT unit_id FROM legal_units 
+                    SELECT unit_id FROM legal_units
                     WHERE LOWER(unit_type::text) = 'pasal' AND number_label = :pasal
                 )
             """)

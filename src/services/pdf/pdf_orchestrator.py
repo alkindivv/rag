@@ -89,6 +89,12 @@ class PDFOrchestrator:
             doc_title = document_data.get('doc_title', document_data.get('title', 'Document'))
             enhanced_tree = self._serialize_tree(document_tree, doc_id, doc_title)
 
+            # Augment cross references by resolving cited units' contents
+            try:
+                self._augment_cross_references(enhanced_tree)
+            except Exception as e:
+                logger.warning(f"Cross-reference augmentation failed: {e}")
+
             # Add PDF content, tree structure, and metadata
             enhanced_data['doc_content'] = cleaned_text
             enhanced_data['document_tree'] = enhanced_tree if enhanced_tree else None
@@ -125,6 +131,11 @@ class PDFOrchestrator:
             doc_id = document_data.get('doc_id', 'document')
             doc_title = document_data.get('doc_title', document_data.get('title', 'Document'))
             enhanced_tree = self._serialize_tree(document_tree, doc_id, doc_title)
+
+            try:
+                self._augment_cross_references(enhanced_tree)
+            except Exception as e:
+                logger.warning(f"Cross-reference augmentation failed: {e}")
 
             # Update data dengan TXT content & tree
             enhanced_data['doc_content'] = cleaned_text
@@ -202,22 +213,22 @@ class PDFOrchestrator:
             return text_cleaner.clean_legal_document_comprehensive(text)
         except ImportError:
             logger.warning("TextCleaner not available, using basic cleaning")
-            return self._basic_clean(text)
+            # return self._basic_clean(text)
 
-    def _basic_clean(self, text: str) -> str:
-        """Basic text cleaning fallback"""
-        import re
+    # def _basic_clean(self, text: str) -> str:
+    #     """Basic text cleaning fallback"""
+    #     import re
 
-        # Remove excessive whitespace
-        text = re.sub(r'\s+', ' ', text)
+    #     # Remove excessive whitespace
+    #     text = re.sub(r'\s+', ' ', text)
 
-        # Remove page breaks and form feeds
-        text = re.sub(r'[\f\r]+', '\n', text)
+    #     # Remove page breaks and form feeds
+    #     text = re.sub(r'[\f\r]+', '\n', text)
 
-        # Clean up line breaks
-        text = re.sub(r'\n\s*\n\s*\n', '\n\n', text)
+    #     # Clean up line breaks
+    #     text = re.sub(r'\n\s*\n\s*\n', '\n\n', text)
 
-        return text.strip()
+    #     return text.strip()
 
     def _build_document_tree(self, text: str) -> LegalNode:
         """Build structured document tree from legal text."""
@@ -639,6 +650,189 @@ class PDFOrchestrator:
         # Recursively process all children
         for child in node.children:
             self._build_full_content_for_pasal(child)
+
+    # ------------------------
+    # Cross-reference resolver
+    # ------------------------
+    def _augment_cross_references(self, root: Dict[str, Any]) -> None:
+        """
+        Traverse the serialized tree, detect references like
+        'Pasal 6 ayat (1) huruf b' or 'Pasal 6 ayat (1)' or 'Pasal 6',
+        and attach the referenced units' contents to the node as:
+          - reference_contents: [ { 'ref': str, 'unit_id': str, 'content': str } ]
+          - reference_content: str (if exactly one reference found)
+        """
+        if not root:
+            return
+
+        index = self._build_unit_index(root)
+
+        # Regex captures: pasal, optional ayat, optional huruf
+        ref_pattern = re.compile(
+            r"Pasal\s+(?P<pasal>\d+[A-Za-z]*)"  # Pasal number with optional suffix
+            r"(?:\s+ayat\s*\(\s*(?P<ayat>\d+)\s*\))?"  # optional ayat
+            r"(?:\s+huruf\s+(?P<huruf>[a-z]))?",
+            flags=re.IGNORECASE,
+        )
+
+        # Relative references (within current context):
+        #   - ayat (N)  [optionally preceded by legal phrasing]
+        rel_ayat_pattern = re.compile(
+            r"(?:sebagaimana\s+dimaksud(?:\s+dalam|\s+pada)?\s*)?ayat\s*\(\s*(?P<ayat_only>\d+)\s*\)",
+            flags=re.IGNORECASE,
+        )
+        #   - huruf x  [optionally preceded by legal phrasing]
+        rel_huruf_pattern = re.compile(
+            r"(?:sebagaimana\s+dimaksud(?:\s+dalam|\s+pada)?\s*)?huruf\s+(?P<huruf_only>[a-z])",
+            flags=re.IGNORECASE,
+        )
+
+        def extract_text_fields(node_dict: Dict[str, Any]) -> List[Tuple[str, str]]:
+            """Return list of (field_name, text) to scan for references."""
+            fields = []
+            t = node_dict.get("type")
+            if t == "pasal":
+                if node_dict.get("content"):
+                    fields.append(("content", node_dict["content"]))
+            elif t in ("ayat", "huruf", "angka"):
+                # Prefer local_content; fall back to display_text
+                if node_dict.get("local_content"):
+                    fields.append(("local_content", node_dict["local_content"]))
+                elif node_dict.get("display_text"):
+                    fields.append(("display_text", node_dict["display_text"]))
+            else:
+                # For structural nodes, scan title if present
+                if node_dict.get("title"):
+                    fields.append(("title", node_dict["title"]))
+            return fields
+
+        def resolve_one(match: re.Match) -> Optional[Dict[str, str]]:
+            pasal = match.group("pasal")
+            ayat = match.group("ayat")
+            huruf = match.group("huruf")
+            target = self._find_unit_by_ref(index, pasal, ayat, huruf)
+            if not target:
+                return None
+            content = self._get_unit_content(target)
+            if not content:
+                return None
+            ref_str = match.group(0)
+            return {"ref": ref_str, "unit_id": target.get("unit_id"), "content": content}
+
+        def walk(node_dict: Dict[str, Any], current_pasal: Optional[str] = None, current_ayat: Optional[str] = None):
+            # Maintain traversal context based on node type
+            t = node_dict.get("type")
+            if t == "pasal" and node_dict.get("number_label"):
+                current_pasal = str(node_dict.get("number_label"))
+                current_ayat = None
+            elif t == "ayat" and node_dict.get("number_label") and current_pasal:
+                current_ayat = str(node_dict.get("number_label"))
+
+            # Find references in text fields
+            refs: List[Dict[str, str]] = []
+            seen: set[tuple] = set()
+            for _, text in extract_text_fields(node_dict):
+                txt = text or ""
+                # 1) Absolute references: Pasal N [ayat (M) [huruf x]]
+                for m in ref_pattern.finditer(txt):
+                    resolved = resolve_one(m)
+                    if resolved:
+                        key = (resolved["unit_id"], resolved["ref"])
+                        if key not in seen:
+                            seen.add(key)
+                            refs.append(resolved)
+                # 2) Relative ayat: ayat (M) -> (current_pasal, M)
+                for m in rel_ayat_pattern.finditer(txt):
+                    if current_pasal:
+                        ay = m.group("ayat_only")
+                        target = index["ayat"].get((str(current_pasal), str(ay)))
+                        if target:
+                            content = self._get_unit_content(target)
+                            if content:
+                                ref_str = m.group(0)
+                                resolved = {"ref": ref_str, "unit_id": target.get("unit_id"), "content": content}
+                                key = (resolved["unit_id"], resolved["ref"])
+                                if key not in seen:
+                                    seen.add(key)
+                                    refs.append(resolved)
+                # 3) Relative huruf: huruf x -> (current_pasal, current_ayat, x)
+                for m in rel_huruf_pattern.finditer(txt):
+                    if current_pasal and current_ayat:
+                        hf = m.group("huruf_only").lower()
+                        target = index["huruf"].get((str(current_pasal), str(current_ayat), hf))
+                        if target:
+                            content = self._get_unit_content(target)
+                            if content:
+                                ref_str = m.group(0)
+                                resolved = {"ref": ref_str, "unit_id": target.get("unit_id"), "content": content}
+                                key = (resolved["unit_id"], resolved["ref"])
+                                if key not in seen:
+                                    seen.add(key)
+                                    refs.append(resolved)
+
+            if refs:
+                node_dict["reference_contents"] = refs
+                if len(refs) == 1:
+                    node_dict["reference_content"] = refs[0]["content"]
+            # Recurse
+            for child in node_dict.get("children", []) or []:
+                walk(child, current_pasal, current_ayat)
+
+        walk(root)
+
+    def _build_unit_index(self, root: Dict[str, Any]) -> Dict[str, Any]:
+        """Build lookup indices for pasal/ayat/huruf by their numbers."""
+        index = {
+            "pasal": {},  # pasal_num -> node
+            "ayat": {},   # (pasal_num, ayat_num) -> node
+            "huruf": {},  # (pasal_num, ayat_num, huruf) -> node
+        }
+
+        def walk(node_dict: Dict[str, Any], current_pasal: Optional[str] = None, current_ayat: Optional[str] = None):
+            t = node_dict.get("type")
+            label = node_dict.get("label_display") or ""
+            # normalize extract number token
+            num = node_dict.get("number_label")
+            if t == "pasal" and num:
+                current_pasal = str(num)
+                index["pasal"][current_pasal] = node_dict
+                current_ayat = None
+            elif t == "ayat" and num and current_pasal:
+                current_ayat = str(num)
+                index["ayat"][ (current_pasal, current_ayat) ] = node_dict
+            elif t == "huruf" and num and current_pasal and current_ayat:
+                index["huruf"][ (current_pasal, str(current_ayat), str(num).lower()) ] = node_dict
+
+            for child in node_dict.get("children", []) or []:
+                walk(child, current_pasal, current_ayat)
+
+        walk(root)
+        return index
+
+    def _find_unit_by_ref(self, index: Dict[str, Any], pasal: str, ayat: Optional[str], huruf: Optional[str]) -> Optional[Dict[str, Any]]:
+        pasal_key = str(pasal)
+        target = index["pasal"].get(pasal_key)
+        if not target:
+            return None
+        if ayat:
+            target = index["ayat"].get((pasal_key, str(ayat)))
+            if not target:
+                return None
+            if huruf:
+                target = index["huruf"].get((pasal_key, str(ayat), str(huruf).lower()))
+                if not target:
+                    return None
+        return target
+
+    def _get_unit_content(self, node_dict: Dict[str, Any]) -> str:
+        """Extract the most relevant text for a unit node."""
+        t = node_dict.get("type")
+        if t == "pasal":
+            return node_dict.get("content") or ""
+        if t in ("ayat", "huruf", "angka"):
+            return node_dict.get("local_content") or node_dict.get("display_text") or ""
+        # structural: return title
+        return node_dict.get("title") or ""
 
     def get_status(self) -> Dict[str, Any]:
         """Get orchestrator status"""

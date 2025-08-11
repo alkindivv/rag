@@ -1,105 +1,203 @@
-UNDANG-UNDANG REPUBLIK INDONESIA NOMOR 4 TAHUN 2009 TENTANG PERTAMBANGAN MINERAL DAN BATUBARA
+// Pola 1.1: Hirarki Lengkap (Buku -> Bab -> Bagian -> Paragraf)
+// Penjelasan: Ini adalah struktur paling lengkap dan ideal yang bisa ditemui, biasanya dalam kodifikasi besar atau undang-undang yang sangat terstruktur.
+// Sistem harus mampu membangun pohon (tree) hirarki dengan kedalaman ini dan mengasosiasikan pasal yang benar ke setiap node.
+UNDANG-UNDANG REPUBLIK INDONESIA NOMOR 1 TAHUN 2023 TENTANG KITAB UNDANG-UNDANG HUKUM PIDANA
+
+BUKU KESATU
+ATURAN UMUM
 
 BAB I
-KETENTUAN UMUM
+RUANG LINGKUP BERLAKUNYA KETENTUAN PERATURAN PERUNDANG-UNDANGAN PIDANA
+
+Bagian Kesatu
+Menurut Waktu
+
+Paragraf 1
+Asas Legalitas
 
 Pasal 1
-Dalam Undang-Undang ini yang dimaksud dengan:
-1. Pertambangan adalah sebagian atau seluruh tahapan kegiatan dalam rangka penelitian, pengelolaan dan pengusahaan mineral atau batubara yang meliputi penyelidikan umum, eksplorasi, studi kelayakan, konstruksi, penambangan, pengolahan dan pemurnian, pengangkutan dan penjualan, serta kegiatan pascatambang.
-2. Mineral adalah senyawa anorganik yang terbentuk di alam, yang memiliki sifat fisik dan kimia tertentu serta susunan kristal teratur atau gabungannya yang membentuk batuan, baik dalam bentuk lepas atau padu.
-3. Batubara adalah endapan senyawa organik karbonan yang terbentuk secara alami dari sisa tumbuh-tumbuhan.
-4. Pertambangan Mineral adalah pertambangan kumpulan mineral yang berupa bijih atau batuan, di luar panas bumi, minyak dan gas bumi, serta air tanah.
-5. Pertambangan Batubara adalah pertambangan endapan karbon yang terdapat di dalam bumi, termasuk bitumen padat, gambut, dan batuan aspal.
-6. Usaha Pertambangan adalah kegiatan dalam rangka pengusahaan mineral atau batubara yang meliputi tahapan kegiatan penyelidikan umum, eksplorasi, studi kelayakan, konstruksi, penambangan, pengolahan dan pemurnian, pengangkutan dan penjualan, serta pascatambang.
-7. Izin Usaha Pertambangan, yang selanjutnya disebut IUP, adalah izin untuk melaksanakan usaha pertambangan.
-8. IUP Eksplorasi adalah izin usaha yang diberikan untuk melakukan tahapan kegiatan penyelidikan umum, eksplorasi, dan studi kelayakan.
-9. IUP Operasi Produksi adalah izin usaha yang diberikan setelah selesai pelaksanaan IUP Eksplorasi untuk melakukan tahapan kegiatan operasi produksi.
-10. Izin Pertambangan Rakyat, yang selanjutnya disebut IPR, adalah izin untuk melaksanakan usaha pertambangan dalam wilayah pertambangan rakyat dengan luas wilayah dan investasi terbatas.
-11. Izin Usaha Pertambangan Khusus, yang selanjutnya disebut dengan IUPK, adalah izin untuk melaksanakan usaha pertambangan di wilayah izin usaha pertambangan khusus.
-12. IUPK Eksplorasi adalah izin usaha yang diberikan untuk melakukan tahapan kegiatan penyelidikan umum, eksplorasi, dan studi kelayakan di wilayah izin usaha pertambangan khusus.
-13. IUPK Operasi Produksi adalah izin usaha yang diberikan setelah selesai pelaksanaan IUPK Eksplorasi untuk melakukan tahapan kegiatan operasi produksi di wilayah izin usaha pertambangan khusus.
-14. Penyelidikan Umum adalah tahapan kegiatan pertambangan untuk mengetahui kondisi geologi regional dan indikasi adanya mineralisasi.
-15. Eksplorasi adalah tahapan kegiatan usaha pertambangan untuk memperoleh informasi secara terperinci dan teliti tentang lokasi, bentuk, dimensi, sebaran, kualitas dan sumber daya terukur dari bahan galian, serta informasi mengenai lingkungan sosial dan lingkungan hidup.
+(1) Tidak ada satu perbuatan pun yang dapat dikenai sanksi pidana dan/atau tindakan kecuali atas kekuatan peraturan pidana dalam peraturan perundang-undangan yang telah ada sebelum perbuatan dilakukan.
+...
 
-BAB II
-ASAS DAN TUJUAN
-
-Pasal 2
-Pertambangan mineral dan/atau batubara dikelola berasaskan:
-a. manfaat, keadilan, dan keseimbangan;
-b. keberpihakan kepada kepentingan bangsa;
-c. partisipatif, transparansi, dan akuntabilitas;
-d. berkelanjutan dan berwawasan lingkungan.
-
-Pasal 3
-Dalam rangka mendukung pembangunan nasional yang berkesinambungan, tujuan pengelolaan mineral dan batubara adalah:
-a. menjamin efektivitas pelaksanaan dan pengendalian kegiatan usaha pertambangan secara berdaya guna, berhasil guna, dan berdaya saing;
-b. menjamin manfaat pertambangan mineral dan batubara secara berkelanjutan dan berwawasan lingkungan hidup;
-c. menjamin tersedianya mineral dan batubara sebagai bahan baku dan/atau sebagai sumber energi untuk kebutuhan dalam negeri;
-d. mendukung dan menumbuhkembangkan kemampuan nasional agar lebih mampu bersaing di tingkat nasional, regional, dan internasional;
-e. meningkatkan pendapatan masyarakat lokal, daerah, dan negara, serta menciptakan lapangan kerja untuk sebesar-besarnya kesejahteraan rakyat; dan
-f. menjamin kepastian hukum dalam penyelenggaraan kegiatan usaha pertambangan mineral dan batubara.
+// Pola 1.2: Hirarki Tidak Lengkap (Contoh: Bab -> Pasal)
+// Penjelasan: Banyak undang-undang yang lebih sederhana tidak menggunakan semua tingkatan hirarki.
+// Sistem tidak boleh error jika 'Bagian' atau 'Paragraf' tidak ada, dan harus bisa langsung menghubungkan 'Pasal' ke 'Bab'.
+UNDANG-UNDANG REPUBLIK INDONESIA NOMOR 17 TAHUN 2023 TENTANG KESEHATAN
 
 BAB III
-PENGUASAAN MINERAL DAN BATUBARA
+HAK DAN KEWAJIBAN
 
+Pasal 4
+Setiap Orang berhak:
+a. mendapatkan lingkungan yang sehat bagi pencapaian derajat Kesehatan;
+b. mendapatkan informasi dan edukasi tentang Kesehatan yang benar dan akurat;
+...
+
+// Pola 1.3: Preamble (Menimbang, Mengingat, Memutuskan)
+// Penjelasan: Ini bukan sekadar teks pembuka. 'Menimbang' berisi landasan filosofis/sosiologis/yuridis. 'Mengingat' adalah daftar dasar hukum (dependensi) yang sangat penting.
+// Sistem idealnya dapat mengekstrak setiap butir 'Mengingat' sebagai referensi ke dokumen hukum lain.
+UNDANG-UNDANG REPUBLIK INDONESIA NOMOR 3 TAHUN 2022 TENTANG IBU KOTA NEGARA
+
+Dengan Persetujuan Bersama
+DEWAN PERWAKILAN RAKYAT REPUBLIK INDONESIA
+dan
+PRESIDEN REPUBLIK INDONESIA
+
+MEMUTUSKAN:
+Menetapkan: UNDANG-UNDANG TENTANG IBU KOTA NEGARA.
+
+// Pola 1.4: Ketentuan Penutup (Mencabut Peraturan Lama)
+// Penjelasan: Bagian ini krusial untuk manajemen status dokumen. 'Mencabut' berarti membuat dokumen lain tidak berlaku.
+// Sistem harus dapat mendeteksi aksi 'pencabutan' ini dan menandai status dokumen target sebagai 'dicabut'.
+BAB XLIV
+KETENTUAN PENUTUP
+
+Pasal 622
+Pada saat Undang-Undang ini mulai berlaku:
+a. Kitab Undang-Undang Hukum Pidana (Wetboek van Strafrecht, Staatsblad 1915 Nomor 732);
+...
+dicabut dan dinyatakan tidak berlaku.
+
+// Pola 1.5: Ketentuan Peralihan
+// Penjelasan: Bagian ini mengatur masa transisi dari hukum lama ke hukum baru. Seringkali berisi kondisi atau tenggat waktu.
+// Contoh: "peraturan pelaksanaan harus ditetapkan paling lama 2 (dua) tahun". Ini adalah informasi yang sangat berharga.
+BAB XLIII
+KETENTUAN PERALIHAN
+
+Pasal 621
+Pada saat Undang-Undang ini mulai berlaku, peraturan pelaksanaan dari Undang-Undang ... masih tetap berlaku sepanjang tidak bertentangan dengan Undang-Undang ini.
+
+Kategori 2: Pola Struktur Pasal & Penomoran
+Pola ini menguji kemampuan sistem dalam mem-parsing isi dari sebuah pasal dengan berbagai variasinya.
+
+// Pola 2.1: Pasal dengan Ayat
+// Penjelasan: Struktur paling umum. Teks pasal diikuti oleh beberapa ayat yang dinomori dalam kurung.
 Pasal 4
 (1) Mineral dan batubara sebagai sumber daya alam yang tak terbarukan merupakan kekayaan nasional yang dikuasai oleh negara untuk sebesar-besarnya kesejahteraan rakyat.
 (2) Penguasaan mineral dan batubara oleh negara sebagaimana dimaksud pada ayat (1) diselenggarakan oleh Pemerintah dan/atau pemerintah daerah.
 
-Pasal 5
-(1) Untuk kepentingan nasional, Pemerintah setelah berkonsultasi dengan Dewan Perwakilan Rakyat Republik Indonesia dapat menetapkan kebijakan pengutamaan mineral dan/atau batubara untuk kepentingan dalam negeri.
-(2) Kepentingan nasional sebagaimana dimaksud pada ayat (1) dapat dilakukan dengan pengendalian produksi dan ekspor.
-(3) Dalam melaksanakan pengendalian sebagaimana dimaksud pada ayat (2), Pemerintah mempunyai kewenangan untuk menetapkan jumlah produksi tiap-tiap komoditas per tahun setiap provinsi.
-(4) Pemerintah daerah wajib mematuhi ketentuan jumlah yang ditetapkan oleh Pemerintah sebagaimana dimaksud pada ayat (3).
-(5) Ketentuan lebih lanjut mengenai pengutamaan mineral dan/atau batubara untuk kepentingan dalam negeri sebagaimana dimaksud pada ayat (1) dan pengendalian produksi dan ekspor sebagaimana dimaksud pada ayat (2) dan ayat (3) diatur dengan peraturan pemerintah.
+// Pola 2.2: Pasal dengan Ayat -> Huruf
+// Penjelasan: Setiap ayat bisa memiliki rincian dalam bentuk enumerasi huruf.
+Pasal 2
+Pertambangan mineral dan/atau batubara dikelola berasaskan:
+a. manfaat, keadilan, dan keseimbangan;
+b. keberpihakan kepada kepentingan nasional;
 
-BAB IV
-KEWENANGAN PENGELOLAAN PERTAMBANGAN MINERAL DAN BATUBARA
+// Pola 2.3: Pasal dengan Ayat -> Huruf -> Angka (Struktur Terdalam)
+// Penjelasan: Struktur rincian terdalam yang umum. Menguji kemampuan parsing bertingkat.
+Pasal 8
+(1) Jika terjadi perbarengan sebagaimana dimaksud dalam Pasal 127 dan Pasal 129, penjatuhan pidana tambahan dilakukan dengan ketentuan sebagai berikut:
+    a. pidana pencabutan hak yang sama dijadikan satu dengan ketentuan:
+        1. paling singkat 2 (dua) tahun dan paling lama 5 (lima) tahun lebih lama dari pidana pokok yang dijatuhkan; atau
+        2. apabila pidana pokok yang diancamkan hanya pidana denda, lama pidana paling singkat 2 (dua) tahun dan paling lama 5 (lima) tahun.
+    b. pidana pencabutan hak yang berbeda dijatuhkan secara sendiri-sendiri untuk tiap Tindak Pidana.
 
-Pasal 6
-(1) Kewenangan Pemerintah dalam pengelolaan pertambangan mineral dan batubara, antara lain, adalah:
-   a. penetapan kebijakan nasional;
-   b. pembuatan peraturan perundang-undangan;
-   c. penetapan standar nasional, pedoman, dan kriteria;
-   d. penetapan sistem perizinan pertambangan mineral dan batubara nasional;
-   e. penetapan WP yang dilakukan setelah berkoordinasi dengan pemerintah daerah dan berkonsultasi dengan Dewan Perwakilan Rakyat Republik Indonesia;
-   f. pemberian IUP, pembinaan, penyelesaian konflik masyarakat, dan pengawasan usaha pertambangan yang berada pada lintas wilayah provinsi dan/atau wilayah laut lebih dari 12 (dua belas) mil dari garis pantai;
-   g. pemberian IUP, pembinaan, penyelesaian konflik masyarakat, dan pengawasan usaha pertambangan yang lokasi penambangannya berada pada lintas wilayah provinsi dan/atau wilayah laut lebih dari 12 (dua belas) mil dari garis pantai;
-   h. pemberian IUP, pembinaan, penyelesaian konflik masyarakat, dan pengawasan usaha pertambangan operasi produksi yang berdampak lingkungan langsung lintas provinsi dan/atau dalam wilayah laut lebih dari 12 (dua belas) mil dari garis pantai;
-   i. pemberian IUPK Eksplorasi dan IUPK Operasi Produksi;
-   j. pengevaluasian IUP Operasi Produksi, yang dikeluarkan oleh pemerintah daerah, yang telah menimbulkan kerusakan lingkungan serta yang tidak menerapkan kaidah pertambangan yang baik;
-   k. penetapan . . .
-k. penetapan kebijakan produksi, pemasaran, pemanfaatan, dan konservasi;
-l. penetapan kebijakan kerja sama, kemitraan, dan pemberdayaan masyarakat;
-m. perumusan dan penetapan penerimaan negara bukan pajak dari hasil usaha pertambangan mineral dan batubara;
-n. pembinaan dan pengawasan penyelenggaraan pengelolaan pertambangan mineral dan batubara yang dilaksanakan oleh pemerintah daerah;
-o. pembinaan dan pengawasan penyusunan peraturan daerah di bidang pertambangan;
-p. penginventarisasian, penyelidikan, dan penelitian serta eksplorasi dalam rangka memperoleh data dan informasi mineral dan batubara sebagai bahan penyusunan WUP dan WPN;
-q. pengelolaan informasi geologi, informasi potensi sumber daya mineral dan batubara, serta informasi pertambangan pada tingkat nasional;
-r. pembinaan dan pengawasan terhadap reklamasi lahan pascatambang;
-s. penyusunan neraca sumber daya mineral dan batubara tingkat nasional;
-t. pengembangan dan peningkatan nilai tambah kegiatan usaha pertambangan; dan
-u. peningkatan kemampuan aparatur Pemerintah, pemerintah provinsi, dan pemerintah kabupaten/kota dalam penyelenggaraan pengelolaan usaha pertambangan.
+// Pola 2.4: Pasal dengan Daftar Bernomor (Bukan Ayat)
+// Penjelasan: Sering ditemukan di pasal 'Ketentuan Umum' untuk definisi. Penomorannya tidak menggunakan kurung. Ini berbeda secara struktur dari ayat.
+Pasal 1
+Dalam Undang-Undang ini yang dimaksud dengan:
 
-(2) Kewenangan Pemerintah sebagaimana dimaksud pada ayat (1) dilaksanakan sesuai dengan ketentuan peraturan perundang-undangan.
+Pertambangan adalah sebagian atau seluruh tahapan kegiatan dalam rangka penelitian, pengelolaan dan pengusahaan mineral atau batubara...
 
+Mineral adalah senyawa anorganik yang terbentuk di alam, yang memiliki sifat fisik dan kimia tertentu serta susunan kristal teratur atau gabungannya...
+
+// Pola 2.5: Pasal dengan Penomoran Campuran (Huruf lalu Angka dalam satu level)
+// Penjelasan: Edge case. Kadang dalam satu ayat, ada enumerasi huruf, lalu dilanjutkan dengan enumerasi angka. Sistem harus bisa menangani ini sebagai sibling dalam satu level.
 Pasal 7
 (1) Kewenangan pemerintah provinsi dalam pengelolaan pertambangan mineral dan batubara, antara lain, adalah:
-a. pembuatan peraturan perundang-undangan daerah;
-b. pemberian IUP, pembinaan, penyelesaian konflik masyarakat dan pengawasan usaha pertambangan pada lintas wilayah kabupaten/kota dan/atau wilayah laut 4 (empat) mil sampai dengan 12 (dua belas) mil;
-c. pemberian IUP, pembinaan, penyelesaian konflik masyarakat dan pengawasan usaha pertambangan operasi produksi yang kegiatannya berada pada lintas wilayah kabupaten/kota dan/atau wilayah laut 4 (empat) mil sampai dengan 12 (dua belas) mil;
-d. pemberian IUP, pembinaan, penyelesaian konflik masyarakat dan pengawasan usaha pertambangan yang berdampak lingkungan langsung lintas kabupaten/kota dan/atau wilayah laut 4 (empat) mil sampai dengan 12 (dua belas) mil;
-e. penginventarisasian, penyelidikan dan penelitian serta eksplorasi dalam rangka memperoleh data dan informasi mineral dan batubara sesuai dengan kewenangannya;
-f. pengelolaan informasi geologi, informasi potensi sumber daya mineral dan batubara, serta informasi pertambangan pada daerah/wilayah provinsi;
-g. penyusunan neraca sumber daya mineral dan batubara pada daerah/wilayah provinsi;
-h. pengembangan dan peningkatan nilai tambah kegiatan usaha pertambangan di provinsi;
-i. pengembangan dan peningkatan peran serta masyarakat dalam usaha pertambangan dengan memperhatikan kelestarian lingkungan;
-j. pengoordinasian perizinan dan pengawasan penggunaan bahan peledak di wilayah tambang sesuai dengan kewenangannya;
-k. penyampaian informasi hasil inventarisasi, penyelidikan umum, dan penelitian serta eksplorasi kepada Menteri dan bupati/walikota;
-l. penyampaian informasi hasil produksi, penjualan dalam negeri, serta ekspor kepada Menteri dan bupati/walikota;
-m. pembinaan dan pengawasan terhadap reklamasi lahan pascatambang; dan
-n. peningkatan kemampuan aparatur pemerintah provinsi dan pemerintah kabupaten/kota dalam penyelenggaraan pengelolaan usaha pertambangan.
+    a. pembuatan peraturan perundang-undangan daerah;
+    b. pemberian IUP pada lintas wilayah kabupaten/kota;
+    1. penyelesaian konflik masyarakat;
+    2. pengawasan usaha pertambangan;
 
-(2) Kewenangan pemerintah provinsi sebagaimana dimaksud pada ayat (1) dilaksanakan sesuai dengan ketentuan peraturan perundang-undangan.
-Pasal 8
+Kategori 3: Pola Referensi Silang (Cross-Reference)
+Ini adalah salah satu tes terpenting untuk membangun knowledge graph dari korpus hukum.
+
+// Pola 3.1: Referensi ke Pasal Lain (dalam dokumen yang sama)
+// Penjelasan: Referensi paling dasar. Sistem harus bisa mengidentifikasi 'Pasal 6' dan membuat tautan.
+Pasal 7
+Perizinan Berusaha berbasis risiko sebagaimana dimaksud dalam Pasal 6 dilakukan berdasarkan penetapan tingkat risiko...
+
+// Pola 3.2: Referensi ke Ayat Spesifik
+// Penjelasan: Lebih granural. Tautan harus menunjuk ke 'ayat (7)' dari 'Pasal 7', bukan hanya 'Pasal 7'.
+Pasal 11
+Pengawasan terhadap setiap kegiatan usaha dilakukan dengan pengaturan frekuensi pelaksanaan berdasarkan tingkat risiko sebagaimana dimaksud dalam Pasal 7 ayat (7)...
+
+// Pola 3.3: Referensi ke Huruf Spesifik
+// Penjelasan: Sangat granural. Tautan harus menunjuk ke unit 'huruf b' di dalam 'ayat (7)' dari 'Pasal 7'.
+Pasal 9
+Perizinan Berusaha untuk kegiatan usaha berisiko menengah sebagaimana dimaksud dalam Pasal 7 ayat (7) huruf b meliputi...
+
+// Pola 3.4: Referensi Internal (dalam pasal yang sama)
+// Penjelasan: Referensi ke ayat-ayat sebelumnya di dalam pasal yang sama.
+Pasal 5
+(5) Ketentuan lebih lanjut mengenai pengutamaan mineral dan/atau batubara untuk kepentingan dalam negeri sebagaimana dimaksud pada ayat (1) dan pengendalian produksi dan ekspor sebagaimana dimaksud pada ayat (2) dan ayat (3) diatur dengan peraturan pemerintah.
+
+// Pola 3.5: Referensi ke Dokumen Lain (Forward-looking)
+// Penjelasan: Ini adalah perintah untuk membuat peraturan turunan. Sistem harus bisa mendeteksi bahwa ada 'Peraturan Pemerintah' yang akan mengatur lebih lanjut 'Pasal 5 ayat (1)'. Ini adalah tautan yang "belum terselesaikan".
+Pasal 5
+(5) Ketentuan lebih lanjut mengenai ... sebagaimana dimaksud pada ayat (1) ... diatur dengan peraturan pemerintah.
+
+// Pola 3.6: Referensi ke Penjelasan
+// Penjelasan: Teks di batang tubuh bisa merujuk langsung ke bagian Penjelasan. Sistem harus bisa menautkan keduanya.
+Pasal 15
+(1) Besaran, persyaratan, dan tata cara pemberian insentif sebagaimana dimaksud dalam Pasal 14 ayat (3) diatur lebih lanjut dalam Peraturan Pemerintah.
+(2) Contoh perhitungan insentif sebagaimana dimaksud pada ayat (1) tercantum dalam Penjelasan.
+
+
+---
+
+### **Kategori 4: Pola Amandemen & Status (Khas Omnibus Law)**
+
+Ini adalah pola paling kompleks dan menjadi ciri khas UU Cipta Kerja dan sejenisnya.
+
+
+// Pola 4.1: Mengubah Pasal (Amending)
+// Penjelasan: Instruksi untuk mengganti seluruh isi dari pasal di UU lain. Sistem harus bisa menemukan 'Pasal 1' di 'UU No. 26/2007' dan menandainya sebagai 'diubah', serta menyimpan teks barunya.
+Pasal 17
+Beberapa ketentuan dalam Undang-Undang Nomor 26 Tahun 2007 tentang Penataan Ruang ... diubah sebagai berikut:
+
+Ketentuan Pasal 1 diubah sehingga berbunyi sebagai berikut:
+Pasal 1
+Dalam Undang-Undang ini yang dimaksud dengan:
+...
+
+// Pola 4.2: Menyisipkan Pasal (Inserting)
+// Penjelasan: Instruksi untuk menambahkan pasal baru di antara dua pasal yang sudah ada di UU lain. Sistem harus memahami lokasi penyisipan (antara Pasal 14 dan 15) dan nama pasal baru (Pasal 14A).
+8. Di antara Pasal 14 dan Pasal 15 disisipkan 1 (satu) pasal, yakni Pasal 14A sehingga berbunyi sebagai berikut:
+   Pasal 14A
+   (1) Pelaksanaan penyusunan Rencana Tata Ruang ...
+
+// Pola 4.3: Menghapus Pasal (Deleting)
+// Penjelasan: Instruksi untuk menghapus sebuah pasal dari UU lain. Sistem harus bisa menemukan 'Pasal 27' di UU target dan menandainya sebagai 'dihapus'.
+17. Ketentuan Pasal 27 dihapus.
+
+// Pola 4.4: Mengubah Sebagian Frasa (Phrase-level Amendment)
+// Penjelasan: Amandemen yang sangat spesifik, hanya mengganti beberapa kata. Ini lebih sulit daripada mengganti seluruh pasal.
+5. Ketentuan Bagian Keempat pada Bab V diubah frasa "... dan Audit Tata Ruang" menjadi "... dan Peran Masyarakat".
+
+Kategori 5: Pola Penjelasan (Pasal demi Pasal)
+Bagian Penjelasan memiliki struktur dan fungsi unik yang harus dipahami oleh sistem.
+
+// Pola 5.1: Penjelasan Sederhana ("Cukup Jelas")
+// Penjelasan: Pola paling umum di bagian penjelasan. Sistem harus mampu memetakan frasa "Cukup jelas" ke Pasal atau Ayat yang dirujuk.
+PENJELASAN ATAS UNDANG-UNDANG ...
+
+PASAL DEMI PASAL
+Pasal 1
+    Cukup jelas.
+Pasal 2
+    Cukup jelas.
+
+// Pola 5.2: Penjelasan Rinci untuk Ayat atau Huruf
+// Penjelasan: Penjelasan seringkali tidak merujuk ke seluruh pasal, tetapi ke unit yang lebih kecil seperti ayat atau huruf. Sistem harus bisa membuat tautan yang presisi.
+Pasal 2 ayat (1)
+Huruf a
+Yang dimaksud dengan "pemerataan hak" adalah bahwa penciptaan kerja untuk memenuhi hak warga negara atas pekerjaan dan penghidupan yang layak bagi kemanusiaan dilakukan secara merata di seluruh wilayah Negara Kesatuan Republik Indonesia.
+Huruf b
+Yang dimaksud dengan "kepastian hukum" adalah...
+
+// Pola 5.3: Penjelasan yang Mencakup Beberapa Pasal Sekaligus
+// Penjelasan: Edge case di mana satu blok teks penjelasan berlaku untuk beberapa pasal. Sistem harus bisa membuat relasi "satu-ke-banyak" dari blok penjelasan ini ke semua pasal yang relevan.
+Pasal 7 dan Pasal 8
+    Yang dimaksud dengan "otoritas veteriner" adalah kelembagaan Pemerintah dan/atau kelembagaan yang dibentuk Pemerintah dalam pengambilan keputusan tertinggi yang bersifat teknis kesehatan hewan...
