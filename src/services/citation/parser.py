@@ -219,7 +219,7 @@ class LegalCitationParser:
 
     def get_best_match(self, text: str) -> Optional[CitationMatch]:
         """
-        Get the highest confidence citation match.
+        Get the most complete and highest confidence citation match.
 
         Args:
             text: Input text to parse
@@ -228,7 +228,71 @@ class LegalCitationParser:
             Best CitationMatch or None if no valid matches
         """
         matches = self.parse_citation(text)
-        return matches[0] if matches else None
+        if not matches:
+            return None
+
+        # Priority 1: Try to merge complementary matches
+        merged_match = self._merge_complementary_matches(matches)
+        if merged_match:
+            return merged_match
+
+        # Priority 2: Select most complete match (not just highest confidence)
+        return self._select_most_complete_match(matches)
+
+    def _merge_complementary_matches(self, matches: List[CitationMatch]) -> Optional[CitationMatch]:
+        """Merge document info with unit info from separate matches."""
+        doc_info = None
+        unit_info = None
+
+        for match in matches:
+            # Document info match
+            if match.doc_form and match.doc_number and match.doc_year:
+                if not doc_info or match.confidence > doc_info.confidence:
+                    doc_info = match
+
+            # Unit info match
+            if match.pasal_number or match.ayat_number or match.huruf_letter:
+                if not unit_info or match.confidence > unit_info.confidence:
+                    unit_info = match
+
+        # Merge if we have both components
+        if doc_info and unit_info:
+            merged = CitationMatch(
+                doc_form=doc_info.doc_form,
+                doc_number=doc_info.doc_number,
+                doc_year=doc_info.doc_year,
+                pasal_number=unit_info.pasal_number,
+                ayat_number=unit_info.ayat_number,
+                huruf_letter=unit_info.huruf_letter,
+                angka_number=unit_info.angka_number,
+                confidence=(doc_info.confidence + unit_info.confidence) / 2,
+                matched_text=f"{unit_info.matched_text} {doc_info.matched_text}",
+                is_complete=True
+            )
+            return merged
+
+        return None
+
+    def _select_most_complete_match(self, matches: List[CitationMatch]) -> CitationMatch:
+        """Select match with most complete information."""
+        def completeness_score(match):
+            score = 0
+            if match.doc_form: score += 3
+            if match.doc_number: score += 3
+            if match.doc_year: score += 3
+            if match.pasal_number: score += 2
+            if match.ayat_number: score += 1
+            if match.huruf_letter: score += 1
+            if match.angka_number: score += 1
+            return score
+
+        # Sort by completeness score, then confidence
+        sorted_matches = sorted(matches,
+            key=lambda m: (completeness_score(m), m.confidence),
+            reverse=True
+        )
+
+        return sorted_matches[0]
 
     def _extract_citation(self, match: re.Match, pattern_config: Dict) -> Optional[CitationMatch]:
         """Extract CitationMatch from regex match."""

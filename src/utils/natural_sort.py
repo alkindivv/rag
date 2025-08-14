@@ -79,8 +79,8 @@ class NaturalSorter:
             # Roman numerals: I, II, III, IV
             'roman': re.compile(r'^([IVX]+)(?:\s+(.*))?$'),
 
-            # Arabic with suffix: 1bis, 2ter, 3quater
-            'arabic_suffix': re.compile(r'^(\d+)([a-z]+)$'),
+            # Arabic with suffix: 1bis, 2ter, 3quater (only match known legal suffixes)
+            'arabic_suffix': re.compile(r'^(\d+)(bis|ter|quater|quinquies|sexies|septies|octies|novies|decies)$'),
 
             # Arabic with letter: 1a, 2b, 3c
             'arabic_letter': re.compile(r'^(\d+)([a-z])$'),
@@ -134,19 +134,19 @@ class NaturalSorter:
             suffix_weight = self.LEGAL_SUFFIXES.get(suffix, 999)
             return SortKey(num * 1000 + suffix_weight, "", suffix, original)
 
-        # Try Arabic with letter: 1a, 2b
-        match = self.patterns['arabic_letter'].match(label.lower())
-        if match:
-            num = int(match.group(1))
-            letter = match.group(2)
-            letter_value = ord(letter) - ord('a')
-            return SortKey(num * 100 + letter_value, letter, "", original)
-
-        # Try pure Arabic: 1, 2, 3, 10
+        # Try pure Arabic first: 1, 2, 3, 10
         match = self.patterns['arabic'].match(label)
         if match:
             num = int(match.group(1))
             return SortKey(num, "", "", original)
+
+        # Try Arabic with letter: 1a, 2b (should come after pure number)
+        match = self.patterns['arabic_letter'].match(label.lower())
+        if match:
+            num = int(match.group(1))
+            letter = match.group(2)
+            # Use the number as primary key, letter as secondary
+            return SortKey(num, letter, "", original)
 
         # Try pure alphabetical: a, b, c, aa, bb
         match = self.patterns['alpha'].match(label.lower())
@@ -167,12 +167,15 @@ class NaturalSorter:
         a = 1, b = 2, ..., z = 26
         aa = 27, ab = 28, ..., az = 52
         ba = 53, etc.
+
+        Use high base value to ensure alphabetical sorts after numbers.
         """
         if not alpha:
             return 0
 
-        result = 0
-        for i, char in enumerate(alpha):
+        # Use 10000 as base to ensure alphabetical comes after all reasonable numbers
+        result = 10000
+        for char in alpha:
             char_value = ord(char.lower()) - ord('a') + 1
             result = result * 26 + char_value
 

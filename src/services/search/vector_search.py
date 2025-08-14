@@ -8,6 +8,7 @@ Indonesian legal documents.
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import re
 import time
@@ -135,6 +136,92 @@ class VectorSearchService:
             'uu no', 'uu nomor', 'pp no', 'pp nomor', 'perpres no',
             'pasal', 'ayat', 'sanksi pidana', 'definisi'
         ])
+
+    async def search_async(
+        self,
+        query: str,
+        k: int = None,
+        filters: Optional[SearchFilters] = None,
+        use_reranking: bool = False,
+        session_id: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Async unified search interface with concurrent processing capabilities.
+
+        Args:
+            query: Search query text
+            k: Number of results to return (defaults to default_k)
+            filters: Optional search filters
+            use_reranking: Whether to apply reranking
+            session_id: Optional session ID for logging
+
+        Returns:
+            Search response with results and metadata
+        """
+        start_time = time.time()
+        k = k or self.default_k
+        original_query = query
+
+        try:
+            # Step 1: Optimize query for better performance (concurrent with citation check)
+            optimize_task = asyncio.to_thread(self.query_optimizer.optimize_query, query)
+            citation_task = asyncio.to_thread(is_explicit_citation, query, self.min_citation_confidence)
+
+            # Run both operations concurrently
+            (optimized_query, query_analysis), is_citation = await asyncio.gather(
+                optimize_task, citation_task, return_exceptions=False
+            )
+
+            # Use optimized query for processing
+            query = optimized_query
+
+            # Step 2: Route to appropriate search handler
+            if is_citation:
+                logger.debug(f"Processing explicit citation query: {query}")
+                results = await self._handle_explicit_citation_async(query, k, filters)
+                search_type = "explicit_citation"
+            else:
+                # Legal keyword detection
+                has_legal_keywords = await asyncio.to_thread(self._detect_legal_keywords, query)
+                if has_legal_keywords:
+                    logger.debug(f"Processing legal keyword query with optimization: {query}")
+
+                logger.debug(f"Processing contextual semantic search: {query}")
+                results = await self._handle_contextual_search_async(query, k, filters, use_reranking)
+                search_type = "contextual_semantic"
+
+            # Step 3: Build response with metadata
+            duration_ms = (time.time() - start_time) * 1000
+
+            response = {
+                "results": results,
+                "metadata": {
+                    "query": original_query,
+                    "optimized_query": query,
+                    "search_type": search_type,
+                    "total_results": len(results),
+                    "duration_ms": round(duration_ms, 2),
+                    "query_analysis": query_analysis
+                }
+            }
+
+            # Log search for analytics
+            await asyncio.to_thread(self._log_search, query, len(results), duration_ms, session_id)
+
+            return response
+
+        except Exception as e:
+            logger.error(f"Async search failed for query '{original_query}': {e}")
+            return {
+                "results": [],
+                "metadata": {
+                    "query": original_query,
+                    "error": str(e),
+                    "search_type": "error",
+                    "total_results": 0,
+                    "duration_ms": (time.time() - start_time) * 1000
+                }
+            }
 
     def search(
         self,
@@ -392,7 +479,17 @@ class VectorSearchService:
 
         return ' '.join(normalized_words)
 
-    def _embed_query(self, query: str) -> Optional[List[float]]:
+    async def _embed_query_async(self, query: str) -> List[float]:
+        """Async query embedding with caching."""
+        try:
+            # Use thread pool for embedding to avoid blocking event loop
+            embedding = await asyncio.to_thread(self.embedder.embed_query, query)
+            return embedding
+        except Exception as e:
+            logger.error(f"Async query embedding failed: {e}")
+            raise
+
+    def _embed_query(self, query: str) -> List[float]:
         """
         Enhanced query embedding with retry logic.
 
@@ -625,12 +722,13 @@ class VectorSearchService:
 
             search_results = []
             for row in rows:
-                # Build proper citation string for pasal
-                citation = self._build_pasal_citation(
+                # Build proper citation string for unit
+                citation = self._build_unit_citation(
                     row.doc_form_short or row.doc_form,
                     row.doc_number,
                     row.doc_year,
-                    row.pasal_number
+                    row.unit_type or "PASAL",
+                    row.pasal_number or row.number_label
                 )
 
                 search_results.append(SearchResult(
@@ -702,20 +800,33 @@ class VectorSearchService:
         Returns:
             List of matching legal units
         """
-        # Build query based on citation specificity - focus on pasal citations
+        # Enhanced query with unit priority scoring for proper legal unit targeting
         base_query = """
         SELECT
             lu.unit_id,
             lu.bm25_body AS content,
             lu.citation_string,
             lu.unit_type,
-            lu.number_label AS pasal_number,
+            lu.number_label,
             lu.hierarchy_path,
+            lu.parent_pasal_id,
+            lu.parent_ayat_id,
+            lu.parent_huruf_id,
             ld.doc_form,
             ld.doc_form_short,
             ld.doc_year,
             ld.doc_number,
-            ld.doc_title
+            ld.doc_title,
+            -- Priority scoring for unit specificity (lower = higher priority)
+            CASE lu.unit_type
+                WHEN 'HURUF' THEN 1
+                WHEN 'ANGKA' THEN 2
+                WHEN 'AYAT' THEN 3
+                WHEN 'PASAL' THEN 4
+                WHEN 'BAGIAN' THEN 5
+                WHEN 'BAB' THEN 6
+                ELSE 7
+            END as unit_priority
         FROM legal_units lu
         JOIN legal_documents ld ON ld.id = lu.document_id
         WHERE ld.doc_status = :doc_status
@@ -737,42 +848,78 @@ class VectorSearchService:
             conditions.append("ld.doc_year = :doc_year")
             params['doc_year'] = citation.doc_year
 
-        # Unit-level filters
-        if citation.pasal_number:
+        # Enhanced unit-level targeting with proper hierarchy
+        if citation.huruf_letter and citation.pasal_number:
+            # Most specific: Look for exact huruf in specific pasal
+            unit_conditions = [
+                "(lu.unit_type = 'HURUF' AND lu.number_label = :huruf_letter AND lu.parent_pasal_id LIKE :pasal_pattern)"
+            ]
+            params['huruf_letter'] = citation.huruf_letter
+            params['pasal_pattern'] = f"%pasal-{citation.pasal_number}%"
+
+            # Also include parent pasal for context
+            unit_conditions.append(
+                "(lu.unit_type = 'PASAL' AND lu.number_label = :pasal_number)"
+            )
             params['pasal_number'] = citation.pasal_number
 
-            if citation.ayat_number or citation.huruf_letter or citation.angka_number:
-                # Looking for specific sub-units - build OR conditions properly
-                or_conditions = [
-                    "(lu.unit_type = 'PASAL' AND lu.number_label = :pasal_number)"
-                ]
+            # Include parent ayat if specified
+            if citation.ayat_number:
+                unit_conditions.append(
+                    "(lu.unit_type = 'AYAT' AND lu.number_label = :ayat_number AND lu.parent_pasal_id LIKE :pasal_pattern)"
+                )
+                params['ayat_number'] = citation.ayat_number
 
-                if citation.ayat_number:
-                    or_conditions.append("(lu.unit_type = 'AYAT' AND lu.number_label = :ayat_number AND lu.parent_pasal_id LIKE :pasal_pattern)")
-                    params['ayat_number'] = citation.ayat_number
-                    params['pasal_pattern'] = f"%pasal-{citation.pasal_number}%"
+        elif citation.angka_number and citation.huruf_letter and citation.pasal_number:
+            # Very specific: angka in huruf in pasal
+            unit_conditions = [
+                "(lu.unit_type = 'ANGKA' AND lu.number_label = :angka_number AND lu.parent_huruf_id LIKE :huruf_pattern)",
+                "(lu.unit_type = 'HURUF' AND lu.number_label = :huruf_letter AND lu.parent_pasal_id LIKE :pasal_pattern)",
+                "(lu.unit_type = 'PASAL' AND lu.number_label = :pasal_number)"
+            ]
+            params['angka_number'] = citation.angka_number
+            params['huruf_letter'] = citation.huruf_letter
+            params['huruf_pattern'] = f"%huruf-{citation.huruf_letter}%"
+            params['pasal_number'] = citation.pasal_number
+            params['pasal_pattern'] = f"%pasal-{citation.pasal_number}%"
 
-                if citation.huruf_letter:
-                    or_conditions.append("(lu.unit_type = 'HURUF' AND lu.number_label = :huruf_letter)")
-                    params['huruf_letter'] = citation.huruf_letter
+        elif citation.ayat_number and citation.pasal_number:
+            # Specific ayat in specific pasal
+            unit_conditions = [
+                "(lu.unit_type = 'AYAT' AND lu.number_label = :ayat_number AND lu.parent_pasal_id LIKE :pasal_pattern)",
+                "(lu.unit_type = 'PASAL' AND lu.number_label = :pasal_number)"
+            ]
+            params['ayat_number'] = citation.ayat_number
+            params['pasal_number'] = citation.pasal_number
+            params['pasal_pattern'] = f"%pasal-{citation.pasal_number}%"
 
-                if citation.angka_number:
-                    or_conditions.append("(lu.unit_type = 'ANGKA' AND lu.number_label = :angka_number)")
-                    params['angka_number'] = citation.angka_number
+        elif citation.pasal_number:
+            # Pasal level - get pasal and its immediate children
+            unit_conditions = [
+                "(lu.unit_type = 'PASAL' AND lu.number_label = :pasal_number)",
+                "(lu.unit_type = 'AYAT' AND lu.parent_pasal_id LIKE :pasal_pattern)",
+                "(lu.unit_type = 'HURUF' AND lu.parent_pasal_id LIKE :pasal_pattern)"
+            ]
+            params['pasal_number'] = citation.pasal_number
+            params['pasal_pattern'] = f"%pasal-{citation.pasal_number}%"
 
-                # Join OR conditions properly
-                unit_condition = "(" + " OR ".join(or_conditions) + ")"
-                conditions.append(unit_condition)
-            else:
-                # Looking for pasal only
-                conditions.append("(lu.unit_type = 'PASAL' AND lu.number_label = :pasal_number)")
+        else:
+            # Document level - get key pasal units, NOT chapters
+            unit_conditions = [
+                "lu.unit_type IN ('PASAL', 'AYAT', 'HURUF')"
+            ]
+
+        if 'unit_conditions' in locals():
+            conditions.append("(" + " OR ".join(unit_conditions) + ")")
 
         if conditions:
             base_query += " AND " + " AND ".join(conditions)
 
-        # Add ordering and limit
+        # Enhanced ordering with unit priority for specificity
         final_query = base_query + """
-        ORDER BY ld.doc_year DESC, lu.unit_type, lu.number_label
+        ORDER BY unit_priority ASC, ld.doc_year DESC,
+                 CASE WHEN lu.number_label ~ '^[0-9]+$' THEN lu.number_label::INTEGER ELSE 999 END ASC,
+                 lu.number_label ASC
         LIMIT :limit
         """
         params['limit'] = k
@@ -783,12 +930,14 @@ class VectorSearchService:
 
             search_results = []
             for row in rows:
-                # Build proper citation string for exact match
-                citation_str = self._build_pasal_citation(
+                # Build proper citation string based on unit type
+                citation_str = self._build_unit_citation(
                     row.doc_form_short or row.doc_form,
                     row.doc_number,
                     row.doc_year,
-                    row.pasal_number or citation.pasal_number
+                    row.unit_type,
+                    row.number_label,
+                    citation
                 )
 
                 search_results.append(SearchResult(
@@ -806,7 +955,9 @@ class VectorSearchService:
                         'doc_title': row.doc_title,
                         'search_type': 'explicit_citation',
                         'citation_match': citation.to_dict(),
-                        'pasal_number': row.pasal_number or citation.pasal_number
+                        'unit_number': row.number_label,
+                        'unit_priority': row.unit_priority if hasattr(row, 'unit_priority') else 7,
+                        'exact_match': True
                     }
                 ))
 
@@ -816,6 +967,89 @@ class VectorSearchService:
         except Exception as e:
             logger.error(f"Citation lookup failed: {e}")
             return []
+
+    async def _handle_contextual_search_async(
+        self,
+        query: str,
+        k: int,
+        filters: Optional[SearchFilters],
+        use_reranking: bool = False
+    ) -> List[SearchResult]:
+        """Async version of contextual search with concurrent operations."""
+        try:
+            # Step 1: Normalize query and generate embedding concurrently
+            normalize_task = asyncio.to_thread(self._normalize_query, query)
+            embed_task = self._embed_query_async(query)
+
+            # Run both operations concurrently
+            normalized_query, query_embedding = await asyncio.gather(
+                normalize_task, embed_task, return_exceptions=False
+            )
+
+            # Step 2: Vector search in thread pool
+            async def vector_search():
+                with next(get_db_session()) as db:
+                    return self._vector_search(db, query_embedding, k, filters)
+
+            vector_results = await asyncio.to_thread(vector_search)
+
+            # Step 3: Apply post-processing concurrently if needed
+            if normalized_query != query and use_reranking and vector_results:
+                # Run relevance filtering and reranking concurrently
+                filter_task = asyncio.to_thread(
+                    self._filter_by_query_relevance, vector_results, query
+                )
+                rerank_task = asyncio.to_thread(
+                    self._rerank_results, vector_results, query
+                )
+
+                filtered_results, reranked_results = await asyncio.gather(
+                    filter_task, rerank_task, return_exceptions=True
+                )
+
+                # Use reranked results if both succeeded
+                if not isinstance(reranked_results, Exception):
+                    vector_results = reranked_results
+                elif not isinstance(filtered_results, Exception):
+                    vector_results = filtered_results
+
+            elif normalized_query != query:
+                vector_results = await asyncio.to_thread(
+                    self._filter_by_query_relevance, vector_results, query
+                )
+            elif use_reranking and vector_results:
+                vector_results = await asyncio.to_thread(
+                    self._rerank_results, vector_results, query
+                )
+
+            logger.debug(f"Async contextual search returned {len(vector_results)} results")
+            return vector_results
+
+        except Exception as e:
+            logger.error(f"Async contextual search failed: {e}")
+            return []
+
+    async def _handle_explicit_citation_async(
+        self,
+        query: str,
+        k: int,
+        filters: Optional[SearchFilters]
+    ) -> List[SearchResult]:
+        """Async version of explicit citation handling."""
+        # Parse citation asynchronously
+        citation = await asyncio.to_thread(get_best_citation_match, query)
+        if not citation:
+            logger.warning(f"No citation parsed from query: {query}")
+            return []
+
+        # Database lookup using thread pool
+        async def db_lookup():
+            with next(get_db_session()) as db:
+                return self._lookup_citation_units(db, citation, k, filters)
+
+        results = await asyncio.to_thread(db_lookup)
+        logger.debug(f"Async citation search returned {len(results)} results")
+        return results
 
     def _rerank_results(self, query: str, results: List[SearchResult]) -> List[SearchResult]:
         """
@@ -908,29 +1142,73 @@ class VectorSearchService:
             return self._vector_search(db, list(row.embedding), k, filters)
 
 
-    def _build_pasal_citation(
+    def _build_unit_citation(
         self,
         doc_form: str,
         doc_number: str,
         doc_year: int,
-        pasal_number: str
+        unit_type: str,
+        unit_number: str,
+        citation: Optional[CitationMatch] = None
     ) -> str:
         """
-        Build standardized pasal citation string.
+        Build standardized citation string for any legal unit type.
 
         Args:
             doc_form: Document form (UU, PP, etc.)
             doc_number: Document number
             doc_year: Document year
-            pasal_number: Pasal number
+            unit_type: Legal unit type (BAB, PASAL, AYAT, HURUF, ANGKA)
+            unit_number: Unit number/label
+            citation: Original citation context for enhanced formatting
 
         Returns:
-            Formatted citation string
+            Properly formatted citation string
         """
-        if not all([doc_form, doc_number, doc_year, pasal_number]):
-            return f"Pasal {pasal_number or 'Unknown'}"
+        # Build base document reference
+        if all([doc_form, doc_number, doc_year]):
+            doc_ref = f"{doc_form} No. {doc_number} Tahun {doc_year}"
+        else:
+            doc_ref = ""
 
-        return f"{doc_form} No. {doc_number} Tahun {doc_year} Pasal {pasal_number}"
+        # Build unit reference based on type
+        unit_ref = ""
+        if unit_type == "BAB":
+            unit_ref = f"BAB {unit_number}"
+        elif unit_type == "BAGIAN":
+            unit_ref = f"Bagian {unit_number}"
+        elif unit_type == "PASAL":
+            unit_ref = f"Pasal {unit_number}"
+        elif unit_type == "AYAT":
+            unit_ref = f"ayat ({unit_number})"
+        elif unit_type == "HURUF":
+            unit_ref = f"huruf {unit_number}"
+        elif unit_type == "ANGKA":
+            unit_ref = f"angka {unit_number}"
+        else:
+            unit_ref = f"{unit_type} {unit_number}"
+
+        # Enhanced formatting with citation context
+        if citation and doc_ref:
+            # Build hierarchical citation with proper context
+            parts = [doc_ref]
+
+            if citation.pasal_number and unit_type in ["AYAT", "HURUF", "ANGKA"]:
+                parts.append(f"Pasal {citation.pasal_number}")
+
+            if citation.ayat_number and unit_type in ["HURUF", "ANGKA"]:
+                parts.append(f"ayat ({citation.ayat_number})")
+
+            parts.append(unit_ref)
+            return " ".join(parts)
+
+        # Standard formatting
+        if doc_ref and unit_ref:
+            return f"{doc_ref} {unit_ref}"
+        elif unit_ref:
+            return unit_ref
+        else:
+            return f"{unit_type} {unit_number or 'Unknown'}"
 
 
 def create_vector_search_service(

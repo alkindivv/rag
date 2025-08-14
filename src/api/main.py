@@ -69,14 +69,14 @@ async def health_check():
 
 @app.post("/search", response_model=SearchResponse)
 async def search_documents(request: SearchRequest):
-    """Search legal documents using vector search"""
+    """Search legal documents using async vector search"""
     try:
         # Convert filters if provided
         filters = None
         if request.filters:
             filters = SearchFilters(**request.filters)
 
-        results = search_service.search(
+        results = await search_service.search_async(
             query=request.query,
             k=request.limit,
             filters=filters,
@@ -90,7 +90,7 @@ async def search_documents(request: SearchRequest):
         }
         return SearchResponse(**api_results)
     except Exception as e:
-        logger.error(f"Search failed: {e}")
+        logger.error(f"Async search failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/performance/cache")
@@ -134,8 +134,8 @@ def get_performance_metrics():
 @app.post("/ask", response_model=LLMResponse)
 async def ask_legal_question(request: LLMRequest):
     try:
-        # First search for relevant documents
-        search_results = search_service.search(
+        # First search for relevant documents using async search
+        search_results = await search_service.search_async(
             query=request.query,
             k=request.context_limit or 5,
             use_reranking=True
@@ -156,7 +156,7 @@ async def ask_legal_question(request: LLMRequest):
             duration_ms=answer["duration_ms"]
         )
     except Exception as e:
-        logger.error(f"Error generating answer: {e}")
+        logger.error(f"Error generating async answer: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/search")
@@ -165,9 +165,9 @@ async def search_get(
     limit: int = Query(15, description="Result limit"),
     use_reranking: bool = Query(False, description="Use reranking")
 ):
-    """GET endpoint for search (for browser testing)"""
+    """GET endpoint for async search (for browser testing)"""
     try:
-        results = search_service.search(
+        results = await search_service.search_async(
             query=query,
             k=limit,
             use_reranking=use_reranking
@@ -180,7 +180,7 @@ async def search_get(
         }
         return api_results
     except Exception as e:
-        logger.error(f"Search failed: {e}")
+        logger.error(f"Async search failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
