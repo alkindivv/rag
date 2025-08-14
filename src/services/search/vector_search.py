@@ -8,6 +8,7 @@ Indonesian legal documents.
 
 from __future__ import annotations
 
+import logging
 import re
 import time
 from dataclasses import dataclass
@@ -103,6 +104,34 @@ class VectorSearchService:
 
         logger.info("Initialized VectorSearchService with dense semantic search only")
 
+    def _detect_legal_keywords(self, query: str) -> bool:
+        """
+        Simple heuristic to detect queries with legal keywords that might benefit
+        from optimized search strategies.
+
+        Args:
+            query: Search query text
+
+        Returns:
+            True if query contains legal keywords
+        """
+        legal_keywords = [
+            'pasal', 'ayat', 'huruf', 'angka', 'bab', 'bagian',
+            'sanksi', 'pidana', 'denda', 'hukuman', 'pelanggaran',
+            'definisi', 'pengertian', 'ketentuan', 'peraturan',
+            'undang', 'perpres', 'permen', 'perda', 'pojk',
+            'tanggung jawab', 'kewajiban', 'hak', 'wewenang'
+        ]
+
+        query_lower = query.lower()
+        keyword_count = sum(1 for keyword in legal_keywords if keyword in query_lower)
+
+        # Return True if query contains 2+ legal keywords or specific legal patterns
+        return keyword_count >= 2 or any(pattern in query_lower for pattern in [
+            'uu no', 'uu nomor', 'pp no', 'pp nomor', 'perpres no',
+            'pasal', 'ayat', 'sanksi pidana', 'definisi'
+        ])
+
     def search(
         self,
         query: str,
@@ -134,9 +163,20 @@ class VectorSearchService:
                 results = self._handle_explicit_citation(query, k, filters)
                 search_type = "explicit_citation"
             else:
-                logger.debug(f"Processing contextual semantic query: {query}")
-                results = self._handle_contextual_search(query, k, filters, use_reranking)
-                search_type = "contextual_semantic"
+                # Step 2: Optimize based on legal keyword presence
+                has_legal_keywords = self._detect_legal_keywords(query)
+                if has_legal_keywords:
+                    logger.debug(f"Processing legal keyword query with optimization: {query}")
+                    # Use slightly more aggressive k for legal keyword queries
+                    optimized_k = min(k + 5, k * 2)
+                    results = self._handle_contextual_search(query, optimized_k, filters, use_reranking)
+                    # Trim back to requested k after reranking if needed
+                    results = results[:k] if len(results) > k else results
+                    search_type = "contextual_semantic_legal"
+                else:
+                    logger.debug(f"Processing general contextual semantic query: {query}")
+                    results = self._handle_contextual_search(query, k, filters, use_reranking)
+                    search_type = "contextual_semantic"
 
             duration_ms = int((time.time() - start_time) * 1000)
 
@@ -532,7 +572,7 @@ class VectorSearchService:
         # Add filters
         filter_conditions = []
         params = {
-            'query_vector': '[' + ','.join(map(str, query_embedding)) + ']',
+            'query_vector': '[' + ','.join(map(str, query_embedding)) + ']',  # Vector string format for pgvector
             'doc_status': DocStatus.BERLAKU.value
         }
 
@@ -596,6 +636,31 @@ class VectorSearchService:
                 ))
 
             logger.debug(f"Vector search returned {len(search_results)} results")
+
+            # PERFORMANCE MONITORING: Verify HNSW index usage
+            if logger.isEnabledFor(logging.DEBUG):
+                explain_query = f"EXPLAIN ANALYZE {final_query}"
+                try:
+                    explain_result = db.execute(text(explain_query), params)
+                    query_plan = explain_result.fetchall()
+
+                    # Check if HNSW index is being used
+                    plan_text = str(query_plan)
+                    index_used = "hnsw" in plan_text.lower()
+
+                    logger.debug(
+                        f"HNSW index usage: {'YES' if index_used else 'NO - SEQUENTIAL SCAN!'}"
+                    )
+
+                    if not index_used:
+                        logger.warning(
+                            "PERFORMANCE WARNING: HNSW index not used - falling back to sequential scan! "
+                            "Check vector parameter format and index configuration."
+                        )
+
+                except Exception as explain_e:
+                    logger.debug(f"Could not analyze query plan: {explain_e}")
+
             return search_results
 
         except Exception as e:

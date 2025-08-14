@@ -1,0 +1,27 @@
+{
+  "timestamp": 1755159449.542953,
+  "tests": {
+    "database_connectivity": true,
+    "legal_keyword_detection": {
+      "Ekosistem Ekonomi Kreatif diatur dalam undang undang apa?": false,
+      "definisi badan hukum dalam peraturan": true,
+      "sanksi pidana korupsi": true,
+      "UU No 8 Tahun 2019 Pasal 6": true,
+      "tanggung jawab sosial perusahaan": false,
+      "ketentuan pidana dalam undang-undang": true,
+      "what is the weather today": true,
+      "cara memasak nasi goreng": true,
+      "film terbaik tahun ini": true,
+      "teknologi artificial intelligence": true
+    },
+    "vector_format_compatibility": true,
+    "hnsw_index_usage": false,
+    "search_performance": {
+      "UU 8/2019 Pasal 6": 10.167121887207031,
+      "definisi badan hukum": 1111.0682487487793,
+      "sanksi pidana korupsi": 1228.4579277038574,
+      "tanggung jawab sosial perusahaan": 936.9127750396729,
+      "artificial intelligence technology": 1212.9771709442139
+    }
+  }
+}

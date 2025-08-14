@@ -30,13 +30,13 @@ class PGVectorConfig:
     password: str = os.getenv("POSTGRES_PASSWORD", "Batam123")
 
     # Connection Pool Settings
-    pool_size: int = int(os.getenv("POSTGRES_POOL_SIZE", "5"))
-    max_overflow: int = int(os.getenv("POSTGRES_MAX_OVERFLOW", "10"))
+    pool_size: int = int(os.getenv("POSTGRES_POOL_SIZE", "10"))
+    max_overflow: int = int(os.getenv("POSTGRES_MAX_OVERFLOW", "20"))
     pool_timeout: int = int(os.getenv("POSTGRES_POOL_TIMEOUT", "30"))
     pool_recycle: int = int(os.getenv("POSTGRES_POOL_RECYCLE", "1800"))
 
     # Vector Settings
-    vector_dimension: int = int(os.getenv("VECTOR_DIMENSION", "768"))
+    vector_dimension: int = int(os.getenv("VECTOR_DIMENSION", "384"))
     similarity_threshold: float = float(os.getenv("SIMILARITY_THRESHOLD", "0.7"))
 
     # Index Settings for HNSW
