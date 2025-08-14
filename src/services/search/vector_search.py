@@ -22,6 +22,7 @@ from ...db.models import LegalDocument, LegalUnit, DocumentVector, DocForm, DocS
 from ...db.session import get_db_session
 from ...services.citation import CitationMatch, is_explicit_citation, get_best_citation_match
 from ...services.embedding.embedder import JinaV4Embedder
+from ...services.search.query_optimizer import QueryOptimizationService, get_query_optimizer
 from ...utils.logging import get_logger, log_timing
 
 logger = get_logger(__name__)
@@ -88,7 +89,8 @@ class VectorSearchService:
         self,
         embedder: Optional[JinaV4Embedder] = None,
         default_k: int = 15,
-        min_citation_confidence: float = 0.60
+        min_citation_confidence: float = 0.60,
+        query_optimizer: Optional[QueryOptimizationService] = None
     ):
         """
         Initialize vector search service.
@@ -97,12 +99,14 @@ class VectorSearchService:
             embedder: Optional JinaV4Embedder instance
             default_k: Default number of results to retrieve
             min_citation_confidence: Minimum confidence for citation matching
+            query_optimizer: Optional query optimizer instance
         """
         self.embedder = embedder or JinaV4Embedder(default_dims=384)
         self.default_k = default_k
         self.min_citation_confidence = min_citation_confidence
+        self.query_optimizer = query_optimizer or get_query_optimizer()
 
-        logger.info("Initialized VectorSearchService with dense semantic search only")
+        logger.info("Initialized VectorSearchService with dense semantic search and query optimization")
 
     def _detect_legal_keywords(self, query: str) -> bool:
         """
@@ -155,9 +159,16 @@ class VectorSearchService:
         """
         start_time = time.time()
         k = k or self.default_k
+        original_query = query
 
         try:
-            # Step 1: Check if query contains explicit citations
+            # Step 1: Optimize query for better performance (KISS approach)
+            optimized_query, query_analysis = self.query_optimizer.optimize_query(query)
+
+            # Use optimized query for processing, but keep original for logging
+            query = optimized_query
+
+            # Step 2: Check if query contains explicit citations
             if is_explicit_citation(query, self.min_citation_confidence):
                 logger.debug(f"Processing explicit citation query: {query}")
                 results = self._handle_explicit_citation(query, k, filters)
@@ -186,12 +197,16 @@ class VectorSearchService:
             return {
                 "results": results,
                 "metadata": {
-                    "query": query,
+                    "original_query": original_query,
+                    "optimized_query": query,
+                    "query_type": query_analysis.query_type.value if query_analysis else "unknown",
+                    "query_confidence": query_analysis.confidence_score if query_analysis else 0.0,
                     "search_type": search_type,
                     "total_results": len(results),
                     "duration_ms": duration_ms,
                     "filters_applied": filters is not None,
-                    "reranking_used": use_reranking and search_type == "contextual_semantic"
+                    "reranking_used": use_reranking and search_type == "contextual_semantic",
+                    "optimization_applied": query != original_query
                 }
             }
 
@@ -200,7 +215,8 @@ class VectorSearchService:
             return {
                 "results": [],
                 "metadata": {
-                    "query": query,
+                    "original_query": original_query,
+                    "optimized_query": query,
                     "search_type": "error",
                     "total_results": 0,
                     "duration_ms": int((time.time() - start_time) * 1000),
@@ -723,29 +739,36 @@ class VectorSearchService:
 
         # Unit-level filters
         if citation.pasal_number:
+            params['pasal_number'] = citation.pasal_number
+
             if citation.ayat_number or citation.huruf_letter or citation.angka_number:
-                # Looking for specific sub-units
+                # Looking for specific sub-units - build OR conditions properly
+                or_conditions = [
+                    "(lu.unit_type = 'PASAL' AND lu.number_label = :pasal_number)"
+                ]
+
                 if citation.ayat_number:
-                    conditions.append("(lu.unit_type = 'PASAL' AND lu.number_label = :pasal_number)")
-                    conditions.append("OR (lu.unit_type = 'AYAT' AND lu.number_label = :ayat_number AND lu.parent_pasal_id LIKE :pasal_pattern)")
+                    or_conditions.append("(lu.unit_type = 'AYAT' AND lu.number_label = :ayat_number AND lu.parent_pasal_id LIKE :pasal_pattern)")
                     params['ayat_number'] = citation.ayat_number
                     params['pasal_pattern'] = f"%pasal-{citation.pasal_number}%"
 
                 if citation.huruf_letter:
-                    conditions.append("OR (lu.unit_type = 'HURUF' AND lu.number_label = :huruf_letter)")
+                    or_conditions.append("(lu.unit_type = 'HURUF' AND lu.number_label = :huruf_letter)")
                     params['huruf_letter'] = citation.huruf_letter
 
                 if citation.angka_number:
-                    conditions.append("OR (lu.unit_type = 'ANGKA' AND lu.number_label = :angka_number)")
+                    or_conditions.append("(lu.unit_type = 'ANGKA' AND lu.number_label = :angka_number)")
                     params['angka_number'] = citation.angka_number
+
+                # Join OR conditions properly
+                unit_condition = "(" + " OR ".join(or_conditions) + ")"
+                conditions.append(unit_condition)
             else:
                 # Looking for pasal only
-                conditions.append("lu.unit_type = 'PASAL' AND lu.number_label = :pasal_number")
-
-            params['pasal_number'] = citation.pasal_number
+                conditions.append("(lu.unit_type = 'PASAL' AND lu.number_label = :pasal_number)")
 
         if conditions:
-            base_query += " AND (" + " AND ".join(conditions) + ")"
+            base_query += " AND " + " AND ".join(conditions)
 
         # Add ordering and limit
         final_query = base_query + """

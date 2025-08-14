@@ -11,6 +11,8 @@ import uvicorn
 
 from ..services.search.vector_search import VectorSearchService, SearchFilters
 from ..services.llm.legal_llm import LegalLLMService
+from ..services.search.query_optimizer import get_query_optimizer, get_optimization_stats
+from ..services.embedding.cache import get_cache_performance_report
 from ..config.settings import settings
 from ..utils.logging import get_logger
 
@@ -35,6 +37,7 @@ app.add_middleware(
 # Initialize services
 search_service = VectorSearchService()
 llm_service = LegalLLMService()
+query_optimizer = get_query_optimizer()
 
 # Request/Response models
 class SearchRequest(BaseModel):
@@ -88,6 +91,44 @@ async def search_documents(request: SearchRequest):
         return SearchResponse(**api_results)
     except Exception as e:
         logger.error(f"Search failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/performance/cache")
+def get_cache_stats():
+    """Get embedding cache performance statistics"""
+    try:
+        return get_cache_performance_report()
+    except Exception as e:
+        logger.error(f"Error getting cache stats: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/performance/optimization")
+def get_optimization_stats_endpoint():
+    """Get query optimization performance statistics"""
+    try:
+        return get_optimization_stats()
+    except Exception as e:
+        logger.error(f"Error getting optimization stats: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/performance/metrics")
+def get_performance_metrics():
+    """Get comprehensive performance metrics"""
+    try:
+        cache_stats = get_cache_performance_report()
+        optimization_stats = get_optimization_stats()
+
+        return {
+            "cache": cache_stats,
+            "optimization": optimization_stats,
+            "system": {
+                "embedding_dim": settings.embedding_dim,
+                "vector_search_k": settings.vector_search_k,
+                "citation_confidence": settings.citation_confidence_threshold
+            }
+        }
+    except Exception as e:
+        logger.error(f"Error getting performance metrics: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/ask", response_model=LLMResponse)

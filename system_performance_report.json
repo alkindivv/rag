@@ -1,0 +1,361 @@
+{
+  "test_results": {
+    "optimization_effectiveness": {
+      "citation_queries": [
+        {
+          "original": "UU 8/2019 Pasal 6 ayat (2)",
+          "optimized": "dokumen hukum: uu 8/2019 pasal 6 ayat (2)",
+          "query_type": "citation",
+          "confidence": 1.0,
+          "legal_keywords": [
+            "pasal",
+            "ayat",
+            "uu"
+          ],
+          "optimization_time_ms": 0.051021575927734375,
+          "improved": true
+        },
+        {
+          "original": "PP No. 45 Tahun 2020 Pasal 12",
+          "optimized": "dokumen hukum: pp no  45/2020 pasal 12",
+          "query_type": "citation",
+          "confidence": 1.0,
+          "legal_keywords": [
+            "pasal",
+            "pp"
+          ],
+          "optimization_time_ms": 0.023126602172851562,
+          "improved": true
+        },
+        {
+          "original": "Pasal 15 ayat (1)",
+          "optimized": "dokumen hukum: pasal 15 ayat (1)",
+          "query_type": "citation",
+          "confidence": 1.0,
+          "legal_keywords": [
+            "pasal",
+            "ayat"
+          ],
+          "optimization_time_ms": 0.01621246337890625,
+          "improved": true
+        }
+      ],
+      "legal_definition_queries": [
+        {
+          "original": "definisi badan hukum",
+          "optimized": "definisi badan hukum",
+          "query_type": "legal_definition",
+          "confidence": 0.3333333333333333,
+          "legal_keywords": [
+            "definisi"
+          ],
+          "optimization_time_ms": 0.016689300537109375,
+          "improved": false
+        },
+        {
+          "original": "pengertian tanggung jawab sosial",
+          "optimized": "definisi atau pengertian mengenai pengertian tanggung jawab sosial",
+          "query_type": "legal_definition",
+          "confidence": 0.75,
+          "legal_keywords": [
+            "tanggung",
+            "jawab",
+            "pengertian"
+          ],
+          "optimization_time_ms": 0.017881393432617188,
+          "improved": true
+        },
+        {
+          "original": "arti korporasi",
+          "optimized": "arti korporasi",
+          "query_type": "legal_definition",
+          "confidence": 0.0,
+          "legal_keywords": [],
+          "optimization_time_ms": 0.013828277587890625,
+          "improved": false
+        }
+      ],
+      "legal_sanction_queries": [
+        {
+          "original": "sanksi pidana korupsi",
+          "optimized": "sanksi pidana korupsi",
+          "query_type": "legal_sanction",
+          "confidence": 0.6666666666666666,
+          "legal_keywords": [
+            "pidana",
+            "sanksi"
+          ],
+          "optimization_time_ms": 0.0152587890625,
+          "improved": false
+        },
+        {
+          "original": "hukuman pencemaran lingkungan",
+          "optimized": "hukuman pencemaran lingkungan",
+          "query_type": "legal_sanction",
+          "confidence": 0.3333333333333333,
+          "legal_keywords": [
+            "hukuman"
+          ],
+          "optimization_time_ms": 0.0209808349609375,
+          "improved": false
+        },
+        {
+          "original": "denda pelanggaran pajak",
+          "optimized": "denda pelanggaran pajak",
+          "query_type": "legal_sanction",
+          "confidence": 0.6666666666666666,
+          "legal_keywords": [
+            "denda",
+            "pelanggaran"
+          ],
+          "optimization_time_ms": 0.015020370483398438,
+          "improved": false
+        }
+      ],
+      "general_legal_queries": [
+        {
+          "original": "tanggung jawab direksi perusahaan",
+          "optimized": "tanggung jawab direksi perusahaan",
+          "query_type": "general_legal",
+          "confidence": 0.5,
+          "legal_keywords": [
+            "tanggung",
+            "jawab"
+          ],
+          "optimization_time_ms": 0.032901763916015625,
+          "improved": false
+        },
+        {
+          "original": "kewajiban pelaporan keuangan",
+          "optimized": "kewajiban pelaporan keuangan",
+          "query_type": "legal_procedure",
+          "confidence": 0.3333333333333333,
+          "legal_keywords": [
+            "kewajiban"
+          ],
+          "optimization_time_ms": 0.047206878662109375,
+          "improved": false
+        },
+        {
+          "original": "prosedur perizinan usaha",
+          "optimized": "prosedur perizinan usaha",
+          "query_type": "legal_procedure",
+          "confidence": 0.3333333333333333,
+          "legal_keywords": [
+            "prosedur"
+          ],
+          "optimization_time_ms": 0.012874603271484375,
+          "improved": false
+        }
+      ]
+    },
+    "cache_performance": {
+      "test_query": "definisi badan hukum dalam peraturan perundang-undangan",
+      "first_call_ms": 1588.4637832641602,
+      "second_call_ms": 2.2301673889160156,
+      "avg_cached_call_ms": 2.3690064748128257,
+      "cache_improvement_percent": 99.85960225140713,
+      "sustained_improvement_percent": 99.85086178861789,
+      "results_count": 5,
+      "results_identical": true
+    },
+    "query_type_performance": {
+      "citation_queries": [
+        {
+          "query": "UU 8/2019 Pasal 6 ayat (2)",
+          "duration_ms": 2.1209716796875,
+          "results_count": 0,
+          "search_type": "explicit_citation",
+          "optimization_applied": true,
+          "original_query": "UU 8/2019 Pasal 6 ayat (2)",
+          "optimized_query": "dokumen hukum: uu 8/2019 pasal 6 ayat (2)"
+        },
+        {
+          "query": "PP No. 45 Tahun 2020 Pasal 12",
+          "duration_ms": 1.0409355163574219,
+          "results_count": 0,
+          "search_type": "explicit_citation",
+          "optimization_applied": true,
+          "original_query": "PP No. 45 Tahun 2020 Pasal 12",
+          "optimized_query": "dokumen hukum: pp no  45/2020 pasal 12"
+        }
+      ],
+      "legal_definition_queries": [
+        {
+          "query": "definisi badan hukum",
+          "duration_ms": 981.0349941253662,
+          "results_count": 8,
+          "search_type": "contextual_semantic_legal",
+          "optimization_applied": false,
+          "original_query": "definisi badan hukum",
+          "optimized_query": "definisi badan hukum"
+        },
+        {
+          "query": "pengertian tanggung jawab sosial",
+          "duration_ms": 924.7229099273682,
+          "results_count": 8,
+          "search_type": "contextual_semantic_legal",
+          "optimization_applied": true,
+          "original_query": "pengertian tanggung jawab sosial",
+          "optimized_query": "definisi atau pengertian mengenai pengertian tanggung jawab sosial"
+        }
+      ],
+      "legal_sanction_queries": [
+        {
+          "query": "sanksi pidana korupsi",
+          "duration_ms": 916.8548583984375,
+          "results_count": 8,
+          "search_type": "contextual_semantic_legal",
+          "optimization_applied": false,
+          "original_query": "sanksi pidana korupsi",
+          "optimized_query": "sanksi pidana korupsi"
+        },
+        {
+          "query": "hukuman pencemaran lingkungan",
+          "duration_ms": 921.1840629577637,
+          "results_count": 8,
+          "search_type": "contextual_semantic",
+          "optimization_applied": false,
+          "original_query": "hukuman pencemaran lingkungan",
+          "optimized_query": "hukuman pencemaran lingkungan"
+        }
+      ],
+      "general_legal_queries": [
+        {
+          "query": "tanggung jawab direksi perusahaan",
+          "duration_ms": 1023.5331058502197,
+          "results_count": 8,
+          "search_type": "contextual_semantic",
+          "optimization_applied": false,
+          "original_query": "tanggung jawab direksi perusahaan",
+          "optimized_query": "tanggung jawab direksi perusahaan"
+        },
+        {
+          "query": "kewajiban pelaporan keuangan",
+          "duration_ms": 1843.7111377716064,
+          "results_count": 8,
+          "search_type": "contextual_semantic",
+          "optimization_applied": false,
+          "original_query": "kewajiban pelaporan keuangan",
+          "optimized_query": "kewajiban pelaporan keuangan"
+        }
+      ]
+    },
+    "api_monitoring": {
+      "cache": {
+        "status_code": 200,
+        "data": {
+          "status": "not_initialized",
+          "cache_enabled": false
+        }
+      },
+      "optimization": {
+        "status_code": 200,
+        "data": {
+          "queries_processed": 25,
+          "avg_processing_time_ms": 0.01987457275390625,
+          "max_processing_time_ms": 0.03790855407714844,
+          "min_processing_time_ms": 0.010251998901367188,
+          "query_type_distribution": {
+            "citation": 5,
+            "legal_definition": 10,
+            "legal_sanction": 5,
+            "general_legal": 2,
+            "legal_procedure": 3
+          },
+          "performance_target_met": true
+        }
+      },
+      "metrics": {
+        "status_code": 200,
+        "data": {
+          "cache": {
+            "status": "not_initialized",
+            "cache_enabled": false
+          },
+          "optimization": {
+            "queries_processed": 25,
+            "avg_processing_time_ms": 0.01987457275390625,
+            "max_processing_time_ms": 0.03790855407714844,
+            "min_processing_time_ms": 0.010251998901367188,
+            "query_type_distribution": {
+              "citation": 5,
+              "legal_definition": 10,
+              "legal_sanction": 5,
+              "general_legal": 2,
+              "legal_procedure": 3
+            },
+            "performance_target_met": true
+          },
+          "system": {
+            "embedding_dim": 384,
+            "vector_search_k": 15,
+            "citation_confidence": 0.6
+          }
+        }
+      }
+    },
+    "api_integration": {
+      "definisi badan hukum": {
+        "status": "success",
+        "api_duration_ms": 1839.7760391235352,
+        "search_duration_ms": 1837,
+        "results_count": 5,
+        "search_type": "contextual_semantic_legal",
+        "optimization_applied": false
+      },
+      "UU 8/2019 Pasal 6": {
+        "status": "success",
+        "api_duration_ms": 2.5179386138916016,
+        "search_duration_ms": 1,
+        "results_count": 0,
+        "search_type": "explicit_citation",
+        "optimization_applied": true
+      },
+      "sanksi pidana": {
+        "status": "success",
+        "api_duration_ms": 1088.305950164795,
+        "search_duration_ms": 1086,
+        "results_count": 5,
+        "search_type": "contextual_semantic_legal",
+        "optimization_applied": true
+      }
+    }
+  },
+  "performance_report": {
+    "test_timestamp": "2025-08-14 15:48:27",
+    "performance_summary": {
+      "avg_query_time_ms": 826.7753720283508,
+      "avg_citation_time_ms": 1.580953598022461,
+      "avg_semantic_time_ms": 1101.8401781717937,
+      "cache_improvement_percent": 99.85960225140713,
+      "queries_tested": 8,
+      "citation_queries": 2,
+      "semantic_queries": 6
+    },
+    "optimization_effectiveness": {
+      "total_queries_tested": 12,
+      "queries_optimized": 4,
+      "optimization_rate_percent": 33.33333333333333,
+      "avg_optimization_time_ms": 0.1
+    },
+    "cache_performance": {
+      "first_call_ms": 1588.4637832641602,
+      "cached_call_ms": 2.2301673889160156,
+      "improvement_factor": 712.2621338464828,
+      "sustained_performance": 99.85086178861789
+    },
+    "performance_targets": {
+      "citation_under_50ms": true,
+      "avg_query_under_30s": true,
+      "cache_improvement_over_90": true,
+      "api_functional": true
+    },
+    "system_health": {
+      "embedding_cache_working": true,
+      "query_optimization_working": true,
+      "citation_parsing_working": true,
+      "api_endpoints_working": true
+    }
+  }
+}
