@@ -152,13 +152,13 @@ class LegalDocumentIndexer:
 
             # Process document tree
             if data.get("document_tree"):
-                units, pasal_contents = self._process_document_tree(
+                units, pasal_units = self._process_document_tree(
                     db, doc, data["document_tree"]
                 )
                 self.stats["units_created"] += len(units)
 
                 # Create embeddings for pasal-level content
-                vectors_created = self._create_embeddings(db, doc, pasal_contents)
+                vectors_created = self._create_embeddings(db, doc, pasal_units)
                 self.stats["vectors_created"] += vectors_created
 
             return True
@@ -256,15 +256,15 @@ class LegalDocumentIndexer:
         db: Session,
         doc: LegalDocument,
         tree: Dict[str, Any]
-    ) -> Tuple[List[LegalUnit], Dict[str, str]]:
+    ) -> Tuple[List[LegalUnit], List[LegalUnit]]:
         """
         Process document tree recursively.
 
         Returns:
-            Tuple of (units_created, pasal_content_dict)
+            Tuple of (all_units_created, pasal_units_for_embedding)
         """
         units = []
-        pasal_contents = {}  # unit_id -> full_content for embedding
+        pasal_units = []  # pasal-level units for vector embedding
         processed_unit_ids: set[str] = set()
 
         def process_node(
@@ -299,20 +299,23 @@ class LegalDocumentIndexer:
             processed_unit_ids.add(unit_id)
 
             # Create unit with strict parent anchors
+            # For pasal units, aggregate content from all children
+            if unit_type == UnitType.PASAL:
+                aggregated_content = self._build_pasal_aggregated_content(node)
+            else:
+                aggregated_content = node.get("bm25_body") or node.get("local_content", "")
+
             unit = LegalUnit(
                 document_id=doc.id,
                 unit_id=unit_id,
                 unit_type=unit_type,
                 number_label=node.get("number_label"),
-                ordinal_int=node.get("ordinal_int", 0),
-                ordinal_suffix=node.get("ordinal_suffix", ""),
                 label_display=node.get("label_display"),
-                seq_sort_key=node.get("seq_sort_key"),
                 title=node.get("title"),
                 content=self._build_full_content(node),
                 local_content=node.get("local_content"),
                 display_text=node.get("display_text"),
-                bm25_body=node.get("bm25_body") or node.get("local_content", ""),
+                bm25_body=aggregated_content,
                 path=node.get("path"),
                 citation_string=node.get("citation_string"),
                 parent_pasal_id=parent_pasal_id,
@@ -333,7 +336,7 @@ class LegalDocumentIndexer:
                 next_pasal_id = unit.unit_id
                 next_ayat_id = None
                 next_huruf_id = None
-                pasal_contents[unit.unit_id] = unit.content or ""
+                pasal_units.append(unit)  # Collect pasal units for embedding
             elif unit_type == UnitType.AYAT:
                 next_ayat_id = unit.unit_id
                 next_huruf_id = None
@@ -351,11 +354,10 @@ class LegalDocumentIndexer:
             # Process root if no children
             process_node(tree)
 
-        # Update FTS vectors
+        # Flush to ensure all units are saved
         db.flush()
-        self._update_fts_vectors(db, units)
 
-        return units, pasal_contents
+        return units, pasal_units
 
     def _build_full_content(self, node: Dict[str, Any]) -> str:
         """Build full content including children."""
@@ -385,53 +387,102 @@ class LegalDocumentIndexer:
 
         return " / ".join(path_parts)
 
-    def _update_fts_vectors(self, db: Session, units: List[LegalUnit]) -> None:
-        """Update full-text search vectors for units."""
-        for unit in units:
-            if unit.bm25_body:
-                # Update content_vector using PostgreSQL's to_tsvector
-                update_query = text("""
-                    UPDATE legal_units
-                    SET content_vector = to_tsvector('indonesian', :content)
-                    WHERE id = :unit_id
-                """)
-                db.execute(update_query, {
-                    "content": unit.bm25_body,
-                    "unit_id": unit.id
-                })
+    def _build_pasal_aggregated_content(self, pasal_node: Dict[str, Any]) -> str:
+        """
+        Build aggregated content for a pasal unit including all children.
+
+        For dense vector search, pasal content should include:
+        - The pasal's own content
+        - All ayat content
+        - All huruf content under ayats
+        - All angka content under huruf
+
+        Args:
+            pasal_node: Pasal node from document tree
+
+        Returns:
+            Aggregated content string
+        """
+        content_parts = []
+
+        # Add pasal's own content
+        pasal_content = pasal_node.get("local_content") or pasal_node.get("bm25_body", "")
+        if pasal_content.strip():
+            content_parts.append(pasal_content.strip())
+
+        # Recursively collect children content
+        def collect_children_content(node, level=0):
+            children = node.get("children", [])
+            for child in children:
+                child_type = child.get("type", "")
+                child_content = child.get("local_content") or child.get("bm25_body", "")
+
+                if child_content.strip():
+                    # Format content based on type
+                    if child_type == "ayat":
+                        number = child.get("number_label", "")
+                        formatted = f"({number}) {child_content.strip()}"
+                    elif child_type == "huruf":
+                        letter = child.get("number_label", "")
+                        formatted = f"{letter}. {child_content.strip()}"
+                    elif child_type == "angka":
+                        number = child.get("number_label", "")
+                        formatted = f"{number}) {child_content.strip()}"
+                    else:
+                        formatted = child_content.strip()
+
+                    content_parts.append(formatted)
+
+                # Recursively process children
+                collect_children_content(child, level + 1)
+
+        collect_children_content(pasal_node)
+
+        # Join all content with double newlines for readability
+        aggregated = "\n\n".join(content_parts)
+        return aggregated
 
     def _create_embeddings(
         self,
         db: Session,
         doc: LegalDocument,
-        pasal_contents: Dict[str, str]
+        pasal_units: List[LegalUnit]
     ) -> int:
         """
-        Create vector embeddings for pasal-level content.
+        Create vector embeddings for pasal-level content using 384-dimensional vectors.
 
         Args:
             db: Database session
             doc: Document record
-            pasal_contents: Dict mapping unit_id to content
+            pasal_units: List of pasal-level LegalUnit objects
 
         Returns:
             Number of vectors created
         """
-        if not pasal_contents:
+        if not pasal_units:
             return 0
 
         try:
-            # Prepare content for embedding
-            unit_ids = list(pasal_contents.keys())
-            contents = list(pasal_contents.values())
+            # Prepare content for embedding from pasal units
+            unit_ids = []
+            contents = []
 
-            # Get embeddings using passage task for document content
-            embeddings = self.embedder.embed_passages(contents, dims=settings.embedding_dim)
+            for unit in pasal_units:
+                if unit.bm25_body and unit.bm25_body.strip():
+                    unit_ids.append(unit.unit_id)
+                    contents.append(unit.bm25_body)
+
+            if not contents:
+                logger.warning("No valid pasal content found for embedding")
+                return 0
+
+            # Get embeddings using passage task for document content (384 dimensions)
+            embeddings = self.embedder.embed_texts(contents, task="retrieval.passage", dims=384)
 
             vectors_created = 0
             for unit_id, content, embedding in zip(unit_ids, contents, embeddings):
-                if embedding is None or len(embedding) != settings.embedding_dim:
-                    logger.warning(f"Failed to create valid embedding for {unit_id}")
+                if embedding is None or len(embedding) != 384:
+                    logger.warning(f"Failed to create valid 384-dim embedding for {unit_id}")
                     continue
 
                 # Extract hierarchy info from unit_id

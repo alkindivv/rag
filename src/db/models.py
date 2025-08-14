@@ -45,22 +45,22 @@ class DocForm(enum.Enum):
 
 class DocStatus(enum.Enum):
     """Document status types."""
-    BERLAKU = "Berlaku"
-    TIDAK_BERLAKU = "Tidak Berlaku"
+    BERLAKU = "BERLAKU"
+    TIDAK_BERLAKU = "TIDAK_BERLAKU"
 
 
 class UnitType(enum.Enum):
     """Legal unit hierarchy types."""
-    DOKUMEN = "dokumen"
-    BUKU = "buku"
-    BAB = "bab"
-    BAGIAN = "bagian"
-    PARAGRAF = "paragraf"
-    PASAL = "pasal"
-    ANGKA_AMANDEMENT = "angka_amandement"
-    AYAT = "ayat"
-    HURUF = "huruf"
-    ANGKA = "angka"
+    DOKUMEN = "DOKUMEN"
+    BUKU = "BUKU"
+    BAB = "BAB"
+    BAGIAN = "BAGIAN"
+    PARAGRAF = "PARAGRAF"
+    PASAL = "PASAL"
+    ANGKA_AMANDEMENT = "ANGKA_AMANDEMENT"
+    AYAT = "AYAT"
+    HURUF = "HURUF"
+    ANGKA = "ANGKA"
 
 
 # Association table for many-to-many relationship between documents and subjects
@@ -173,12 +173,9 @@ class LegalUnit(Base):
     unit_type = Column(Enum(UnitType), nullable=False, index=True)
     unit_id = Column(String(500), nullable=False, index=True)  # Unique path like "UU-2025-2/pasal-1/ayat-2"
 
-    # Numbering and ordering
+    # Numbering and display
     number_label = Column(String(50))           # e.g., "1", "a", "i"
-    ordinal_int = Column(Integer, default=0)    # Numeric ordering
-    ordinal_suffix = Column(String(10), default="")  # e.g., "bis", "ter"
     label_display = Column(String(50))          # e.g., "Pasal 1", "a."
-    seq_sort_key = Column(String(50), index=True)  # For sorting
 
     # Content
     title = Column(Text)                        # Title if any
@@ -195,8 +192,7 @@ class LegalUnit(Base):
     parent_huruf_id = Column(String(500), index=True, nullable=True)  # Parent huruf for angka
     hierarchy_path = Column(Text, index=True)   # Text hierarchy path
 
-    # Full-text search vector
-    content_vector = Column(TSVECTOR)
+
 
     # Timestamps
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -208,8 +204,6 @@ class LegalUnit(Base):
     # Table constraints and indexes
     __table_args__ = (
         UniqueConstraint('document_id', 'unit_id', name='uq_units_doc_unitid'),
-        Index('idx_units_type_ord', 'unit_type', 'ordinal_int'),
-        Index('idx_units_content_vector_gin', 'content_vector', postgresql_using='gin'),
         Index('idx_units_parent_pasal', 'parent_pasal_id'),
         Index('idx_units_parent_ayat', 'parent_ayat_id'),
         Index('idx_units_parent_huruf', 'parent_huruf_id'),
@@ -232,7 +226,7 @@ class DocumentVector(Base):
     content_type = Column(String(50), nullable=False, index=True, default="pasal")
 
     # Vector embedding
-    embedding = Column(Vector(1024), nullable=False)  # Jina v4 1024-dimensional
+    embedding = Column(Vector(384), nullable=False)  # Jina v4 384-dimensional
     embedding_model = Column(String(100), default='jina-embeddings-v4')
     embedding_version = Column(String(20), default='v1')
 
@@ -263,7 +257,7 @@ class DocumentVector(Base):
     __table_args__ = (
         Index('idx_vec_embedding_hnsw', 'embedding',
               postgresql_using='hnsw',
-              postgresql_with={'m': 16, 'ef_construction': 64},
+              postgresql_with={'m': 16, 'ef_construction': 200},
               postgresql_ops={'embedding': 'vector_cosine_ops'}),
         Index('idx_vec_doc_meta', 'doc_form', 'doc_year', 'doc_number'),
     )

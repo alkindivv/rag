@@ -9,8 +9,9 @@
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
 
-
-
+# Embedding & Search Framework (Production-Ready)
+haystack-ai==2.16.1
+jina-haystack==0.7.0
 
 # Configuration Management
 pydantic==2.5.0

@@ -420,10 +420,7 @@ class PDFOrchestrator:
                 "type": "dokumen",
                 "unit_id": doc_id,
                 "number_label": None,
-                "ordinal_int": None,
-                "ordinal_suffix": "",
                 "label_display": doc_title,
-                "seq_sort_key": None,
                 "citation_string": doc_title,
                 "path": path,
                 "title": doc_title,
@@ -445,9 +442,7 @@ class PDFOrchestrator:
             counter += 1
         used_ids.add(unit_id)
         number_label = node.number
-        ordinal_int, ordinal_suffix = self._split_number_label(number_label)
         label_display = self._build_label_display(node.type, number_label)
-        seq_sort_key = f"{ordinal_int:04d}|{ordinal_suffix}"
         current_entry = {"type": node.type, "label": label_display, "unit_id": unit_id}
         current_path = path + [current_entry]
         citation = build_citation_string(current_path, doc_title)
@@ -456,10 +451,7 @@ class PDFOrchestrator:
             "type": node.type,
             "unit_id": unit_id,
             "number_label": number_label,
-            "ordinal_int": ordinal_int,
-            "ordinal_suffix": ordinal_suffix,
             "label_display": label_display,
-            "seq_sort_key": seq_sort_key,
             "citation_string": citation,
             "path": current_path,
         }

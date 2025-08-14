@@ -9,7 +9,7 @@ from pydantic import BaseModel
 from typing import Optional, List
 import uvicorn
 
-from ..services.search.hybrid_search import HybridSearchService
+from ..services.search.vector_search import VectorSearchService, SearchFilters
 from ..services.llm.legal_llm import LegalLLMService
 from ..config.settings import settings
 from ..utils.logging import get_logger
@@ -33,23 +33,19 @@ app.add_middleware(
 )
 
 # Initialize services
-search_service = HybridSearchService()
+search_service = VectorSearchService()
 llm_service = LegalLLMService()
 
 # Request/Response models
 class SearchRequest(BaseModel):
     query: str
-    limit: int = 10
-    strategy: str = "auto"
-    use_reranking: bool = True
+    limit: int = 15
+    use_reranking: bool = False
+    filters: Optional[dict] = None
 
 class SearchResponse(BaseModel):
     results: List[dict]
-    total: int
-    query: str
-    strategy: str
-    reranked: bool
-    duration_ms: float
+    metadata: dict
 
 class LLMRequest(BaseModel):
     query: str
@@ -70,12 +66,17 @@ async def health_check():
 
 @app.post("/search", response_model=SearchResponse)
 async def search_documents(request: SearchRequest):
-    """Search legal documents"""
+    """Search legal documents using vector search"""
     try:
+        # Convert filters if provided
+        filters = None
+        if request.filters:
+            filters = SearchFilters(**request.filters)
+
         results = search_service.search(
             query=request.query,
-            limit=request.limit,
-            strategy=request.strategy,
+            k=request.limit,
+            filters=filters,
             use_reranking=request.use_reranking
         )
         return SearchResponse(**results)
@@ -89,11 +90,10 @@ async def ask_legal_question(request: LLMRequest):
         # First search for relevant documents
         search_results = search_service.search(
             query=request.query,
-            limit=request.context_limit or 5,
-            strategy="auto",
+            k=request.context_limit or 5,
             use_reranking=True
         )
-        
+
         # Generate answer with LLM
         answer = await llm_service.generate_answer(
             query=request.query,
@@ -101,7 +101,7 @@ async def ask_legal_question(request: LLMRequest):
             temperature=request.temperature or 0.3,
             max_tokens=request.max_tokens or 1000
         )
-        
+
         return LLMResponse(
             answer=answer["answer"],
             sources=answer["sources"],
@@ -115,16 +115,14 @@ async def ask_legal_question(request: LLMRequest):
 @app.get("/search")
 async def search_get(
     query: str = Query(..., description="Search query"),
-    limit: int = Query(10, description="Result limit"),
-    strategy: str = Query("auto", description="Search strategy"),
-    use_reranking: bool = Query(True, description="Use reranking")
+    limit: int = Query(15, description="Result limit"),
+    use_reranking: bool = Query(False, description="Use reranking")
 ):
     """GET endpoint for search (for browser testing)"""
     try:
         results = search_service.search(
             query=query,
-            limit=limit,
-            strategy=strategy,
+            k=limit,
             use_reranking=use_reranking
         )
         return results

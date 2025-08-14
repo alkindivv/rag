@@ -1,0 +1,420 @@
+# Golden Operations Test Suite for Legal RAG Dense Search
+# Tests 6 core scenarios for citation parsing and contextual retrieval
+#
+# Test Categories:
+# 1. Citation exact match
+# 2. Citation partial (without ayat)
+# 3. Query definition
+# 4. Query sanksi (sanctions)
+# 5. Query multi-hop definition+sanksi
+# 6. Query general concept
+
+version: "1.0"
+test_suite: "golden_ops_dense_search"
+description: "Golden test cases for vector-only legal search with citation parsing"
+
+# Test configuration
+config:
+  min_precision_at_5: 0.80
+  min_recall_at_10: 0.70
+  max_latency_ms: 200
+  vector_similarity_threshold: 0.60
+  citation_confidence_threshold: 0.60
+
+# Test cases organized by scenario
+test_cases:
+  # ============================================================================
+  # 1. CITATION EXACT MATCH - Should use direct SQL lookup, not vector search
+  # ============================================================================
+
+  citation_exact_match:
+    - id: "cite_exact_001"
+      name: "UU with Pasal and Ayat"
+      query: "UU 8/2019 Pasal 6 ayat (2) huruf b"
+      expected_search_type: "explicit_citation"
+      expected_results:
+        - unit_id: "UU-2019-8/pasal-6/ayat-2/huruf-b"
+          doc_form: "UU"
+          doc_year: 2019
+          doc_number: "8"
+          pasal_number: "6"
+          ayat_number: "2"
+          huruf_letter: "b"
+          score: 1.0
+      min_results: 1
+      max_latency_ms: 50
+
+    - id: "cite_exact_002"
+      name: "PP with Pasal only"
+      query: "PP No. 45 Tahun 2020 Pasal 12"
+      expected_search_type: "explicit_citation"
+      expected_results:
+        - unit_id: "PP-2020-45/pasal-12"
+          doc_form: "PP"
+          doc_year: 2020
+          doc_number: "45"
+          pasal_number: "12"
+          score: 1.0
+      min_results: 1
+
+    - id: "cite_exact_003"
+      name: "UU format variation"
+      query: "Undang-Undang No. 4 Tahun 2009 Pasal 121 Ayat 1"
+      expected_search_type: "explicit_citation"
+      expected_results:
+        - unit_id: "UU-2009-4/pasal-121/ayat-1"
+          doc_form: "UU"
+          doc_year: 2009
+          doc_number: "4"
+          pasal_number: "121"
+          ayat_number: "1"
+          score: 1.0
+      min_results: 1
+
+  # ============================================================================
+  # 2. CITATION PARTIAL - Should use direct SQL lookup with broader scope
+  # ============================================================================
+
+  citation_partial:
+    - id: "cite_partial_001"
+      name: "Pasal only reference"
+      query: "Pasal 15 ayat (1)"
+      expected_search_type: "explicit_citation"
+      expected_results:
+        - unit_type: "PASAL"
+          pasal_number: "15"
+          ayat_number: "1"
+          score: 1.0
+      min_results: 1
+      # Should return all documents containing Pasal 15 ayat (1)
+
+    - id: "cite_partial_002"
+      name: "Document without specific unit"
+      query: "UU 21/2008"
+      expected_search_type: "explicit_citation"
+      expected_results:
+        - doc_form: "UU"
+          doc_year: 2008
+          doc_number: "21"
+          score: 1.0
+      min_results: 1
+      # Should return all pasal from this document
+
+    - id: "cite_partial_003"
+      name: "Ayat reference only"
+      query: "ayat (3) huruf c"
+      expected_search_type: "explicit_citation"
+      expected_results:
+        - ayat_number: "3"
+          huruf_letter: "c"
+          score: 1.0
+      min_results: 1
+
+  # ============================================================================
+  # 3. QUERY DEFINITION - Should use vector search for semantic similarity
+  # ============================================================================
+
+  query_definition:
+    - id: "def_001"
+      name: "Legal entity definition"
+      query: "definisi badan hukum dalam peraturan perundang-undangan"
+      expected_search_type: "contextual_semantic"
+      expected_results:
+        - citation_format: "UU No. X Tahun YYYY Pasal Z"
+          content_contains: ["badan hukum", "definisi", "pengertian"]
+          unit_type: "PASAL"
+      expected_keywords: ["badan hukum", "definisi", "pengertian"]
+      min_results: 5
+      min_precision_at_5: 0.80
+
+    - id: "def_002"
+      name: "Contract definition"
+      query: "apa yang dimaksud dengan kontrak kerja"
+      expected_search_type: "contextual_semantic"
+      expected_results:
+        - citation_format: "UU No. X Tahun YYYY Pasal Z"
+          content_contains: ["kontrak", "kerja", "perjanjian", "definisi"]
+          unit_type: "PASAL"
+      expected_keywords: ["kontrak", "kerja", "perjanjian", "definisi"]
+      min_results: 5
+      min_precision_at_5: 0.75
+
+    - id: "def_003"
+      name: "Corporate governance definition"
+      query: "pengertian tata kelola perusahaan yang baik"
+      expected_search_type: "contextual_semantic"
+      expected_results:
+        - citation_format: "UU No. X Tahun YYYY Pasal Z"
+          content_contains: ["tata kelola", "perusahaan", "governance"]
+          unit_type: "PASAL"
+      expected_keywords: ["tata kelola", "perusahaan", "governance", "good"]
+      min_results: 5
+      min_precision_at_5: 0.70
+
+    - id: "def_004"
+      name: "Environmental impact definition"
+      query: "definisi dampak lingkungan hidup"
+      expected_search_type: "contextual_semantic"
+      expected_results:
+        - citation_format: "UU No. X Tahun YYYY Pasal Z"
+          content_contains: ["dampak", "lingkungan", "hidup"]
+          unit_type: "PASAL"
+      expected_keywords: ["dampak", "lingkungan", "hidup", "environmental"]
+      min_results: 5
+      min_precision_at_5: 0.75
+
+  # ============================================================================
+  # 4. QUERY SANKSI - Should use vector search for sanctions/penalties
+  # ============================================================================
+
+  query_sanksi:
+    - id: "sanksi_001"
+      name: "Criminal sanctions"
+      query: "sanksi pidana pelanggaran lingkungan hidup"
+      expected_search_type: "contextual_semantic"
+      expected_results:
+        - citation_format: "UU No. X Tahun YYYY Pasal Z"
+          content_contains: ["sanksi", "pidana", "pelanggaran", "lingkungan"]
+          unit_type: "PASAL"
+      expected_keywords: ["sanksi", "pidana", "pelanggaran", "lingkungan"]
+      min_results: 5
+      min_precision_at_5: 0.80
+
+    - id: "sanksi_002"
+      name: "Administrative sanctions"
+      query: "sanksi administratif korporasi"
+      expected_search_type: "contextual_semantic"
+      expected_results:
+        - citation_format: "UU No. X Tahun YYYY Pasal Z"
+          content_contains: ["sanksi", "administratif", "korporasi"]
+          unit_type: "PASAL"
+      expected_keywords: ["sanksi", "administratif", "korporasi", "perusahaan"]
+      min_results: 5
+      min_precision_at_5: 0.75
+
+    - id: "sanksi_003"
+      name: "Financial penalties"
+      query: "denda maksimal pelanggaran peraturan pasar modal"
+      expected_search_type: "contextual_semantic"
+      expected_results:
+        - citation_format: "UU No. X Tahun YYYY Pasal Z"
+          content_contains: ["denda", "maksimal", "pelanggaran", "pasar modal"]
+          unit_type: "PASAL"
+      expected_keywords: ["denda", "maksimal", "pelanggaran", "pasar modal"]
+      min_results: 5
+      min_precision_at_5: 0.70
+
+    - id: "sanksi_004"
+      name: "License revocation"
+      query: "pencabutan izin usaha karena pelanggaran"
+      expected_search_type: "contextual_semantic"
+      expected_results:
+        - citation_format: "UU No. X Tahun YYYY Pasal Z"
+          content_contains: ["pencabutan", "izin", "usaha", "pelanggaran"]
+          unit_type: "PASAL"
+      expected_keywords: ["pencabutan", "izin", "usaha", "pelanggaran"]
+      min_results: 5
+      min_precision_at_5: 0.75
+
+  # ============================================================================
+  # 5. MULTI-HOP DEFINITION+SANKSI - Complex queries requiring both concepts
+  # ============================================================================
+
+  query_multi_hop:
+    - id: "multihop_001"
+      name: "Definition and related sanctions"
+      query: "pengertian insider trading dan sanksi pidananya"
+      expected_search_type: "contextual_semantic"
+      expected_results:
+        - citation_format: "UU No. X Tahun YYYY Pasal Z"
+          content_contains: ["insider trading", "definisi"]
+          unit_type: "PASAL"
+        - citation_format: "UU No. X Tahun YYYY Pasal Z"
+          content_contains: ["insider trading", "sanksi", "pidana"]
+          unit_type: "PASAL"
+      expected_keywords: ["insider trading", "sanksi", "pidana", "definisi"]
+      min_results: 8
+      min_precision_at_5: 0.70
+
+    - id: "multihop_002"
+      name: "Corporate action definition and penalties"
+      query: "definisi aksi korporasi dan denda pelanggarannya"
+      expected_search_type: "contextual_semantic"
+      expected_results:
+        - citation_format: "UU No. X Tahun YYYY Pasal Z"
+          content_contains: ["aksi korporasi", "definisi"]
+          unit_type: "PASAL"
+        - citation_format: "UU No. X Tahun YYYY Pasal Z"
+          content_contains: ["aksi korporasi", "denda", "pelanggaran"]
+          unit_type: "PASAL"
+      expected_keywords: ["aksi korporasi", "definisi", "denda", "pelanggaran"]
+      min_results: 8
+      min_precision_at_5: 0.70
+
+    - id: "multihop_003"
+      name: "Environmental violation and consequences"
+      query: "pelanggaran baku mutu lingkungan dan konsekuensi hukumnya"
+      expected_search_type: "contextual_semantic"
+      expected_results:
+        - citation_format: "UU No. X Tahun YYYY Pasal Z"
+          content_contains: ["baku mutu", "lingkungan", "pelanggaran"]
+          unit_type: "PASAL"
+        - citation_format: "UU No. X Tahun YYYY Pasal Z"
+          content_contains: ["konsekuensi", "hukum", "sanksi"]
+          unit_type: "PASAL"
+      expected_keywords:
+        ["baku mutu", "lingkungan", "pelanggaran", "konsekuensi"]
+      min_results: 8
+      min_precision_at_5: 0.65
+
+    - id: "multihop_004"
+      name: "Financial service definition and supervision"
+      query: "pengertian jasa keuangan dan kewenangan pengawasan"
+      expected_search_type: "contextual_semantic"
+      expected_results:
+        - citation_format: "UU No. X Tahun YYYY Pasal Z"
+          content_contains: ["jasa keuangan", "pengertian", "definisi"]
+          unit_type: "PASAL"
+        - citation_format: "UU No. X Tahun YYYY Pasal Z"
+          content_contains: ["pengawasan", "kewenangan", "otoritas"]
+          unit_type: "PASAL"
+      expected_keywords:
+        ["jasa keuangan", "pengertian", "pengawasan", "kewenangan"]
+      min_results: 8
+      min_precision_at_5: 0.70
+
+  # ============================================================================
+  # 6. QUERY GENERAL CONCEPT - Broad conceptual queries
+  # ============================================================================
+
+  query_general_concept:
+    - id: "concept_001"
+      name: "Corporate responsibility"
+      query: "tanggung jawab sosial perusahaan"
+      expected_search_type: "contextual_semantic"
+      expected_results:
+        - citation_format: "UU No. X Tahun YYYY Pasal Z"
+          content_contains: ["tanggung jawab", "sosial", "perusahaan"]
+          unit_type: "PASAL"
+      expected_keywords: ["tanggung jawab", "sosial", "perusahaan", "CSR"]
+      min_results: 10
+      min_precision_at_5: 0.60
+
+    - id: "concept_002"
+      name: "Digital transformation in finance"
+      query: "transformasi digital sektor keuangan"
+      expected_search_type: "contextual_semantic"
+      expected_results:
+        - citation_format: "UU No. X Tahun YYYY Pasal Z"
+          content_contains: ["transformasi", "digital", "keuangan", "teknologi"]
+          unit_type: "PASAL"
+      expected_keywords: ["transformasi", "digital", "keuangan", "teknologi"]
+      min_results: 10
+      min_precision_at_5: 0.60
+
+    - id: "concept_003"
+      name: "Sustainable development"
+      query: "pembangunan berkelanjutan dan lingkungan hidup"
+      expected_search_type: "contextual_semantic"
+      expected_results:
+        - citation_format: "UU No. X Tahun YYYY Pasal Z"
+          content_contains: ["pembangunan", "berkelanjutan", "lingkungan"]
+          unit_type: "PASAL"
+      expected_keywords:
+        ["pembangunan", "berkelanjutan", "lingkungan", "sustainable"]
+      min_results: 10
+      min_precision_at_5: 0.60
+
+    - id: "concept_004"
+      name: "Good governance principles"
+      query: "prinsip tata kelola yang baik dalam pemerintahan"
+      expected_search_type: "contextual_semantic"
+      expected_results:
+        - citation_format: "UU No. X Tahun YYYY Pasal Z"
+          content_contains: ["prinsip", "tata kelola", "pemerintahan"]
+          unit_type: "PASAL"
+      expected_keywords:
+        ["prinsip", "tata kelola", "pemerintahan", "governance"]
+      min_results: 10
+      min_precision_at_5: 0.60
+
+    - id: "concept_005"
+      name: "Consumer protection"
+      query: "perlindungan konsumen dalam transaksi elektronik"
+      expected_search_type: "contextual_semantic"
+      expected_results:
+        - citation_format: "UU No. X Tahun YYYY Pasal Z"
+          content_contains:
+            ["perlindungan", "konsumen", "transaksi", "elektronik"]
+          unit_type: "PASAL"
+      expected_keywords: ["perlindungan", "konsumen", "transaksi", "elektronik"]
+      min_results: 10
+      min_precision_at_5: 0.60
+
+    - id: "concept_006"
+      name: "Anti-corruption measures"
+      query: "pencegahan dan pemberantasan korupsi"
+      expected_search_type: "contextual_semantic"
+      expected_results:
+        - citation_format: "UU No. X Tahun YYYY Pasal Z"
+          content_contains: ["pencegahan", "pemberantasan", "korupsi"]
+          unit_type: "PASAL"
+      expected_keywords: ["pencegahan", "pemberantasan", "korupsi", "anti"]
+      min_results: 10
+      min_precision_at_5: 0.60
+
+# Performance benchmarks
+performance_targets:
+  precision_at_1: 0.90 # For exact citations
+  precision_at_5: 0.75 # For contextual queries
+  precision_at_10: 0.65
+  recall_at_10: 0.70
+  recall_at_20: 0.85
+
+  # Latency targets
+  citation_latency_ms: 50 # Direct SQL should be very fast
+  vector_search_latency_ms: 200 # Vector search with reranking
+
+  # Search type accuracy
+  citation_detection_accuracy: 0.95 # Should correctly identify citations
+
+# Test data requirements
+test_data:
+  min_documents: 100
+  min_pasal_units: 500
+  required_doc_forms: ["UU", "PP", "PERPU", "PERPRES", "POJK"]
+  required_years: [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024]
+
+# Evaluation metrics
+metrics:
+  search_accuracy:
+    - precision_at_k: [1, 3, 5, 10]
+    - recall_at_k: [5, 10, 20]
+    - mean_reciprocal_rank: true
+    - normalized_discounted_cumulative_gain: [5, 10]
+
+  citation_parsing:
+    - exact_match_accuracy: true
+    - partial_match_accuracy: true
+    - false_positive_rate: true
+
+  performance:
+    - average_latency: true
+    - 95th_percentile_latency: true
+    - queries_per_second: true
+
+  semantic_quality:
+    - embedding_similarity_correlation: true
+    - semantic_coherence_score: true
+
+# Expected failure cases (should handle gracefully)
+negative_tests:
+  - query: "" # Empty query
+    expected_results: []
+
+  - query: "xyz nonexistent regulation 999/9999" # Non-existent citation
+    expected_results: []
+
+  - query: "random gibberish query that makes no sense" # Nonsensical query
+    expected_results_max: 5
+    min_score: 0.1
