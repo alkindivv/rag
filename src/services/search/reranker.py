@@ -2,7 +2,7 @@
 Jina reranker service for re-ordering search results.
 
 Provides semantic reranking of search results using Jina's reranking API
-to improve relevance ordering for Legal RAG system.
+to improve relevance ordering for Legal RAG.
 """
 
 from __future__ import annotations
