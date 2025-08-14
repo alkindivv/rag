@@ -9,7 +9,8 @@ from pydantic import BaseModel
 from typing import Optional, List
 import uvicorn
 
-from ..services.search.vector_search import VectorSearchService, SearchFilters
+from ..services.search.vector_search import SearchFilters
+from ..services.search.hybrid_search import HybridSearchService
 from ..services.llm.legal_llm import LegalLLMService
 from ..services.search.query_optimizer import get_query_optimizer, get_optimization_stats
 from ..services.embedding.cache import get_cache_performance_report
@@ -35,7 +36,7 @@ app.add_middleware(
 )
 
 # Initialize services
-search_service = VectorSearchService()
+search_service = HybridSearchService()
 llm_service = LegalLLMService()
 query_optimizer = get_query_optimizer()
 
@@ -45,6 +46,7 @@ class SearchRequest(BaseModel):
     limit: int = 15
     use_reranking: bool = False
     filters: Optional[dict] = None
+    strategy: str = "auto"  # auto, hybrid, vector_only, bm25_only
 
 class SearchResponse(BaseModel):
     results: List[dict]
@@ -69,7 +71,7 @@ async def health_check():
 
 @app.post("/search", response_model=SearchResponse)
 async def search_documents(request: SearchRequest):
-    """Search legal documents using async vector search"""
+    """Search legal documents using hybrid search (vector + BM25 + RRF)"""
     try:
         # Convert filters if provided
         filters = None
@@ -80,17 +82,23 @@ async def search_documents(request: SearchRequest):
             query=request.query,
             k=request.limit,
             filters=filters,
-            use_reranking=request.use_reranking
+            strategy=request.strategy
         )
 
         # Convert SearchResult objects to dicts for API response
         api_results = {
-            "results": [result.to_dict() for result in results["results"]],
-            "metadata": results["metadata"]
+            "results": [result.to_dict() for result in results],
+            "metadata": {
+                "total_results": len(results),
+                "strategy": request.strategy,
+                "query": request.query,
+                "limit": request.limit,
+                "hybrid_search": True
+            }
         }
         return SearchResponse(**api_results)
     except Exception as e:
-        logger.error(f"Async search failed: {e}")
+        logger.error(f"Hybrid search failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/performance/cache")

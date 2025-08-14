@@ -19,7 +19,7 @@ import re
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from src.services.search.vector_search import VectorSearchService
+from src.services.search.hybrid_search import HybridSearchService
 from src.services.llm.legal_llm import LegalLLMService
 from src.config.settings import settings
 
@@ -69,7 +69,7 @@ class LegalRAGCLI(cmd.Cmd):
 
     def __init__(self):
         super().__init__()
-        self.search_service = VectorSearchService()
+        self.search_service = HybridSearchService()
         self.llm_service = LegalLLMService()
         self.history = []
         self.setup_autocomplete()
@@ -132,20 +132,19 @@ class LegalRAGCLI(cmd.Cmd):
             print(f"{Colors.YELLOW}🔍 Mencari: {arg}{Colors.RESET}")
             results = asyncio.run(self.search_service.search_async(
                 query=arg,
-                k=5,
-                use_reranking=True
+                k=5
             ))
 
-            print(f"{Colors.GREEN}✅ Ditemukan {results['metadata']['total_results']} hasil{Colors.RESET}")
+            print(f"{Colors.GREEN}✅ Ditemukan {len(results)} hasil{Colors.RESET}")
 
-            for i, result in enumerate(results['results'][:5]):
+            for i, result in enumerate(results[:5]):
                 print(self.format_search_result(result, i))
 
             self.history.append({
                 'type': 'search',
                 'query': arg,
                 'timestamp': datetime.now().isoformat(),
-                'results': len(results['results'])
+                'results': len(results)
             })
 
         except Exception as e:
@@ -163,14 +162,13 @@ class LegalRAGCLI(cmd.Cmd):
             # Search for context using async method for better multi-part query handling
             search_results = asyncio.run(self.search_service.search_async(
                 query=arg,
-                k=5,
-                use_reranking=True
+                k=5
             ))
 
             # Generate answer with LLM (now accepts SearchResult objects directly)
             answer = asyncio.run(self.llm_service.generate_answer(
                 query=arg,
-                context=search_results["results"],
+                context=search_results,
                 temperature=0.3,
                 max_tokens=1000
             ))
@@ -269,7 +267,7 @@ class QuickCLI:
     """CLI cepat untuk satu perintah"""
 
     def __init__(self):
-        self.search_service = VectorSearchService()
+        self.search_service = HybridSearchService()
         self.llm_service = LegalLLMService()
 
 
@@ -278,25 +276,23 @@ class QuickCLI:
         """Cari cepat"""
         results = await self.search_service.search_async(
             query=query,
-            k=limit,
-            use_reranking=True
+            k=limit
         )
 
         print(f"🔍 Hasil pencarian untuk: {query}")
-        for i, result in enumerate(results['results']):
+        for i, result in enumerate(results):
             print(f"[{i+1}] {result.citation_string or 'No citation'}")
 
     async def ask(self, question: str):
         """Tanya cepat"""
         search_results = await self.search_service.search_async(
             query=question,
-            k=5,
-            use_reranking=True
+            k=5
         )
 
         answer = await self.llm_service.generate_answer(
             query=question,
-            context=search_results["results"],
+            context=search_results,
             temperature=0.3,
             max_tokens=1000
         )

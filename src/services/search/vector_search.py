@@ -691,7 +691,7 @@ class VectorSearchService:
             dv.doc_year,
             dv.doc_number,
             dv.hierarchy_path,
-            lu.bm25_body AS content,
+            lu.content,
             lu.citation_string,
             lu.unit_type,
             lu.number_label AS pasal_number,
@@ -703,6 +703,7 @@ class VectorSearchService:
         JOIN legal_documents ld ON ld.id = dv.document_id
         WHERE dv.content_type = 'pasal'
         AND lu.unit_type = 'PASAL'
+        AND lu.content IS NOT NULL
         AND ld.doc_status = :doc_status
         """
 
@@ -828,7 +829,7 @@ class VectorSearchService:
         base_query = """
         SELECT
             lu.unit_id,
-            lu.bm25_body AS content,
+            lu.content,
             lu.citation_string,
             lu.unit_type,
             lu.number_label,
@@ -1236,12 +1237,14 @@ class VectorSearchService:
 
     def _decompose_multi_part_query(self, query: str) -> List[str]:
         """
-        Decompose query into parts for multi-part processing.
+        Enhanced decomposition for multi-part and comparative queries.
 
         Detects patterns like:
         - "apa itu X? dan apa isi Pasal Y?"
         - "definisi X dan UU Y Pasal Z"
         - "jelaskan X, kemudian cari Pasal Y"
+        - "apa bedanya X dengan Y?" (comparative)
+        - "perbedaan antara X dan Y" (comparative)
 
         Args:
             query: Input query to decompose
@@ -1252,6 +1255,11 @@ class VectorSearchService:
         if not query or len(query.strip()) < 20:
             return [query]
 
+        # Check for comparative queries first
+        comparative_result = self._handle_comparative_decomposition(query)
+        if comparative_result:
+            return comparative_result
+
         # Patterns that indicate multi-part queries
         split_patterns = [
             r'\s+dan\s+apa\s+isi\s+',  # "dan apa isi"
@@ -1260,6 +1268,7 @@ class VectorSearchService:
             r'\s+kemudian\s+',  # "kemudian"
             r'\s+juga\s+(?:cari|apa)\s+',  # "juga cari/apa"
             r'\s+serta\s+',  # "serta"
+            r'\s+bagaimana\s+(?:dengan|pula)\s+',  # "bagaimana dengan/pula"
         ]
 
         for pattern in split_patterns:
@@ -1272,6 +1281,52 @@ class VectorSearchService:
                     return [p.strip() for p in parts]
 
         return [query]
+
+    def _handle_comparative_decomposition(self, query: str) -> Optional[List[str]]:
+        """
+        Handle comparative query decomposition specifically.
+
+        Args:
+            query: Input query to check for comparative patterns
+
+        Returns:
+            List of decomposed queries if comparative, None otherwise
+        """
+        import re
+
+        # Enhanced comparative patterns for Indonesian legal queries
+        comparative_patterns = [
+            r'(?:apa\s+)?(?:bedanya|perbedaan)\s+(?:antara\s+)?(.+?)\s+(?:dengan|dan)\s+(.+?)(?:\?|$)',
+            r'(?:beda|berbeda)\s+(.+?)\s+(?:dengan|dan)\s+(.+?)(?:\?|$)',
+            r'bandingkan\s+(.+?)\s+(?:dengan|dan)\s+(.+?)(?:\?|$)',
+            r'(?:jelaskan\s+)?perbedaan\s+(.+?)\s+(?:dengan|dan)\s+(.+?)(?:\?|$)',
+        ]
+
+        for pattern in comparative_patterns:
+            match = re.search(pattern, query, re.IGNORECASE)
+            if match:
+                concept_a = match.group(1).strip()
+                concept_b = match.group(2).strip()
+
+                # Generate enhanced sub-queries for better legal document retrieval
+                sub_queries = [
+                    f"definisi {concept_a}",
+                    f"definisi {concept_b}",
+                    f"pengertian {concept_a}",
+                    f"pengertian {concept_b}",
+                    f"unsur-unsur {concept_a}",
+                    f"unsur-unsur {concept_b}",
+                    f"sanksi {concept_a}",
+                    f"sanksi {concept_b}",
+                    f"hukuman {concept_a}",
+                    f"hukuman {concept_b}",
+                    query  # Keep original for context
+                ]
+
+                logger.debug(f"Comparative query decomposed: '{concept_a}' vs '{concept_b}' into {len(sub_queries)} sub-queries")
+                return sub_queries
+
+        return None
 
     def _handle_multi_part_query(
         self,

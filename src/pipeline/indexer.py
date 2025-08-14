@@ -468,9 +468,9 @@ class LegalDocumentIndexer:
             contents = []
 
             for unit in pasal_units:
-                if unit.bm25_body and unit.bm25_body.strip():
+                if unit.content and unit.content.strip():
                     unit_ids.append(unit.unit_id)
-                    contents.append(unit.bm25_body)
+                    contents.append(unit.content)
 
             if not contents:
                 logger.warning("No valid pasal content found for embedding")

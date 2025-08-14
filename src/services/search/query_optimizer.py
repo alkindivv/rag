@@ -24,6 +24,8 @@ from typing import Any, Dict, List, Optional, Tuple, Set
 from dataclasses import dataclass
 from enum import Enum
 
+from haystack.logging import patch_make_records_to_use_kwarg_string_interpolation
+
 from src.utils.logging import get_logger
 
 logger = get_logger(__name__)
@@ -111,7 +113,7 @@ class FastQueryPreprocessor:
             'legal_concepts': {
                 'sanksi', 'pidana', 'denda', 'hukuman', 'pelanggaran',
                 'definisi', 'pengertian', 'ketentuan', 'kewajiban',
-                'hak', 'wewenang', 'tanggung', 'jawab'
+                'hak', 'wewenang', 'tanggung', 'jawab', 'administratif', 'administrasi',
             },
             'legal_procedures': {
                 'tata', 'cara', 'prosedur', 'mekanisme', 'persyaratan',
