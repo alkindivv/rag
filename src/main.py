@@ -14,8 +14,7 @@ from pathlib import Path
 
 from src.db.session import get_db_session, init_db, reset_db
 from src.pipeline.indexer import LegalDocumentIndexer
-from src.services.search.hybrid_search import HybridSearchService
-from src.services.retriever.hybrid_retriever import SearchFilters
+from src.services.search.vector_search import VectorSearchService, SearchFilters
 from src.utils.logging import get_logger, setup_logging
 
 logger = get_logger(__name__)
@@ -104,7 +103,7 @@ def cmd_search(args: argparse.Namespace) -> int:
         logger.info(f"Testing search with query: '{args.query}'")
 
         # Initialize search service
-        search_service = HybridSearchService()
+        search_service = VectorSearchService()
 
         # Build filters if provided
         filters = None
@@ -118,33 +117,31 @@ def cmd_search(args: argparse.Namespace) -> int:
         # Perform search
         response = search_service.search(
             query=args.query,
-            limit=args.limit,
+            k=args.limit,
             filters=filters,
             use_reranking=args.rerank,
-            session_id="cli_test",
-            strategy=args.strategy,
+            session_id="cli_test"
         )
 
         # Display results
         print(f"\nSearch Results for: '{args.query}'")
-        print(f"Strategy: {response['strategy']}")
-        print(f"Total: {response['total']} results")
-        print(f"Reranked: {response['reranked']}")
-        print(f"Duration: {response['duration_ms']:.2f}ms")
+        print(f"Search Type: {response['metadata']['search_type']}")
+        print(f"Total: {response['metadata']['total_results']} results")
+        print(f"Reranked: {response['metadata']['reranking_used']}")
+        print(f"Duration: {response['metadata']['duration_ms']:.2f}ms")
 
-        if response.get('error'):
-            print(f"Error: {response['error']}")
+        if response['metadata'].get('error'):
+            print(f"Error: {response['metadata']['error']}")
             return 1
 
         print("\nResults:")
         for i, result in enumerate(response["results"], 1):
-            doc_info = result["document"]
-            print(f"\n{i}. {result['citation']}")
-            print(f"   Document: {doc_info['form']} {doc_info['number']}/{doc_info['year']}")
-            print(f"   Score: {result['score']:.3f} | Source: {result['source_type']}")
+            print(f"\n{i}. {result.citation_string}")
+            print(f"   Document: {result.doc_form} {result.doc_number}/{result.doc_year}")
+            print(f"   Score: {result.score:.3f} | Type: {result.unit_type}")
 
             if args.show_content:
-                content = result["text"][:200] + "..." if len(result["text"]) > 200 else result["text"]
+                content = result.content[:200] + "..." if len(result.content) > 200 else result.content
                 print(f"   Content: {content}")
 
         return 0
@@ -159,11 +156,10 @@ def cmd_outline(args: argparse.Namespace) -> int:
     try:
         logger.info(f"Getting outline for document: {args.doc_id}")
 
-        search_service = HybridSearchService()
-        response = search_service.get_document_outline(
-            doc_id=args.doc_id,
-            include_content=args.include_content
-        )
+        search_service = VectorSearchService()
+        # Note: get_document_outline not implemented in VectorSearchService
+        # This is a placeholder - would need to be implemented
+        response = {"error": "Document outline not implemented in VectorSearchService yet"}
 
         if response.get('error'):
             logger.error(f"Error: {response['error']}")
@@ -229,14 +225,14 @@ def cmd_status(args: argparse.Namespace) -> int:
 
         # Check embedding service
         try:
-            from src.services.embedding.embedder import JinaEmbedder
+            from src.services.embedding.embedder import JinaV4Embedder
 
-            embedder = JinaEmbedder()
+            embedder = JinaV4Embedder()
             test_embedding = embedder.embed_single("test")
 
-            if test_embedding and len(test_embedding) == 1024:
+            if test_embedding and len(test_embedding) == 384:
                 status["embedding"] = "working"
-                status["embedding_model"] = embedder.model_name
+                status["embedding_model"] = embedder.model
             else:
                 status["embedding"] = "error"
                 status["errors"].append("Embedding service returned invalid response")
@@ -280,7 +276,7 @@ def cmd_benchmark(args: argparse.Namespace) -> int:
     try:
         logger.info("Running search benchmarks...")
 
-        search_service = HybridSearchService()
+        search_service = VectorSearchService()
 
         # Test queries
         test_queries = [
@@ -301,7 +297,7 @@ def cmd_benchmark(args: argparse.Namespace) -> int:
 
             response = search_service.search(
                 query=query,
-                limit=10,
+                k=10,
                 use_reranking=args.rerank
             )
 
@@ -309,13 +305,13 @@ def cmd_benchmark(args: argparse.Namespace) -> int:
 
             results.append({
                 "query": query,
-                "strategy": response["strategy"],
-                "results_count": response["total"],
+                "search_type": response["metadata"]["search_type"],
+                "results_count": response["metadata"]["total_results"],
                 "duration_ms": duration,
-                "reranked": response["reranked"]
+                "reranked": response["metadata"]["reranking_used"]
             })
 
-            print(f"Query: '{query}' -> {response['total']} results in {duration:.2f}ms ({response['strategy']})")
+            print(f"Query: '{query}' -> {response['metadata']['total_results']} results in {duration:.2f}ms ({response['metadata']['search_type']})")
 
         # Summary statistics
         avg_duration = sum(r["duration_ms"] for r in results) / len(results)
@@ -426,12 +422,7 @@ Examples:
         "--doc-numbers",
         help="Comma-separated list of document numbers"
     )
-    search_parser.add_argument(
-        "--strategy",
-        choices=["auto", "explicit", "fts", "vector", "hybrid"],
-        default="auto",
-        help="Search strategy to use",
-    )
+
     search_parser.add_argument(
         "--no-rerank",
         dest="rerank",

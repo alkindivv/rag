@@ -17,9 +17,9 @@ import cmd
 import re
 
 # Add project root to path
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from src.services.search.hybrid_search import HybridSearchService
+from src.services.search.vector_search import VectorSearchService
 from src.services.llm.legal_llm import LegalLLMService
 from src.config.settings import settings
 
@@ -36,14 +36,14 @@ class Colors:
     CYAN = '\033[36m'
     WHITE = '\033[37m'
     GRAY = '\033[90m'
-    
+
     @classmethod
     def format(cls, text: str, color: str) -> str:
         return f"{color}{text}{cls.RESET}"
 
 class LegalRAGCLI(cmd.Cmd):
     """Advanced CLI untuk Legal RAG System"""
-    
+
     intro = f"""
 {Colors.BOLD}{Colors.CYAN}🗳️  Legal RAG CLI{Colors.RESET}
 {Colors.DIM}Interactive terminal untuk pencarian dan analisis dokumen hukum{Colors.RESET}
@@ -64,45 +64,47 @@ class LegalRAGCLI(cmd.Cmd):
   explain pasal 35 uu 4/2009
   compare pasal 121 pasal 122 uu 4/2009
 """
-    
+
     prompt = f"{Colors.CYAN}legal-rag{Colors.RESET}> "
-    
+
     def __init__(self):
         super().__init__()
-        self.search_service = HybridSearchService()
+        self.search_service = VectorSearchService()
         self.llm_service = LegalLLMService()
         self.history = []
         self.setup_autocomplete()
-        
+
     def setup_autocomplete(self):
         """Setup autocomplete untuk perintah"""
         commands = ['search', 'ask', 'explain', 'compare', 'history', 'config', 'help', 'exit', 'quit']
         readline.parse_and_bind('tab: complete')
         readline.set_completer(self.complete)
-        
+
     def complete(self, text, state):
         """Autocomplete untuk perintah"""
         commands = ['search', 'ask', 'explain', 'compare', 'history', 'config', 'help', 'exit', 'quit']
         matches = [cmd for cmd in commands if cmd.startswith(text)]
         return matches[state] if state < len(matches) else None
-        
-    def format_search_result(self, result: Dict[str, Any], index: int) -> str:
+
+    def format_search_result(self, result, index: int) -> str:
         """Format hasil pencarian"""
-        citation = result.get('citation', 'Tidak ada sitasi')
-        score = result.get('score', 0)
-        
+        citation = result.citation_string or 'Tidak ada sitasi'
+        score = result.score
+
         return f"""
 {Colors.YELLOW}[{index+1}] {Colors.BOLD}{citation}{Colors.RESET}
 {Colors.DIM}Score: {score:.3f}{Colors.RESET}
 """
-        
+
+
+
     def format_answer(self, answer: Dict[str, Any]) -> str:
         """Format jawaban LLM"""
         answer_text = answer.get('answer', '')
         confidence = answer.get('confidence', 0)
         duration = answer.get('duration_ms', 0)
         sources = answer.get('sources', [])
-        
+
         output = f"""
 {Colors.GREEN}💡 Jawaban:{Colors.RESET}
 {answer_text}
@@ -114,119 +116,117 @@ class LegalRAGCLI(cmd.Cmd):
 
 {Colors.MAGENTA}📚 Sumber:{Colors.RESET}
 """
-        
+
         for i, source in enumerate(sources[:3], 1):
             output += self.format_search_result(source, i)
-            
+
         return output
-        
+
     def do_search(self, arg):
         """Cari dokumen hukum"""
         if not arg:
             print(f"{Colors.RED}❌ Gunakan: search <query>{Colors.RESET}")
             return
-            
+
         try:
             print(f"{Colors.YELLOW}🔍 Mencari: {arg}{Colors.RESET}")
             results = self.search_service.search(
                 query=arg,
-                limit=5,
-                strategy="auto",
+                k=5,
                 use_reranking=True
             )
-            
-            print(f"{Colors.GREEN}✅ Ditemukan {results['total']} hasil{Colors.RESET}")
-            
+
+            print(f"{Colors.GREEN}✅ Ditemukan {results['metadata']['total_results']} hasil{Colors.RESET}")
+
             for i, result in enumerate(results['results'][:5]):
                 print(self.format_search_result(result, i))
-                
+
             self.history.append({
                 'type': 'search',
                 'query': arg,
                 'timestamp': datetime.now().isoformat(),
                 'results': len(results['results'])
             })
-            
+
         except Exception as e:
             print(f"{Colors.RED}❌ Error: {e}{Colors.RESET}")
-            
+
     def do_ask(self, arg):
         """Tanya pertanyaan hukum"""
         if not arg:
             print(f"{Colors.RED}❌ Gunakan: ask <pertanyaan>{Colors.RESET}")
             return
-            
+
         try:
             print(f"{Colors.CYAN}🤔 Menjawab: {arg}{Colors.RESET}")
-            
+
             # Search for context
             search_results = self.search_service.search(
                 query=arg,
-                limit=5,
-                strategy="auto",
+                k=5,
                 use_reranking=True
             )
-            
-            # Generate answer with LLM
+
+            # Generate answer with LLM (now accepts SearchResult objects directly)
             answer = asyncio.run(self.llm_service.generate_answer(
                 query=arg,
                 context=search_results["results"],
                 temperature=0.3,
                 max_tokens=1000
             ))
-            
+
             print(self.format_answer(answer))
-            
+
             self.history.append({
                 'type': 'ask',
                 'query': arg,
                 'timestamp': datetime.now().isoformat(),
                 'confidence': answer.get('confidence', 0)
             })
-            
+
         except Exception as e:
             print(f"{Colors.RED}❌ Error: {e}{Colors.RESET}")
-            
+
     def do_explain(self, arg):
         """Jelaskan pasal tertentu"""
         if not arg:
             print(f"{Colors.RED}❌ Gunakan: explain <pasal> [uu] [tahun]{Colors.RESET}")
             return
-            
+
         try:
             query = f"jelaskan {arg}"
             self.do_ask(query)
-            
+
         except Exception as e:
             print(f"{Colors.RED}❌ Error: {e}{Colors.RESET}")
-            
+
     def do_compare(self, arg):
         """Bandingkan dua pasal"""
         parts = arg.split()
         if len(parts) < 2:
             print(f"{Colors.RED}❌ Gunakan: compare <pasal1> <pasal2> [uu] [tahun]{Colors.RESET}")
             return
-            
+
         try:
             pasal1, pasal2 = parts[0], parts[1]
             query = f"bandingkan pasal {pasal1} dan pasal {pasal2}"
             self.do_ask(query)
-            
+
         except Exception as e:
             print(f"{Colors.RED}❌ Error: {e}{Colors.RESET}")
-            
+
     def do_history(self, arg):
         """Lihat riwayat query"""
         if not self.history:
             print(f"{Colors.YELLOW}📋 Belum ada riwayat{Colors.RESET}")
             return
-            
+
         print(f"{Colors.CYAN}📋 Riwayat Query:{Colors.RESET}")
         for i, item in enumerate(self.history[-10:], 1):
             timestamp = item['timestamp'][:19]
             print(f"{Colors.DIM}[{i}] {item['type'].upper()} - {timestamp}{Colors.RESET}")
             print(f"  {item['query']}")
-            
+
     def do_config(self, arg):
         """Lihat konfigurasi"""
         print(f"""
@@ -237,29 +237,29 @@ class LegalRAGCLI(cmd.Cmd):
 • Reranker: jina-reranker-v2
 • Database: PostgreSQL + pgvector
         """)
-        
+
     def do_help(self, arg):
         """Bantuan lengkap"""
         print(self.intro)
-        
+
     def do_exit(self, arg):
         """Keluar dari CLI"""
         print(f"{Colors.GREEN}👋 Selamat tinggal!{Colors.RESET}")
         return True
-        
+
     def do_quit(self, arg):
         """Keluar dari CLI"""
         return self.do_exit(arg)
-        
+
     def do_EOF(self, arg):
         """Handle Ctrl+D"""
         print()
         return self.do_exit(arg)
-        
+
     def emptyline(self):
         """Handle empty line"""
         pass
-        
+
     def default(self, line):
         """Handle unknown commands"""
         print(f"{Colors.RED}❌ Perintah tidak dikenal: {line}{Colors.RESET}")
@@ -267,40 +267,40 @@ class LegalRAGCLI(cmd.Cmd):
 
 class QuickCLI:
     """CLI cepat untuk satu perintah"""
-    
+
     def __init__(self):
-        self.search_service = HybridSearchService()
+        self.search_service = VectorSearchService()
         self.llm_service = LegalLLMService()
-        
+
+
+
     async def search(self, query: str, limit: int = 5):
         """Cari cepat"""
         results = self.search_service.search(
             query=query,
-            limit=limit,
-            strategy="auto",
+            k=limit,
             use_reranking=True
         )
-        
+
         print(f"🔍 Hasil pencarian untuk: {query}")
         for i, result in enumerate(results['results']):
-            print(f"[{i+1}] {result.get('citation', 'No citation')}")
-            
+            print(f"[{i+1}] {result.citation_string or 'No citation'}")
+
     async def ask(self, question: str):
         """Tanya cepat"""
         search_results = self.search_service.search(
             query=question,
-            limit=5,
-            strategy="auto",
+            k=5,
             use_reranking=True
         )
-        
+
         answer = await self.llm_service.generate_answer(
             query=question,
             context=search_results["results"],
             temperature=0.3,
             max_tokens=1000
         )
-        
+
         print(f"💡 {answer['answer']}")
 
 def main():
@@ -311,9 +311,9 @@ def main():
     parser.add_argument('--ask', '-a', type=str, help='Tanya pertanyaan')
     parser.add_argument('--explain', '-e', type=str, help='Jelaskan pasal')
     parser.add_argument('--compare', '-c', type=str, help='Bandingkan pasal')
-    
+
     args = parser.parse_args()
-    
+
     if args.interactive:
         # Mode interaktif
         cli = LegalRAGCLI()
@@ -321,29 +321,29 @@ def main():
             cli.cmdloop()
         except KeyboardInterrupt:
             print(f"\n{Colors.GREEN}👋 Selamat tinggal!{Colors.RESET}")
-            
+
     elif args.search:
         # Mode cepat - search
         quick_cli = QuickCLI()
         asyncio.run(quick_cli.search(args.search))
-        
+
     elif args.ask:
         # Mode cepat - ask
         quick_cli = QuickCLI()
         asyncio.run(quick_cli.ask(args.ask))
-        
+
     elif args.explain:
         # Mode cepat - explain
         quick_cli = QuickCLI()
         question = f"jelaskan {args.explain}"
         asyncio.run(quick_cli.ask(question))
-        
+
     elif args.compare:
         # Mode cepat - compare
         quick_cli = QuickCLI()
         question = f"bandingkan {args.compare}"
         asyncio.run(quick_cli.ask(question))
-        
+
     else:
         # Default ke mode interaktif
         print("Memulai Legal RAG CLI...")

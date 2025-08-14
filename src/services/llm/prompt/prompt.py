@@ -14,45 +14,80 @@ SYSTEM_RAG = (
     "- Jika ada beberapa pasal relevan, urutkan dari yang paling spesifik ke umum.\n"
 )
 
-# USER→ASSISTANT: Jawaban dengan kutipan & ringkasan
+# USER→ASSISTANT: Jawaban dengan kutipan & ringkasan (Enhanced for better focus)
 ANSWER_WITH_CITATIONS = (
     "Pertanyaan pengguna:\n"
     "{question}\n\n"
-    "Konteks (potongan hasil pencarian):\n"
+    "Konteks hukum yang tersedia:\n"
     "{contexts}\n\n"
-    "Instruksi:\n"
-    "- Gunakan hanya konteks di atas.\n"
-    "- Kutip unit paling spesifik (mis. Pasal X ayat (Y) huruf Z) menggunakan `citation_string` yang diberikan.\n"
-    "- Tulis jawaban dalam bahasa Indonesia yang jelas. Jika aturan berubah karena ‘diubah/dicabut’, jelaskan singkat.\n"
-    "- Jika tidak cukup data, jawab: 'Tidak ditemukan dalam konteks yang diberikan.'\n"
+    "INSTRUKSI PRIORITAS:\n"
+    "1. FOKUS TOTAL pada pertanyaan spesifik yang diajukan\n"
+    "2. ANALISIS jenis pertanyaan:\n"
+    "   - Jika tanya 'pasal apa/UU apa' → sebutkan EKSPLISIT pasal dan nomor UU\n"
+    "   - Jika tanya 'definisi/pengertian' → berikan definisi TEPAT dari konteks\n"
+    "   - Jika tanya 'sanksi/pidana' → sebutkan JENIS sanksi dan besarannya\n"
+    "   - Jika tanya 'prosedur/cara' → jelaskan LANGKAH-LANGKAH yang tepat\n"
+    "   - Jika tanya 'siapa/kewenangan' → identifikasi PIHAK yang berwenang\n"
+    "3. GUNAKAN HANYA informasi dari konteks di atas - DILARANG menambah dari pengetahuan umum\n"
+    "4. FORMAT JAWABAN:\n"
+    "   a) Jawaban LANGSUNG dalam 1-2 kalimat pertama\n"
+    "   b) Kutipan pasal lengkap: \"Berdasarkan [citation_string yang diberikan]\"\n"
+    "   c) Penjelasan tambahan HANYA jika diminta\n"
+    "5. KRITERIA KUALITAS:\n"
+    "   - Jawaban HARUS menjawab pertanyaan eksplisit\n"
+    "   - HARUS ada kutipan citation_string yang tepat\n"
+    "   - HINDARI informasi umum yang tidak diminta\n"
+    "6. Jika konteks TIDAK cukup untuk menjawab pertanyaan spesifik:\n"
+    "   'Berdasarkan konteks yang tersedia, informasi spesifik mengenai [topik yang ditanyakan] tidak dapat dijawab secara lengkap.'\n\n"
+    "MULAI JAWABAN:"
 )
 
-# Reformulasi query untuk retrieval
+# Reformulasi query untuk retrieval yang lebih efektif
 QUERY_REWRITE = (
-    "Ubah pertanyaan berikut menjadi query pencarian yang lebih tepat untuk hukum Indonesia.\n"
-    "Fokus pada kata kunci normatif (mis. 'izin', 'sanksi', 'kewenangan', 'kewajiban'), entitas (UU/PP/Perpres),\n"
-    "dan unit (Pasal/Ayat/Huruf/Angka). Jangan menambahkan opini.\n\n"
-    "Pertanyaan: {question}\n"
-    "Hasil: "
+    "Analisis pertanyaan hukum berikut dan ubah menjadi query pencarian yang optimal:\n\n"
+    "Pertanyaan asli: {question}\n\n"
+    "PANDUAN REFORMULASI:\n"
+    "1. Identifikasi INTENT utama (definisi/sanksi/prosedur/kewenangan/dll)\n"
+    "2. Ekstrak ENTITAS hukum (UU/PP/Perpres, nomor, tahun)\n"
+    "3. Fokus pada KATA KUNCI normatif (izin, sanksi, kewajiban, hak, prosedur)\n"
+    "4. Pertahankan UNIT spesifik (Pasal, Ayat, Huruf, Angka)\n"
+    "5. Hilangkan kata tanya umum, fokus pada substansi\n\n"
+    "Query hasil reformulasi:"
 )
 
-# Ringkasan pasal/ayat
+# Ringkasan pasal/ayat yang efektif
 SUMMARIZE_UNITS = (
-    "Ringkas poin kunci dari unit berikut menjadi bullet list.\n"
-    "Pertahankan istilah hukum. Jangan mengubah makna.\n\n"
+    "TUGAS: Buat ringkasan fokus untuk menjawab pertanyaan pengguna\n\n"
+    "Konteks hukum:\n"
     "{contexts}\n\n"
-    "Hasil ringkas:"
+    "ATURAN RINGKASAN:\n"
+    "1. PERTAHANKAN istilah hukum original - jangan parafrase\n"
+    "2. PRIORITASKAN informasi yang langsung menjawab pertanyaan\n"
+    "3. FORMAT: Bullet point dengan struktur:\n"
+    "   • [Citation lengkap]: [Inti substansi]\n"
+    "4. URUTAN: Dari yang paling spesifik ke umum\n"
+    "5. BATASI: Maksimal 5 poin utama\n\n"
+    "Ringkasan terstruktur:"
 )
 
-# Verifikasi / kritik jawaban (self‑check)
+# Verifikasi / kritik jawaban (self‑check) yang ketat
 CRITIQUE = (
-    "Periksa jawaban berikut terhadap konteks hukum yang disediakan.\n"
-    "- Tandai klaim tanpa dasar.\n"
-    "- Tunjukkan jika kutipan tidak sesuai unit.\n"
-    "- Beri saran perbaikan singkat.\n\n"
-    "Jawaban:\n{answer}\n\n"
-    "Konteks:\n{contexts}\n\n"
-    "Laporan:"
+    "AUDIT KUALITAS JAWABAN HUKUM\n\n"
+    "Jawaban yang akan diaudit:\n{answer}\n\n"
+    "Konteks referensi:\n{contexts}\n\n"
+    "CHECKLIST VERIFIKASI:\n"
+    "1. AKURASI KUTIPAN:\n"
+    "   ☐ Apakah semua citation_string akurat?\n"
+    "   ☐ Apakah pasal/ayat yang dikutip benar?\n"
+    "2. RELEVANSI JAWABAN:\n"
+    "   ☐ Apakah jawaban langsung menjawab pertanyaan?\n"
+    "   ☐ Apakah ada informasi tidak relevan?\n"
+    "3. KELENGKAPAN:\n"
+    "   ☐ Apakah ada informasi penting yang terlewat?\n"
+    "   ☐ Apakah semua klaim memiliki dasar hukum?\n"
+    "4. KONSISTENSI:\n"
+    "   ☐ Apakah tidak ada kontradiksi internal?\n\n"
+    "HASIL AUDIT:"
 )
 
 # Generator format kutipan (opsional jika ingin diseragamkan di LLM)
@@ -93,19 +128,44 @@ EXPLAIN_RETRIEVAL_DECISIONS = (
     "Penjelasan (maks 5 kalimat):"
 )
 
-# Helper kecil untuk mencetak contexts ke template
+# Helper untuk format konteks yang optimal
 def join_contexts(results, max_len: int = 6) -> str:
     """
-    results: List[dict] dengan field minimal:
-      - 'content' (teks potongan)
-      - 'citation' atau 'citation_string'
-      - 'unit_id' (opsional)
+    Enhanced context formatting for better LLM processing.
+
+    Args:
+        results: List[dict] dengan field minimal:
+          - 'content' (teks potongan)
+          - 'citation' atau 'citation_string'
+          - 'unit_id' (opsional)
+          - 'score' (opsional, untuk prioritas)
+        max_len: Maksimal jumlah konteks
+
+    Returns:
+        Formatted context string untuk prompt
     """
+    if not results:
+        return "Tidak ada konteks yang tersedia."
+
     rows = []
     for i, r in enumerate(results[:max_len], 1):
-        cit = r.get("citation") or r.get("citation_string") or "-"
-        content = (r.get("content") or "").strip().replace("\n", " ")
-        if len(content) > 800:
-            content = content[:800] + "…"
-        rows.append(f"[{i}] {cit}\n{content}\n")
+        # Get citation with fallback
+        cit = r.get("citation") or r.get("citation_string") or f"[Referensi {i}]"
+
+        # Clean and truncate content
+        content = (r.get("content") or "").strip()
+        content = content.replace("\n", " ").replace("\t", " ")
+
+        # More aggressive truncation for focus
+        if len(content) > 600:
+            content = content[:600] + "..."
+
+        # Add relevance indicator if available
+        score_info = ""
+        if r.get("score") and isinstance(r["score"], (int, float)):
+            score_info = f" (relevansi: {r['score']:.2f})"
+
+        # Format with clear structure
+        rows.append(f"[{i}] SUMBER: {cit}{score_info}\nISI: {content}\n")
+
     return "\n".join(rows)

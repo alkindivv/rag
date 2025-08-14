@@ -42,6 +42,24 @@ class SearchResult:
     hierarchy_path: Optional[str] = None
     metadata: Optional[Dict[str, Any]] = None
 
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert SearchResult to dictionary for API/LLM compatibility."""
+        return {
+            "id": self.id,
+            "content": self.content,
+            "text": self.content,  # Alias for compatibility
+            "citation": self.citation_string,
+            "citation_string": self.citation_string,
+            "score": self.score,
+            "unit_type": self.unit_type,
+            "unit_id": self.unit_id,
+            "doc_form": self.doc_form,
+            "doc_year": self.doc_year,
+            "doc_number": self.doc_number,
+            "hierarchy_path": self.hierarchy_path,
+            "metadata": self.metadata or {}
+        }
+
 
 @dataclass
 class SearchFilters:
@@ -196,28 +214,42 @@ class VectorSearchService:
         Returns:
             List of semantically similar legal units
         """
-        # Step 1: Normalize query text
+        # Step 1: Enhanced query preprocessing
+        original_query = query
         normalized_query = self._normalize_query(query)
 
-        # Step 2: Embed query
-        query_embedding = self._embed_query(normalized_query)
+        # Step 1.5: Query expansion for better context
+        expanded_query = self._expand_query_context(normalized_query)
+
+        # Step 2: Embed query with fallback
+        query_embedding = self._embed_query(expanded_query)
         if not query_embedding:
-            logger.error("Failed to embed query")
-            return []
+            logger.warning(f"Failed to embed expanded query, trying original: {query}")
+            query_embedding = self._embed_query(normalized_query)
+            if not query_embedding:
+                logger.error("Failed to embed query completely")
+                return []
 
-        # Step 3: Vector search with HNSW
+        # Step 3: Enhanced vector search with adaptive k
+        adaptive_k = min(k * 2, 30)  # Get more results for better filtering
         with get_db_session() as db:
-            results = self._vector_search(db, query_embedding, k, filters)
+            raw_results = self._vector_search(db, query_embedding, adaptive_k, filters)
 
-        # Step 4: Optional reranking
+        # Step 3.5: Filter and re-rank results based on query context
+        filtered_results = self._filter_by_query_relevance(original_query, raw_results)
+
+        # Step 4: Limit to requested k after filtering
+        results = filtered_results[:k]
+
+        # Step 5: Optional reranking
         if use_reranking and results:
-            results = self._rerank_results(query, results)
+            results = self._rerank_results(original_query, results)
 
         return results
 
     def _normalize_query(self, query: str) -> str:
         """
-        Normalize query text for better embedding quality.
+        Enhanced query normalization for better embedding quality.
 
         Args:
             query: Raw query text
@@ -225,43 +257,80 @@ class VectorSearchService:
         Returns:
             Normalized query text
         """
+        if not query or not query.strip():
+            return ""
+
         # Lowercasing
         normalized = query.lower().strip()
 
-        # Remove punctuation (keep alphanumeric and spaces)
-        normalized = re.sub(r'[^\w\s]', ' ', normalized)
+        # Preserve important legal punctuation before removing
+        # Convert common legal abbreviations
+        legal_replacements = {
+            'uu no.': 'undang undang nomor',
+            'pp no.': 'peraturan pemerintah nomor',
+            'perpres no.': 'peraturan presiden nomor',
+            'permen no.': 'peraturan menteri nomor',
+            'pasal ke-': 'pasal',
+            'ayat ke-': 'ayat'
+        }
+
+        for old, new in legal_replacements.items():
+            normalized = normalized.replace(old, new)
+
+        # Remove punctuation but preserve legal structure indicators
+        normalized = re.sub(r'[^\w\s()]', ' ', normalized)
+
+        # Preserve parentheses for ayat references
+        normalized = re.sub(r'\s*\(\s*', ' (', normalized)
+        normalized = re.sub(r'\s*\)\s*', ') ', normalized)
 
         # Collapse multiple spaces
         normalized = re.sub(r'\s+', ' ', normalized)
 
-        # Basic Indonesian stemming/lemmatization (simplified)
-        # In production, use proper Indonesian NLP library like Sastrawi
+        # Enhanced Indonesian normalization
         normalized = self._simple_indonesian_normalize(normalized)
 
         return normalized.strip()
 
     def _simple_indonesian_normalize(self, text: str) -> str:
         """
-        Simple Indonesian text normalization.
-
-        In production, replace with proper Indonesian lemmatization.
+        Enhanced Indonesian text normalization for legal documents.
         """
-        # Common Indonesian prefix/suffix removal (very basic)
         words = text.split()
         normalized_words = []
 
+        # Legal terms that should not be stemmed
+        legal_terms = {
+            'pasal', 'ayat', 'huruf', 'angka', 'undang', 'peraturan', 'pemerintah',
+            'presiden', 'menteri', 'sanksi', 'pidana', 'administrasi', 'kewenangan',
+            'tanggung', 'jawab', 'kewajiban', 'hukum', 'norma', 'ketentuan'
+        }
+
         for word in words:
-            # Remove common prefixes
-            for prefix in ['ber', 'ter', 'me', 'di', 'ke', 'se']:
-                if word.startswith(prefix) and len(word) > len(prefix) + 2:
+            original_word = word
+
+            # Skip normalization for legal terms
+            if word in legal_terms or len(word) <= 3:
+                normalized_words.append(word)
+                continue
+
+            # Remove common prefixes (more conservative for legal text)
+            prefix_removed = False
+            for prefix in ['ber', 'ter', 'me', 'pe', 'di', 'ke', 'se']:
+                if word.startswith(prefix) and len(word) > len(prefix) + 3:
                     word = word[len(prefix):]
+                    prefix_removed = True
                     break
 
-            # Remove common suffixes
-            for suffix in ['kan', 'an', 'nya', 'lah']:
-                if word.endswith(suffix) and len(word) > len(suffix) + 2:
+            # Remove common suffixes (more conservative)
+            for suffix in ['kan', 'an', 'nya', 'lah', 'kah']:
+                if word.endswith(suffix) and len(word) > len(suffix) + 3:
                     word = word[:-len(suffix)]
                     break
+
+            # Don't over-stem - keep original if result is too short
+            if len(word) < 3:
+                word = original_word
 
             normalized_words.append(word)
 
@@ -269,7 +338,7 @@ class VectorSearchService:
 
     def _embed_query(self, query: str) -> Optional[List[float]]:
         """
-        Embed query using Jina v4 embedder.
+        Enhanced query embedding with retry logic.
 
         Args:
             query: Normalized query text
@@ -277,17 +346,146 @@ class VectorSearchService:
         Returns:
             Query embedding vector or None if failed
         """
+        if not query or not query.strip():
+            logger.warning("Empty query provided for embedding")
+            return None
+
         try:
+            # Add context hint for legal domain
+            enhanced_query = f"legal document query: {query}"
+
             embeddings = self.embedder.embed_texts(
-                [query],
+                [enhanced_query],
                 task="retrieval.query",
                 dims=384
             )
-            return embeddings[0] if embeddings else None
+
+            if embeddings and len(embeddings) > 0 and len(embeddings[0]) == 384:
+                return embeddings[0]
+            else:
+                logger.warning("Invalid embedding dimensions received")
+                return None
 
         except Exception as e:
             logger.error(f"Query embedding failed: {e}")
-            return None
+
+            # Fallback: try without enhancement
+            try:
+                logger.info("Trying fallback embedding without enhancement")
+                embeddings = self.embedder.embed_texts(
+                    [query],
+                    task="retrieval.query",
+                    dims=384
+                )
+                return embeddings[0] if embeddings else None
+            except Exception as fallback_e:
+                logger.error(f"Fallback embedding also failed: {fallback_e}")
+                return None
+
+    def _expand_query_context(self, query: str) -> str:
+        """
+        Expand query with relevant context for better retrieval.
+
+        Args:
+            query: Normalized query text
+
+        Returns:
+            Expanded query with additional context
+        """
+        if not query or len(query.strip()) == 0:
+            return query
+
+        # Legal domain keywords to add context
+        legal_context_terms = {
+            'sanksi': 'sanksi pidana administrasi',
+            'izin': 'izin perizinan kewenangan',
+            'kewajiban': 'kewajiban tanggung jawab',
+            'hak': 'hak kewenangan otoritas',
+            'prosedur': 'prosedur tata cara mekanisme',
+            'lembaga': 'lembaga instansi organisasi',
+            'lingkungan': 'lingkungan hidup konservasi',
+            'investasi': 'investasi modal penanaman',
+            'pajak': 'pajak retribusi pungutan',
+            'perdagangan': 'perdagangan ekspor impor'
+        }
+
+        expanded_terms = []
+        query_words = query.split()
+
+        for word in query_words:
+            expanded_terms.append(word)
+            # Add contextual terms if found
+            if word in legal_context_terms:
+                context = legal_context_terms[word]
+                # Add only 1-2 most relevant context words to avoid dilution
+                context_words = context.split()[:2]
+                expanded_terms.extend(context_words)
+
+        # Limit expansion to avoid overwhelming the query
+        if len(expanded_terms) > len(query_words) * 2:
+            expanded_terms = expanded_terms[:len(query_words) * 2]
+
+        expanded_query = ' '.join(expanded_terms)
+
+        # If expansion made query too long, return original
+        if len(expanded_query) > len(query) * 2:
+            return query
+
+        return expanded_query
+
+    def _filter_by_query_relevance(self, query: str, results: List[SearchResult]) -> List[SearchResult]:
+        """
+        Filter and re-rank results based on query-specific relevance.
+
+        Args:
+            query: Original query text
+            results: Raw search results from vector search
+
+        Returns:
+            Filtered and re-ranked results
+        """
+        if not results:
+            return results
+
+        # Simple query analysis
+        query_lower = query.lower()
+        is_specific_query = any(term in query_lower for term in
+                               ['pasal', 'uu', 'undang-undang', 'peraturan', 'nomor'])
+
+        filtered_results = []
+
+        for result in results:
+            content = (result.content or "").lower()
+            citation = (result.citation_string or "").lower()
+
+            # Base relevance score from vector similarity
+            relevance_score = result.score
+
+            # Boost for specific queries that find matching legal references
+            if is_specific_query:
+                if any(term in citation for term in ['uu', 'pasal', 'peraturan']):
+                    relevance_score += 0.2
+                if any(term in content for term in query_lower.split()[:3]):
+                    relevance_score += 0.1
+
+            # Content quality filters
+            if len(content.strip()) < 20:  # Skip very short content
+                relevance_score -= 0.3
+
+            if 'tidak ditemukan' in content or 'tidak ada' in content:
+                relevance_score -= 0.2
+
+            # Keep results with decent relevance
+            if relevance_score > 0.2:  # Lower threshold for more inclusive results
+                # Update the score in result
+                result.score = min(relevance_score, 1.0)
+                filtered_results.append(result)
+
+        # Sort by updated relevance score
+        filtered_results.sort(key=lambda x: x.score, reverse=True)
+
+        logger.debug(f"Filtered {len(results)} -> {len(filtered_results)} results")
+        return filtered_results
 
     def _vector_search(
         self,
@@ -334,7 +532,7 @@ class VectorSearchService:
         # Add filters
         filter_conditions = []
         params = {
-            'query_vector': query_embedding,
+            'query_vector': '[' + ','.join(map(str, query_embedding)) + ']',
             'doc_status': DocStatus.BERLAKU.value
         }
 

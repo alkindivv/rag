@@ -79,7 +79,13 @@ async def search_documents(request: SearchRequest):
             filters=filters,
             use_reranking=request.use_reranking
         )
-        return SearchResponse(**results)
+
+        # Convert SearchResult objects to dicts for API response
+        api_results = {
+            "results": [result.to_dict() for result in results["results"]],
+            "metadata": results["metadata"]
+        }
+        return SearchResponse(**api_results)
     except Exception as e:
         logger.error(f"Search failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -94,7 +100,7 @@ async def ask_legal_question(request: LLMRequest):
             use_reranking=True
         )
 
-        # Generate answer with LLM
+        # Generate answer with LLM (LLM service now accepts SearchResult objects directly)
         answer = await llm_service.generate_answer(
             query=request.query,
             context=search_results["results"],
@@ -125,7 +131,13 @@ async def search_get(
             k=limit,
             use_reranking=use_reranking
         )
-        return results
+
+        # Convert SearchResult objects to dicts for API response
+        api_results = {
+            "results": [result.to_dict() for result in results["results"]],
+            "metadata": results["metadata"]
+        }
+        return api_results
     except Exception as e:
         logger.error(f"Search failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))

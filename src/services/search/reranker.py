@@ -13,7 +13,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 # Removed JinaEmbedder import - not needed for reranker
 from ...config.settings import settings
-from ..retriever.hybrid_retriever import SearchResult
+from .vector_search import SearchResult
 from ...utils.http import HttpClient
 from ...utils.logging import get_logger, log_timing, log_error
 
