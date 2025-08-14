@@ -175,20 +175,31 @@ class VectorSearchService:
             # Use optimized query for processing
             query = optimized_query
 
-            # Step 2: Route to appropriate search handler
-            if is_citation:
-                logger.debug(f"Processing explicit citation query: {query}")
-                results = await self._handle_explicit_citation_async(query, k, filters)
-                search_type = "explicit_citation"
-            else:
-                # Legal keyword detection
-                has_legal_keywords = await asyncio.to_thread(self._detect_legal_keywords, query)
-                if has_legal_keywords:
-                    logger.debug(f"Processing legal keyword query with optimization: {query}")
+            # Step 2: Check for multi-part queries (contextual + citation)
+            query_parts = await asyncio.to_thread(self._decompose_multi_part_query, query)
 
-                logger.debug(f"Processing contextual semantic search: {query}")
-                results = await self._handle_contextual_search_async(query, k, filters, use_reranking)
-                search_type = "contextual_semantic"
+            if len(query_parts) > 1:
+                logger.debug(f"Processing async multi-part query with {len(query_parts)} parts: {query}")
+                results = await self._handle_multi_part_query_async(query_parts, k, filters, use_reranking)
+                search_type = "multi_part_async"
+            else:
+                # Single query processing
+                single_query = query_parts[0] if query_parts else query
+
+                # Step 3: Route to appropriate search handler
+                if is_citation:
+                    logger.debug(f"Processing explicit citation query: {single_query}")
+                    results = await self._handle_explicit_citation_async(single_query, k, filters)
+                    search_type = "explicit_citation"
+                else:
+                    # Legal keyword detection
+                    has_legal_keywords = await asyncio.to_thread(self._detect_legal_keywords, single_query)
+                    if has_legal_keywords:
+                        logger.debug(f"Processing legal keyword query with optimization: {single_query}")
+
+                    logger.debug(f"Processing contextual semantic search: {single_query}")
+                    results = await self._handle_contextual_search_async(single_query, k, filters, use_reranking)
+                    search_type = "contextual_semantic"
 
             # Step 3: Build response with metadata
             duration_ms = (time.time() - start_time) * 1000
@@ -201,7 +212,8 @@ class VectorSearchService:
                     "search_type": search_type,
                     "total_results": len(results),
                     "duration_ms": round(duration_ms, 2),
-                    "query_analysis": query_analysis
+                    "query_analysis": query_analysis,
+                    "query_parts": len(query_parts) if len(query_parts) > 1 else 1
                 }
             }
 
@@ -233,6 +245,7 @@ class VectorSearchService:
     ) -> Dict[str, Any]:
         """
         Unified search interface supporting both explicit citations and contextual queries.
+        Enhanced with multi-part query decomposition for mixed queries.
 
         Args:
             query: Search query text
@@ -255,26 +268,37 @@ class VectorSearchService:
             # Use optimized query for processing, but keep original for logging
             query = optimized_query
 
-            # Step 2: Check if query contains explicit citations
-            if is_explicit_citation(query, self.min_citation_confidence):
-                logger.debug(f"Processing explicit citation query: {query}")
-                results = self._handle_explicit_citation(query, k, filters)
-                search_type = "explicit_citation"
+            # Step 2: Check for multi-part queries (contextual + citation)
+            query_parts = self._decompose_multi_part_query(query)
+
+            if len(query_parts) > 1:
+                logger.debug(f"Processing multi-part query with {len(query_parts)} parts: {query}")
+                results = self._handle_multi_part_query(query_parts, k, filters, use_reranking)
+                search_type = "multi_part"
             else:
-                # Step 2: Optimize based on legal keyword presence
-                has_legal_keywords = self._detect_legal_keywords(query)
-                if has_legal_keywords:
-                    logger.debug(f"Processing legal keyword query with optimization: {query}")
-                    # Use slightly more aggressive k for legal keyword queries
-                    optimized_k = min(k + 5, k * 2)
-                    results = self._handle_contextual_search(query, optimized_k, filters, use_reranking)
-                    # Trim back to requested k after reranking if needed
-                    results = results[:k] if len(results) > k else results
-                    search_type = "contextual_semantic_legal"
+                # Single query processing (existing logic)
+                single_query = query_parts[0] if query_parts else query
+
+                # Step 3: Check if query contains explicit citations
+                if is_explicit_citation(single_query, self.min_citation_confidence):
+                    logger.debug(f"Processing explicit citation query: {single_query}")
+                    results = self._handle_explicit_citation(single_query, k, filters)
+                    search_type = "explicit_citation"
                 else:
-                    logger.debug(f"Processing general contextual semantic query: {query}")
-                    results = self._handle_contextual_search(query, k, filters, use_reranking)
-                    search_type = "contextual_semantic"
+                    # Step 4: Optimize based on legal keyword presence
+                    has_legal_keywords = self._detect_legal_keywords(single_query)
+                    if has_legal_keywords:
+                        logger.debug(f"Processing legal keyword query with optimization: {single_query}")
+                        # Use slightly more aggressive k for legal keyword queries
+                        optimized_k = min(k + 5, k * 2)
+                        results = self._handle_contextual_search(single_query, optimized_k, filters, use_reranking)
+                        # Trim back to requested k after reranking if needed
+                        results = results[:k] if len(results) > k else results
+                        search_type = "contextual_semantic_legal"
+                    else:
+                        logger.debug(f"Processing contextual semantic search: {single_query}")
+                        results = self._handle_contextual_search(single_query, k, filters, use_reranking)
+                        search_type = "contextual_semantic"
 
             duration_ms = int((time.time() - start_time) * 1000)
 
@@ -987,8 +1011,8 @@ class VectorSearchService:
             )
 
             # Step 2: Vector search in thread pool
-            async def vector_search():
-                with next(get_db_session()) as db:
+            def vector_search():
+                with get_db_session() as db:
                     return self._vector_search(db, query_embedding, k, filters)
 
             vector_results = await asyncio.to_thread(vector_search)
@@ -997,10 +1021,10 @@ class VectorSearchService:
             if normalized_query != query and use_reranking and vector_results:
                 # Run relevance filtering and reranking concurrently
                 filter_task = asyncio.to_thread(
-                    self._filter_by_query_relevance, vector_results, query
+                    self._filter_by_query_relevance, query, vector_results
                 )
                 rerank_task = asyncio.to_thread(
-                    self._rerank_results, vector_results, query
+                    self._rerank_results, query, vector_results
                 )
 
                 filtered_results, reranked_results = await asyncio.gather(
@@ -1015,11 +1039,11 @@ class VectorSearchService:
 
             elif normalized_query != query:
                 vector_results = await asyncio.to_thread(
-                    self._filter_by_query_relevance, vector_results, query
+                    self._filter_by_query_relevance, query, vector_results
                 )
             elif use_reranking and vector_results:
                 vector_results = await asyncio.to_thread(
-                    self._rerank_results, vector_results, query
+                    self._rerank_results, query, vector_results
                 )
 
             logger.debug(f"Async contextual search returned {len(vector_results)} results")
@@ -1043,8 +1067,8 @@ class VectorSearchService:
             return []
 
         # Database lookup using thread pool
-        async def db_lookup():
-            with next(get_db_session()) as db:
+        def db_lookup():
+            with get_db_session() as db:
                 return self._lookup_citation_units(db, citation, k, filters)
 
         results = await asyncio.to_thread(db_lookup)
@@ -1209,6 +1233,176 @@ class VectorSearchService:
             return unit_ref
         else:
             return f"{unit_type} {unit_number or 'Unknown'}"
+
+    def _decompose_multi_part_query(self, query: str) -> List[str]:
+        """
+        Decompose query into parts for multi-part processing.
+
+        Detects patterns like:
+        - "apa itu X? dan apa isi Pasal Y?"
+        - "definisi X dan UU Y Pasal Z"
+        - "jelaskan X, kemudian cari Pasal Y"
+
+        Args:
+            query: Input query to decompose
+
+        Returns:
+            List of query parts (single item if no decomposition needed)
+        """
+        if not query or len(query.strip()) < 20:
+            return [query]
+
+        # Patterns that indicate multi-part queries
+        split_patterns = [
+            r'\s+dan\s+apa\s+isi\s+',  # "dan apa isi"
+            r'\s+dan\s+(?:cari|temukan)\s+',  # "dan cari/temukan"
+            r'\?\s*dan\s+',  # "? dan"
+            r'\s+kemudian\s+',  # "kemudian"
+            r'\s+juga\s+(?:cari|apa)\s+',  # "juga cari/apa"
+            r'\s+serta\s+',  # "serta"
+        ]
+
+        for pattern in split_patterns:
+            match = re.search(pattern, query, re.IGNORECASE)
+            if match:
+                # Split at the pattern
+                parts = re.split(pattern, query, maxsplit=1, flags=re.IGNORECASE)
+                if len(parts) == 2 and all(len(p.strip()) > 5 for p in parts):
+                    logger.debug(f"Multi-part query detected, split into: {len(parts)} parts")
+                    return [p.strip() for p in parts]
+
+        return [query]
+
+    def _handle_multi_part_query(
+        self,
+        query_parts: List[str],
+        k: int,
+        filters: Optional[SearchFilters],
+        use_reranking: bool = False
+    ) -> List[SearchResult]:
+        """
+        Handle multi-part queries by processing each part separately and combining results.
+
+        Args:
+            query_parts: List of query parts to process
+            k: Total number of results desired
+            filters: Optional search filters
+            use_reranking: Whether to apply reranking
+
+        Returns:
+            Combined search results from all parts
+        """
+        all_results = []
+        k_per_part = max(2, k // len(query_parts))  # Distribute k across parts
+
+        for i, part in enumerate(query_parts):
+            logger.debug(f"Processing query part {i+1}/{len(query_parts)}: {part}")
+
+            # Determine search type for this part
+            if is_explicit_citation(part, self.min_citation_confidence):
+                part_results = self._handle_explicit_citation(part, k_per_part, filters)
+                logger.debug(f"Part {i+1} processed as explicit citation: {len(part_results)} results")
+            else:
+                part_results = self._handle_contextual_search(part, k_per_part, filters, use_reranking)
+                logger.debug(f"Part {i+1} processed as contextual search: {len(part_results)} results")
+
+            # Add part identifier to metadata for debugging
+            for result in part_results:
+                if hasattr(result, 'metadata') and result.metadata:
+                    result.metadata['query_part'] = i + 1
+                    result.metadata['query_part_text'] = part[:50] + "..." if len(part) > 50 else part
+
+            all_results.extend(part_results)
+
+        # Remove duplicates based on unit_id while preserving order
+        seen_unit_ids = set()
+        deduplicated_results = []
+
+        for result in all_results:
+            unit_id = getattr(result, 'unit_id', None) or getattr(result, 'id', None)
+            if unit_id and unit_id not in seen_unit_ids:
+                seen_unit_ids.add(unit_id)
+                deduplicated_results.append(result)
+            elif not unit_id:  # Include results without unit_id
+                deduplicated_results.append(result)
+
+        # Return top k results
+        final_results = deduplicated_results[:k]
+        logger.debug(f"Multi-part query completed: {len(final_results)} final results from {len(query_parts)} parts")
+
+        return final_results
+
+    async def _handle_multi_part_query_async(
+        self,
+        query_parts: List[str],
+        k: int,
+        filters: Optional[SearchFilters],
+        use_reranking: bool = False
+    ) -> List[SearchResult]:
+        """
+        Async version: Handle multi-part queries with concurrent processing.
+
+        Args:
+            query_parts: List of query parts to process
+            k: Total number of results desired
+            filters: Optional search filters
+            use_reranking: Whether to apply reranking
+
+        Returns:
+            Combined search results from all parts
+        """
+        k_per_part = max(2, k // len(query_parts))  # Distribute k across parts
+
+        # Create tasks for concurrent processing
+        tasks = []
+        for i, part in enumerate(query_parts):
+            logger.debug(f"Creating async task for query part {i+1}/{len(query_parts)}: {part}")
+
+            # Create task based on query type
+            if await asyncio.to_thread(is_explicit_citation, part, self.min_citation_confidence):
+                task = self._handle_explicit_citation_async(part, k_per_part, filters)
+            else:
+                task = self._handle_contextual_search_async(part, k_per_part, filters, use_reranking)
+
+            tasks.append((i + 1, part, task))
+
+        # Execute all tasks concurrently
+        all_results = []
+        completed_tasks = await asyncio.gather(*[task for _, _, task in tasks], return_exceptions=True)
+
+        for (part_num, part_text, _), result in zip(tasks, completed_tasks):
+            if isinstance(result, Exception):
+                logger.error(f"Async query part {part_num} failed: {result}")
+                continue
+
+            logger.debug(f"Async part {part_num} completed: {len(result)} results")
+
+            # Add part identifier to metadata
+            for search_result in result:
+                if hasattr(search_result, 'metadata') and search_result.metadata:
+                    search_result.metadata['query_part'] = part_num
+                    search_result.metadata['query_part_text'] = part_text[:50] + "..." if len(part_text) > 50 else part_text
+                    search_result.metadata['async_processed'] = True
+
+            all_results.extend(result)
+
+        # Remove duplicates based on unit_id while preserving order
+        seen_unit_ids = set()
+        deduplicated_results = []
+
+        for result in all_results:
+            unit_id = getattr(result, 'unit_id', None) or getattr(result, 'id', None)
+            if unit_id and unit_id not in seen_unit_ids:
+                seen_unit_ids.add(unit_id)
+                deduplicated_results.append(result)
+            elif not unit_id:  # Include results without unit_id
+                deduplicated_results.append(result)
+
+        # Return top k results
+        final_results = deduplicated_results[:k]
+        logger.debug(f"Async multi-part query completed: {len(final_results)} final results from {len(query_parts)} parts")
+
+        return final_results
 
 
 def create_vector_search_service(

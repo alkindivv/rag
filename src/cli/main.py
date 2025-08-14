@@ -130,11 +130,11 @@ class LegalRAGCLI(cmd.Cmd):
 
         try:
             print(f"{Colors.YELLOW}🔍 Mencari: {arg}{Colors.RESET}")
-            results = self.search_service.search(
+            results = asyncio.run(self.search_service.search_async(
                 query=arg,
                 k=5,
                 use_reranking=True
-            )
+            ))
 
             print(f"{Colors.GREEN}✅ Ditemukan {results['metadata']['total_results']} hasil{Colors.RESET}")
 
@@ -160,12 +160,12 @@ class LegalRAGCLI(cmd.Cmd):
         try:
             print(f"{Colors.CYAN}🤔 Menjawab: {arg}{Colors.RESET}")
 
-            # Search for context
-            search_results = self.search_service.search(
+            # Search for context using async method for better multi-part query handling
+            search_results = asyncio.run(self.search_service.search_async(
                 query=arg,
                 k=5,
                 use_reranking=True
-            )
+            ))
 
             # Generate answer with LLM (now accepts SearchResult objects directly)
             answer = asyncio.run(self.llm_service.generate_answer(
@@ -276,7 +276,7 @@ class QuickCLI:
 
     async def search(self, query: str, limit: int = 5):
         """Cari cepat"""
-        results = self.search_service.search(
+        results = await self.search_service.search_async(
             query=query,
             k=limit,
             use_reranking=True
@@ -288,7 +288,7 @@ class QuickCLI:
 
     async def ask(self, question: str):
         """Tanya cepat"""
-        search_results = self.search_service.search(
+        search_results = await self.search_service.search_async(
             query=question,
             k=5,
             use_reranking=True
