@@ -40,7 +40,7 @@ class Settings(BaseSettings):
     gemini_api_key: str | None = Field(default=None, env="GEMINI_API_KEY")
     openai_api_key: str | None = Field(default=None, env="OPENAI_API_KEY")
     anthropic_api_key: str | None = Field(default=None, env="ANTHROPIC_API_KEY")
-    embed_batch_size: int = Field(default=16, env="EMBED_BATCH_SIZE")
+    embed_batch_size: int = Field(default=32, env="EMBED_BATCH_SIZE")
     rerank_provider: str = Field(default="none", env="RERANK_PROVIDER")
     enable_stream: bool = Field(default=False, env="ENABLE_STREAM")
     log_level: str = Field(default="INFO", env="LOG_LEVEL")
