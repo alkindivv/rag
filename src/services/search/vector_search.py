@@ -19,7 +19,7 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from ...config.settings import settings
-from ...db.models import LegalDocument, LegalUnit, DocumentVector, DocForm, DocStatus
+from ...db.models import LegalDocument, LegalUnit, DocForm, DocStatus
 from ...db.session import get_db_session
 from ...services.citation import CitationMatch, is_explicit_citation, get_best_citation_match
 from ...services.embedding.embedder import JinaV4Embedder
@@ -204,17 +204,25 @@ class VectorSearchService:
             # Step 3: Build response with metadata
             duration_ms = (time.time() - start_time) * 1000
 
+            # Coerce results to unified schema-compatible dicts
+            unified_results = [r.to_dict() if hasattr(r, "to_dict") else r for r in results]
+
             response = {
-                "results": results,
+                "results": unified_results,
                 "metadata": {
                     "query": original_query,
                     "optimized_query": query,
                     "search_type": search_type,
-                    "total_results": len(results),
+                    "total_results": len(unified_results),
                     "duration_ms": round(duration_ms, 2),
                     "query_analysis": query_analysis,
-                    "query_parts": len(query_parts) if len(query_parts) > 1 else 1
-                }
+                    "query_parts": len(query_parts) if len(query_parts) > 1 else 1,
+                    "feature_flags": {
+                        "NEW_PG_RETRIEVAL": settings.NEW_PG_RETRIEVAL,
+                        "USE_SQL_FUSION": settings.USE_SQL_FUSION,
+                        "USE_RERANKER": settings.USE_RERANKER,
+                    },
+                },
             }
 
             # Log search for analytics
@@ -231,8 +239,13 @@ class VectorSearchService:
                     "error": str(e),
                     "search_type": "error",
                     "total_results": 0,
-                    "duration_ms": (time.time() - start_time) * 1000
-                }
+                    "duration_ms": (time.time() - start_time) * 1000,
+                    "feature_flags": {
+                        "NEW_PG_RETRIEVAL": settings.NEW_PG_RETRIEVAL,
+                        "USE_SQL_FUSION": settings.USE_SQL_FUSION,
+                        "USE_RERANKER": settings.USE_RERANKER,
+                    },
+                },
             }
 
     def search(
@@ -305,20 +318,27 @@ class VectorSearchService:
             # Log search for analytics
             self._log_search(query, len(results), duration_ms, search_type, session_id)
 
+            unified_results = [r.to_dict() if hasattr(r, "to_dict") else r for r in results]
+
             return {
-                "results": results,
+                "results": unified_results,
                 "metadata": {
                     "original_query": original_query,
                     "optimized_query": query,
                     "query_type": query_analysis.query_type.value if query_analysis else "unknown",
                     "query_confidence": query_analysis.confidence_score if query_analysis else 0.0,
                     "search_type": search_type,
-                    "total_results": len(results),
+                    "total_results": len(unified_results),
                     "duration_ms": duration_ms,
                     "filters_applied": filters is not None,
                     "reranking_used": use_reranking and search_type == "contextual_semantic",
-                    "optimization_applied": query != original_query
-                }
+                    "optimization_applied": query != original_query,
+                    "feature_flags": {
+                        "NEW_PG_RETRIEVAL": settings.NEW_PG_RETRIEVAL,
+                        "USE_SQL_FUSION": settings.USE_SQL_FUSION,
+                        "USE_RERANKER": settings.USE_RERANKER,
+                    },
+                },
             }
 
         except Exception as e:
@@ -331,8 +351,13 @@ class VectorSearchService:
                     "search_type": "error",
                     "total_results": 0,
                     "duration_ms": int((time.time() - start_time) * 1000),
-                    "error": str(e)
-                }
+                    "error": str(e),
+                    "feature_flags": {
+                        "NEW_PG_RETRIEVAL": settings.NEW_PG_RETRIEVAL,
+                        "USE_SQL_FUSION": settings.USE_SQL_FUSION,
+                        "USE_RERANKER": settings.USE_RERANKER,
+                    },
+                },
             }
 
     def _handle_explicit_citation(
@@ -683,28 +708,27 @@ class VectorSearchService:
         Returns:
             List of search results ordered by similarity
         """
-        # Build base query with HNSW cosine similarity - return pasal citations
+        # Build base query with HNSW/IVFFLAT cosine similarity over legal_units.embedding (384)
+        # Choose content based on unit granularity: local_content for AYAT/HURUF/ANGKA, else content
         base_query = """
         SELECT
-            dv.unit_id,
-            dv.doc_form,
-            dv.doc_year,
-            dv.doc_number,
-            dv.hierarchy_path,
-            lu.content,
-            lu.citation_string,
+            lu.unit_id,
+            ld.doc_form,
+            ld.doc_year,
+            ld.doc_number,
+            lu.hierarchy_path,
+            CASE WHEN lu.unit_type IN ('AYAT','HURUF','ANGKA') THEN COALESCE(lu.local_content, '') ELSE COALESCE(lu.content, '') END AS content,
+            COALESCE(lu.citation_string, '') AS citation_string,
             lu.unit_type,
-            lu.number_label AS pasal_number,
+            lu.number_label,
             ld.doc_title,
             ld.doc_form_short,
-            (1 - (dv.embedding <=> :query_vector)) AS similarity_score
-        FROM document_vectors dv
-        JOIN legal_units lu ON lu.unit_id = dv.unit_id
-        JOIN legal_documents ld ON ld.id = dv.document_id
-        WHERE dv.content_type = 'pasal'
-        AND lu.unit_type = 'PASAL'
-        AND lu.content IS NOT NULL
-        AND ld.doc_status = :doc_status
+            (1 - (lu.embedding <=> CAST(:query_vector AS vector))) AS similarity_score
+        FROM legal_units lu
+        JOIN legal_documents ld ON ld.id = lu.document_id
+        WHERE lu.embedding IS NOT NULL
+          AND (COALESCE(lu.local_content, '') <> '' OR COALESCE(lu.content, '') <> '')
+          AND ld.doc_status = :doc_status
         """
 
         # Add filters
@@ -716,19 +740,19 @@ class VectorSearchService:
 
         if filters:
             if filters.doc_forms:
-                filter_conditions.append("dv.doc_form = ANY(:doc_forms)")
+                filter_conditions.append("ld.doc_form = ANY(:doc_forms)")
                 params['doc_forms'] = filters.doc_forms
 
             if filters.doc_years:
-                filter_conditions.append("dv.doc_year = ANY(:doc_years)")
+                filter_conditions.append("ld.doc_year = ANY(:doc_years)")
                 params['doc_years'] = filters.doc_years
 
             if filters.doc_numbers:
-                filter_conditions.append("dv.doc_number = ANY(:doc_numbers)")
+                filter_conditions.append("ld.doc_number = ANY(:doc_numbers)")
                 params['doc_numbers'] = filters.doc_numbers
 
             if filters.pasal_numbers:
-                filter_conditions.append("dv.pasal_number = ANY(:pasal_numbers)")
+                filter_conditions.append("(lu.unit_type = 'PASAL' AND lu.number_label = ANY(:pasal_numbers))")
                 params['pasal_numbers'] = filters.pasal_numbers
 
         if filter_conditions:
@@ -736,7 +760,7 @@ class VectorSearchService:
 
         # Add ordering and limit
         final_query = base_query + """
-        ORDER BY dv.embedding <=> :query_vector
+        ORDER BY lu.embedding <=> CAST(:query_vector AS vector)
         LIMIT :limit
         """
         params['limit'] = k
@@ -753,7 +777,7 @@ class VectorSearchService:
                     row.doc_number,
                     row.doc_year,
                     row.unit_type or "PASAL",
-                    row.pasal_number or row.number_label
+                    row.number_label
                 )
 
                 search_results.append(SearchResult(
@@ -770,7 +794,8 @@ class VectorSearchService:
                     metadata={
                         'doc_title': row.doc_title,
                         'search_type': 'contextual_semantic_citation',
-                        'pasal_number': row.pasal_number
+                        'unit_type': row.unit_type,
+                        'number_label': row.number_label
                     }
                 ))
 

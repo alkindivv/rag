@@ -73,17 +73,16 @@ def init_db() -> None:
     """
     Initialize database tables.
 
-    This creates all tables defined in the models.
-    Use Alembic migrations for production.
+    This creates all tables defined in the models and applies required
+    Postgres extensions, column types, triggers, and indexes without Alembic.
     """
-    from .models import Base
+    from .models import Base, setup_db_extras
 
-    # Ensure required extensions exist (e.g., pgvector)
-    with engine.begin() as conn:
-        if engine.url.get_backend_name() == "postgresql":
-            conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
-
+    # Create tables from ORM
     Base.metadata.create_all(bind=engine)
+
+    # Apply DB extras (extensions, triggers, indexes, cleanup) centralised in models
+    setup_db_extras(engine)
 
 
 def drop_db() -> None:
@@ -95,6 +94,13 @@ def drop_db() -> None:
     """
     from .models import Base
 
+    # First, drop legacy tables not present in ORM that may hold FKs to our tables
+    if engine.url.get_backend_name() == "postgresql":
+        with engine.begin() as conn:
+            # Drop known legacy table to avoid FK dependency errors
+            conn.execute(text("DROP TABLE IF EXISTS document_vectors CASCADE"))
+
+    # Then drop all ORM-declared tables
     Base.metadata.drop_all(bind=engine)
 
 

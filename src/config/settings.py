@@ -35,6 +35,21 @@ class Settings(BaseSettings):
     hnsw_m: int = Field(default=16, env="HNSW_M")
     hnsw_ef_construction: int = Field(default=200, env="HNSW_EF_CONSTRUCTION")
 
+    # Feature Flags (P0 rollout controls)
+    # NEW_PG_RETRIEVAL: enable new Postgres retrieval path (ltree/explicit + FTS/sql fusion)
+    NEW_PG_RETRIEVAL: bool = Field(default=True, env="NEW_PG_RETRIEVAL")
+    # USE_SQL_FUSION: use SQL-level fusion/CTE instead of in-Python RRF
+    USE_SQL_FUSION: bool = Field(default=True, env="USE_SQL_FUSION")
+    # USE_RERANKER: toggle reranker usage in retrieval stack
+    USE_RERANKER: bool = Field(default=True, env="USE_RERANKER")
+
+    # SQL Fusion weights and thresholds
+    # Global defaults; can be overridden per-request at the service layer if needed
+    fts_weight: float = Field(default=0.5, env="FTS_WEIGHT")
+    vector_weight: float = Field(default=0.5, env="VECTOR_WEIGHT")
+    # Optional minimum ts_rank_cd threshold to filter low-signal FTS hits (0..1 recommended)
+    min_ts_rank: float | None = Field(default=None, env="MIN_TS_RANK")
+
     llm_provider: str = Field(default="gemini", env="LLM_PROVIDER")
     llm_model: str = Field(default="gemini-2.0-flash-exp", env="LLM_MODEL")
     gemini_api_key: str | None = Field(default=None, env="GEMINI_API_KEY")

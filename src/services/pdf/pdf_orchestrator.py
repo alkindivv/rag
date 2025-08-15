@@ -213,7 +213,7 @@ class PDFOrchestrator:
             return text_cleaner.clean_legal_document_comprehensive(text)
         except ImportError:
             logger.warning("TextCleaner not available, using basic cleaning")
-            # return self._basic_clean(text)
+            return self._basic_clean(text)
 
     def _basic_clean(self, text: str) -> str:
         """Basic text cleaning fallback"""
@@ -232,7 +232,7 @@ class PDFOrchestrator:
 
     def _build_document_tree(self, text: str) -> LegalNode:
         """Build structured document tree from legal text."""
-        root = LegalNode(type="document", number="root", title="Document Root")
+        root = LegalNode(type="dokumen", number="root", title="Document Root")
 
         if not text or not text.strip():
             return root
@@ -387,9 +387,12 @@ class PDFOrchestrator:
         else:
             # For structural elements, append content normally
             if target_node.content:
-                target_node.content += "\n\n" + content
+                target_node.content += " " + content
             else:
                 target_node.content = content
+
+        # Done flushing buffer
+        return
 
     def _serialize_tree(
         self,
@@ -397,122 +400,159 @@ class PDFOrchestrator:
         doc_id: str,
         doc_title: str,
         parent_unit_id: Optional[str] = None,
-        path: Optional[List[Dict[str, str]]] = None,
-        pasal_id: Optional[str] = None,
+        path: Optional[List[Dict[str, Any]]] = None,
         used_ids: Optional[set[str]] = None,
-        current_ayat_id: Optional[str] = None,
-        current_huruf_id: Optional[str] = None,
     ) -> Dict[str, Any]:
-        """Serialize LegalNode tree to specification-compliant structure."""
+        """Serialize LegalNode tree to canonical dict structure.
 
+        Emits only canonical hierarchy fields: parent_unit_id and unit_path.
+        Does NOT emit legacy parent_* fields nor 'path' array.
+        """
         if used_ids is None:
             used_ids = set()
 
-        if path is None:
-            path = [{"type": "dokumen", "label": doc_title, "unit_id": doc_id}]
+        # Initialize path with root document entry
+        current_path: List[Dict[str, Any]] = path[:] if path else [
+            {"type": "dokumen", "label": doc_title}
+        ]
 
-        # Root document node -> emit TreeNode-compliant root
-        if node.type == "document":
-            # Ensure the root doc_id is reserved to avoid collisions
-            used_ids.add(doc_id)
-
-            root_node = {
-                "type": "dokumen",
-                "unit_id": doc_id,
-                "number_label": None,
-                "label_display": doc_title,
-                "citation_string": doc_title,
-                "path": path,
-                "title": doc_title,
-                "content": None,
-                "children": [
-                    self._serialize_tree(child, doc_id, doc_title, doc_id, path, None, used_ids)
-                    for child in node.children
-                ],
-            }
-
-            return root_node
-
-        parent_unit_id = parent_unit_id or doc_id
-        base_unit_id = f"{parent_unit_id}/{node.type}-{node.number}"
-        unit_id = base_unit_id
-        counter = 2
-        while unit_id in used_ids:
-            unit_id = f"{base_unit_id}-{counter}"
-            counter += 1
-        used_ids.add(unit_id)
+        # Build deterministic unit_id from current path + this node
         number_label = node.number
         label_display = self._build_label_display(node.type, number_label)
-        current_entry = {"type": node.type, "label": label_display, "unit_id": unit_id}
-        current_path = path + [current_entry]
-        citation = build_citation_string(current_path, doc_title)
+        current_path.append({"type": node.type, "label": label_display})
+        unit_path = self._build_unit_path(doc_id, current_path)
+        unit_id = unit_path.replace(".", "/")  # stable path-like id
 
-        data = {
+        # Deduplicate if needed
+        if unit_id in used_ids:
+            # Append a numeric suffix to guarantee uniqueness
+            i = 2
+            while f"{unit_id}__{i}" in used_ids:
+                i += 1
+            unit_id = f"{unit_id}__{i}"
+        used_ids.add(unit_id)
+
+        # Build base data
+        citation = build_citation_string(current_path, doc_title)
+        data: Dict[str, Any] = {
             "type": node.type,
             "unit_id": unit_id,
             "number_label": number_label,
             "label_display": label_display,
             "citation_string": citation,
-            "path": current_path,
+            "parent_unit_id": parent_unit_id,
+            "unit_path": unit_path,
         }
 
-        if node.type in ["bab", "bagian", "paragraf", "pasal"]:
+        # Optional structural title
+        if node.title:
             data["title"] = node.title
 
+        # Content emission rules
         if node.type == "pasal":
+            # Pasal stores full aggregated content
             data["content"] = node.content
+            # Reserved extension fields for downstream enrichment
             data["tags_semantik"] = []
             data["entities"] = []
-
-        if node.type in ["ayat", "huruf", "angka"]:
-            local_content = self._extract_inline_content(node)
-            # Base linkage to pasal
+        elif node.type in ("ayat", "huruf", "angka"):
+            local_content = self._normalize_ws(self._extract_inline_content(node))
             data.update(
                 {
-                    "parent_pasal_id": pasal_id,
                     "local_content": local_content,
-                    "display_text": f"{label_display} {local_content}".strip(),
-                    "bm25_body": local_content,
-                    "span": None,
+                    "display_text": self._normalize_ws(f"{label_display} {local_content}").strip(),
                 }
             )
-            # Additional strict parent links per level
-            if node.type == "huruf":
-                data["parent_ayat_id"] = current_ayat_id
-            if node.type == "angka":
-                data["parent_ayat_id"] = current_ayat_id
-                data["parent_huruf_id"] = current_huruf_id
 
-        child_pasal_id = pasal_id
-        child_ayat_id = current_ayat_id
-        child_huruf_id = current_huruf_id
-        if node.type == "pasal":
-            child_pasal_id = unit_id
-            # reset lower anchors when entering a new pasal
-            child_ayat_id = None
-            child_huruf_id = None
-        elif node.type == "ayat":
-            child_ayat_id = unit_id
-            child_huruf_id = None
-        elif node.type == "huruf":
-            child_huruf_id = unit_id
-
-        data["children"] = [
-            self._serialize_tree(
-                child,
-                doc_id,
-                doc_title,
-                unit_id,
-                current_path,
-                child_pasal_id,
-                used_ids,
-                child_ayat_id,
-                child_huruf_id,
+        # Recurse into children
+        children = []
+        for child in node.children:
+            children.append(
+                self._serialize_tree(
+                    child,
+                    doc_id,
+                    doc_title,
+                    unit_id,
+                    current_path,
+                    used_ids,
+                )
             )
-            for child in node.children
-        ]
+        data["children"] = children
+
+        # Pop this node from path when unwinding
+        current_path.pop()
 
         return data
+
+    def _normalize_ws(self, s: str) -> str:
+        """Normalize whitespace to single spaces and trim."""
+        if not s:
+            return ""
+        return re.sub(r"\s+", " ", s).strip()
+
+    def _slugify(self, s: str) -> str:
+        """Normalize token to ltree-friendly slug: lowercase, replace spaces/dashes, strip non-alnum/_"""
+        s = s or ""
+        s = s.lower()
+        s = re.sub(r"[-\s]+", "_", s)
+        s = re.sub(r"[^a-z0-9_]", "", s)
+        return s
+
+    def _build_unit_path(self, doc_id: str, current_path: List[Dict[str, Any]]) -> str:
+        """Build deterministic ltree path using normalization rules.
+
+        Rules:
+        - Document: take doc_id if already slug-like; else slugify title to fallback 'doc_*'.
+        - bab: roman numerals converted to int (bab_4)
+        - pasal: as-is lower (pasal_149, pasal_14a)
+        - ayat: digits (ayat_2)
+        - huruf: letters (huruf_b)
+        - angka: digits (angka_1)
+        """
+        # Root token from doc_id
+        root = self._slugify(doc_id) or "doc"
+        tokens: List[str] = [root]
+        for entry in current_path[1:]:  # skip root
+            label = entry.get("label", "")
+            etype = entry.get("type", "")
+            # extract number part from label
+            num = None
+            if etype == "bab":
+                m = re.search(r"\b([IVXLCDM]+)\b", label, flags=re.IGNORECASE)
+                if m:
+                    num = str(self._roman_to_int(m.group(1)))
+            elif etype == "pasal":
+                m = re.search(r"Pasal\s+([0-9A-Za-z]+)", label, flags=re.IGNORECASE)
+                if m:
+                    num = m.group(1).lower()
+            elif etype == "paragraf":
+                m = re.search(r"PARAGRAF\s+([0-9A-Za-z]+)", label, flags=re.IGNORECASE)
+                if m:
+                    num = m.group(1).lower()
+            elif etype == "bagian":
+                m = re.search(r"BAGIAN\s+([0-9A-Za-z]+)", label, flags=re.IGNORECASE)
+                if m:
+                    num = m.group(1).lower()
+            elif etype == "ayat":
+                m = re.search(r"\((\d+)\)", label)
+                if m:
+                    num = m.group(1)
+            elif etype in ("huruf", "angka"):
+                m = re.match(r"([a-z0-9]+)\.\s*", label, flags=re.IGNORECASE)
+                if m:
+                    num = m.group(1).lower()
+
+            if not etype:
+                continue
+            if etype == "dokumen":
+                continue
+            base = etype
+            if num:
+                token = f"{base}_{self._slugify(num)}"
+            else:
+                token = self._slugify(base)
+            tokens.append(token)
+        return ".".join(tokens)
 
     def _split_number_label(self, label: str) -> Tuple[int, str]:
         """Split number label into integer and suffix."""

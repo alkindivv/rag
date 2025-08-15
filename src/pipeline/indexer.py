@@ -12,7 +12,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-from sqlalchemy import text
+from sqlalchemy import text, func
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
@@ -20,7 +20,6 @@ from ..config.settings import settings
 from ..db.models import (
     DocForm,
     DocStatus,
-    DocumentVector,
     LegalDocument,
     LegalUnit,
     Subject,
@@ -55,7 +54,7 @@ class LegalDocumentIndexer:
         self.stats = {
             "documents_processed": 0,
             "units_created": 0,
-            "vectors_created": 0,
+            "embeddings_created": 0,
             "errors": 0,
         }
 
@@ -157,9 +156,9 @@ class LegalDocumentIndexer:
                 )
                 self.stats["units_created"] += len(units)
 
-                # Create embeddings for pasal-level content
-                vectors_created = self._create_embeddings(db, doc, pasal_units)
-                self.stats["vectors_created"] += vectors_created
+                # Create embeddings on legal_units.embedding (granular)
+                embeddings_created = self._create_embeddings(db, doc, units)
+                self.stats["embeddings_created"] += embeddings_created
 
             return True
 
@@ -269,9 +268,7 @@ class LegalDocumentIndexer:
 
         def process_node(
             node: Dict[str, Any],
-            parent_pasal_id: Optional[str] = None,
-            current_ayat_id: Optional[str] = None,
-            current_huruf_id: Optional[str] = None,
+            parent_db_id: Optional[str] = None,
         ) -> None:
             """Recursively process tree nodes."""
 
@@ -286,7 +283,6 @@ class LegalDocumentIndexer:
                 "ayat": UnitType.AYAT,
                 "huruf": UnitType.HURUF,
                 "angka": UnitType.ANGKA,
-                "angka_amandement": UnitType.ANGKA_AMANDEMENT,
             }
 
             node_type = node.get("type", "dokumen")
@@ -298,12 +294,9 @@ class LegalDocumentIndexer:
                 return
             processed_unit_ids.add(unit_id)
 
-            # Create unit with strict parent anchors
-            # For pasal units, aggregate content from all children
-            if unit_type == UnitType.PASAL:
-                aggregated_content = self._build_pasal_aggregated_content(node)
-            else:
-                aggregated_content = node.get("bm25_body") or node.get("local_content", "")
+            # Pure-consumer: use orchestrator fields as-is
+            # Content: prefer orchestrator 'content' for pasal, else 'local_content'
+            content_value = node.get("content") or node.get("local_content")
 
             unit = LegalUnit(
                 document_id=doc.id,
@@ -312,39 +305,32 @@ class LegalDocumentIndexer:
                 number_label=node.get("number_label"),
                 label_display=node.get("label_display"),
                 title=node.get("title"),
-                content=self._build_full_content(node),
+                content=content_value,
                 local_content=node.get("local_content"),
                 display_text=node.get("display_text"),
-                bm25_body=aggregated_content,
-                path=node.get("path"),
+                # bm25_body deprecated: do not populate
                 citation_string=node.get("citation_string"),
-                parent_pasal_id=parent_pasal_id,
-                parent_ayat_id=(node.get("parent_ayat_id") or current_ayat_id),
-                parent_huruf_id=(node.get("parent_huruf_id") or current_huruf_id),
-                hierarchy_path=self._build_hierarchy_path(node.get("path", [])),
+                # Legacy parent_* fields are deprecated: do not write
             )
+
+            # Persist unit_path as ltree using server-side function
+            unit_path_str = node.get("unit_path")
+            if unit_path_str:
+                unit.unit_path = func.text2ltree(unit_path_str)
+
+            # Parent link: assign actual parent's DB UUID if provided
+            if parent_db_id:
+                unit.parent_unit_id = parent_db_id
 
             db.add(unit)
             units.append(unit)
 
-            # Advance anchors
-            next_pasal_id = parent_pasal_id
-            next_ayat_id = current_ayat_id
-            next_huruf_id = current_huruf_id
-
+            # Collect pasal units for embedding only
             if unit_type == UnitType.PASAL:
-                next_pasal_id = unit.unit_id
-                next_ayat_id = None
-                next_huruf_id = None
-                pasal_units.append(unit)  # Collect pasal units for embedding
-            elif unit_type == UnitType.AYAT:
-                next_ayat_id = unit.unit_id
-                next_huruf_id = None
-            elif unit_type == UnitType.HURUF:
-                next_huruf_id = unit.unit_id
+                pasal_units.append(unit)
 
             for child in node.get("children", []):
-                process_node(child, next_pasal_id, next_ayat_id, next_huruf_id)
+                process_node(child, unit.id)
 
         # Start processing from root
         if tree.get("children"):
@@ -359,189 +345,81 @@ class LegalDocumentIndexer:
 
         return units, pasal_units
 
-    def _build_full_content(self, node: Dict[str, Any]) -> str:
-        """Build full content including children."""
-        content_parts = []
-
-        # Add local content
-        if node.get("local_content"):
-            content_parts.append(node["local_content"])
-
-        # Add children content recursively
-        for child in node.get("children", []):
-            child_content = self._build_full_content(child)
-            if child_content:
-                content_parts.append(child_content)
-
-        return "\n\n".join(content_parts)
-
-    def _build_hierarchy_path(self, path: List[Dict[str, Any]]) -> str:
-        """Build text hierarchy path from path array."""
-        if not path:
-            return ""
-
-        path_parts = []
-        for item in path:
-            if item.get("label"):
-                path_parts.append(item["label"])
-
-        return " / ".join(path_parts)
-
-    def _build_pasal_aggregated_content(self, pasal_node: Dict[str, Any]) -> str:
-        """
-        Build aggregated content for a pasal unit including all children.
-
-        For dense vector search, pasal content should include:
-        - The pasal's own content
-        - All ayat content
-        - All huruf content under ayats
-        - All angka content under huruf
-
-        Args:
-            pasal_node: Pasal node from document tree
-
-        Returns:
-            Aggregated content string
-        """
-        content_parts = []
-
-        # Add pasal's own content
-        pasal_content = pasal_node.get("local_content") or pasal_node.get("bm25_body", "")
-        if pasal_content.strip():
-            content_parts.append(pasal_content.strip())
-
-        # Recursively collect children content
-        def collect_children_content(node, level=0):
-            children = node.get("children", [])
-            for child in children:
-                child_type = child.get("type", "")
-                child_content = child.get("local_content") or child.get("bm25_body", "")
-
-                if child_content.strip():
-                    # Format content based on type
-                    if child_type == "ayat":
-                        number = child.get("number_label", "")
-                        formatted = f"({number}) {child_content.strip()}"
-                    elif child_type == "huruf":
-                        letter = child.get("number_label", "")
-                        formatted = f"{letter}. {child_content.strip()}"
-                    elif child_type == "angka":
-                        number = child.get("number_label", "")
-                        formatted = f"{number}) {child_content.strip()}"
-                    else:
-                        formatted = child_content.strip()
-
-                    content_parts.append(formatted)
-
-                # Recursively process children
-                collect_children_content(child, level + 1)
-
-        collect_children_content(pasal_node)
-
-        # Join all content with double newlines for readability
-        aggregated = "\n\n".join(content_parts)
-        return aggregated
+    # Removed all in-Python aggregation/formatting helpers to enforce pure-consumer behavior
 
     def _create_embeddings(
         self,
         db: Session,
         doc: LegalDocument,
-        pasal_units: List[LegalUnit]
+        units: List[LegalUnit]
     ) -> int:
         """
-        Create vector embeddings for pasal-level content using 384-dimensional vectors.
+        Create vector embeddings directly on legal_units.embedding (384-dim).
 
         Args:
             db: Database session
             doc: Document record
-            pasal_units: List of pasal-level LegalUnit objects
+            units: List of LegalUnit objects (all granularities)
 
         Returns:
-            Number of vectors created
+            Number of embeddings created
         """
-        if not pasal_units:
+        if not units:
             return 0
 
         try:
-            # Prepare content for embedding from pasal units
-            unit_ids = []
-            contents = []
+            # Prepare content per granular rule
+            unit_db_ids: List[str] = []  # store ORM pk id for update
+            contents: List[str] = []
 
-            for unit in pasal_units:
-                if unit.content and unit.content.strip():
-                    unit_ids.append(unit.unit_id)
-                    contents.append(unit.content)
+            def is_skip_text(text: Optional[str]) -> bool:
+                if not text:
+                    return True
+                stripped = text.strip()
+                if not stripped:
+                    return True
+                # Skip boilerplate markers
+                return stripped.lower() in {"dihapus.", "diubah.", "dicabut."}
 
-            if not contents:
-                logger.warning("No valid pasal content found for embedding")
-                return 0
+            for unit in units:
+                # Choose content based on unit_type
+                if unit.unit_type in {UnitType.AYAT, UnitType.HURUF, UnitType.ANGKA}:
+                    chosen = unit.local_content
+                else:
+                    chosen = unit.content
 
-            # Get embeddings using passage task for document content (384 dimensions)
-            embeddings = self.embedder.embed_texts(contents, task="retrieval.passage", dims=384)
-
-            vectors_created = 0
-            for unit_id, content, embedding in zip(unit_ids, contents, embeddings):
-                if embedding is None or len(embedding) != 384:
-                    logger.warning(f"Failed to create valid 384-dim embedding for {unit_id}")
+                if is_skip_text(chosen):
                     continue
 
-                # Extract hierarchy info from unit_id
-                hierarchy_info = self._extract_hierarchy_info(unit_id)
+                unit_db_ids.append(unit.id)
+                contents.append(chosen)
 
-                vector = DocumentVector(
-                    document_id=doc.id,
-                    unit_id=unit_id,
-                    content_type="pasal",
-                    embedding=embedding,
-                    embedding_model=self.embedder.model,
-                    doc_form=doc.doc_form,
-                    doc_year=doc.doc_year,
-                    doc_number=doc.doc_number,
-                    doc_status=doc.doc_status,
-                    hierarchy_path=hierarchy_info.get("hierarchy_path", ""),
-                    pasal_number=hierarchy_info.get("pasal_number"),
-                    bab_number=hierarchy_info.get("bab_number"),
-                    ayat_number=hierarchy_info.get("ayat_number"),
-                    token_count=len(content.split()),
-                    char_count=len(content),
-                )
+            if not contents:
+                logger.warning("No valid unit content found for embedding")
+                return 0
 
-                db.add(vector)
-                vectors_created += 1
+            # Get embeddings using passage task (384 dims)
+            embeddings = self.embedder.embed_texts(contents, task="retrieval.passage", dims=384)
 
-            logger.info(f"Created {vectors_created} embeddings for document {doc.doc_id}")
-            return vectors_created
+            created = 0
+            for unit_pk, content, embedding in zip(unit_db_ids, contents, embeddings):
+                if embedding is None or len(embedding) != 384:
+                    logger.warning(f"Failed to create valid 384-dim embedding for unit {unit_pk}")
+                    continue
+                # Update in-place
+                db.query(LegalUnit).filter(LegalUnit.id == unit_pk).update({
+                    LegalUnit.embedding: embedding
+                }, synchronize_session=False)
+                created += 1
+
+            logger.info(f"Created {created} embeddings for document {doc.doc_id}")
+            return created
 
         except Exception as e:
             logger.error(f"Error creating embeddings for document {doc.doc_id}: {e}")
             return 0
 
-    def _extract_hierarchy_info(self, unit_id: str) -> Dict[str, Optional[str]]:
-        """Extract hierarchy information from unit_id."""
-        info = {
-            "hierarchy_path": "",
-            "pasal_number": None,
-            "bab_number": None,
-            "ayat_number": None,
-        }
-
-        # Parse unit_id like "UU-2025-2/pasal-1" or "UU-2025-2/bab-1/pasal-5"
-        parts = unit_id.split("/")
-        path_parts = []
-
-        for part in parts[1:]:  # Skip document part
-            if part.startswith("bab-"):
-                info["bab_number"] = part.replace("bab-", "")
-                path_parts.append(f"Bab {info['bab_number']}")
-            elif part.startswith("pasal-"):
-                info["pasal_number"] = part.replace("pasal-", "")
-                path_parts.append(f"Pasal {info['pasal_number']}")
-            elif part.startswith("ayat-"):
-                info["ayat_number"] = part.replace("ayat-", "")
-                path_parts.append(f"Ayat {info['ayat_number']}")
-
-        info["hierarchy_path"] = " / ".join(path_parts)
-        return info
+    # Removed hierarchy extraction helper; no longer needed after removing DocumentVector
 
 
 def main():

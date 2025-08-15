@@ -25,7 +25,7 @@ class LegalLLMService:
     async def generate_answer(
         self,
         query: str,
-        context: List[SearchResult],
+        context: Any,
         temperature: float = 0.3,
         max_tokens: int = 1000
     ) -> Dict[str, Any]:
@@ -44,11 +44,16 @@ class LegalLLMService:
         start_time = time.time()
 
         try:
+            # Normalize context to a list of results (can be passed as dict from services)
+            if isinstance(context, dict):
+                context_list = context.get("results", []) or []
+            else:
+                context_list = context or []
             # Analyze question type for better targeting
             question_type = self._analyze_question_type(query)
 
             # Build context focused on the specific question
-            focused_context = self._build_focused_context(query, context, question_type)
+            focused_context = self._build_focused_context(query, context_list, question_type)
 
             # Generate direct answer using improved prompt
             direct_prompt = ANSWER_WITH_CITATIONS.format(
@@ -60,24 +65,42 @@ class LegalLLMService:
 
             # If answer is too generic, try to get more specific response
             if self._is_answer_too_generic(answer, query):
-                specific_prompt = self._build_specific_prompt(query, context, question_type)
+                specific_prompt = self._build_specific_prompt(query, context_list, question_type)
                 answer = await self._generate_llm_response(specific_prompt, temperature, max_tokens)
 
             # Calculate confidence based on relevance
-            confidence = self._calculate_confidence(context)
+            confidence = self._calculate_confidence(context_list)
 
             duration_ms = (time.time() - start_time) * 1000
 
+            # Serialize sources defensively
+            def _to_dict_safe(item: Any) -> Dict[str, Any]:
+                try:
+                    if hasattr(item, "to_dict"):
+                        return item.to_dict()
+                    if isinstance(item, dict):
+                        return item
+                    return {
+                        "id": getattr(item, "id", None),
+                        "unit_id": getattr(item, "unit_id", None),
+                        "content": getattr(item, "content", ""),
+                        "citation_string": getattr(item, "citation_string", None),
+                        "score": getattr(item, "score", None),
+                        "unit_type": getattr(item, "unit_type", None),
+                    }
+                except Exception:
+                    return {"error": "failed_to_serialize_source"}
+
             return {
                 "answer": answer,
-                "sources": [result.to_dict() for result in context[:5]],  # Top 5 sources as dicts
+                "sources": [_to_dict_safe(r) for r in context_list[:5]],  # Top 5 sources as dicts
                 "confidence": confidence,
                 "duration_ms": duration_ms,
                 "model_used": self.provider.get_model_info()['model']
             }
 
         except Exception as e:
-            logger.error(f"LLM generation failed: {e}")
+            logger.exception(f"LLM generation failed: {e}")
             return {
                 "answer": "Maaf, terjadi kesalahan dalam memproses pertanyaan Anda.",
                 "sources": [],
@@ -108,7 +131,7 @@ class LegalLLMService:
         else:
             return "general"
 
-    def _build_focused_context(self, query: str, context: List[SearchResult], question_type: str) -> str:
+    def _build_focused_context(self, query: str, context: List[Any], question_type: str) -> str:
         """Build context focused on answering the specific question."""
         if not context:
             return "Tidak ada konteks yang ditemukan."
@@ -116,8 +139,14 @@ class LegalLLMService:
         # Filter and rank results based on question type
         relevant_results = []
         for result in context[:7]:  # Increased from 5 to 7 for better coverage
-            content = (result.content or "").strip()
-            citation = result.citation_string or "(tanpa citation)"
+            if isinstance(result, dict):
+                content = (result.get("content") or "").strip()
+                citation = result.get("citation_string") or result.get("citation") or "(tanpa citation)"
+                search_score = result.get("score") or 0.0
+            else:
+                content = (getattr(result, "content", "") or "").strip()
+                citation = getattr(result, "citation_string", None) or "(tanpa citation)"
+                search_score = getattr(result, "score", 0.0)
 
             # Score relevance based on question type
             relevance_score = self._calculate_content_relevance(content, query, question_type)
@@ -127,7 +156,7 @@ class LegalLLMService:
                 'relevance': relevance_score,
                 'citation': citation,
                 'content': content,
-                'search_score': result.score  # Include original search score
+                'search_score': search_score  # Include original search score
             })
 
         # Sort by combined relevance and search score
@@ -356,7 +385,7 @@ Jawaban:"""
             logger.error(f"LLM generation failed: {e}")
             return "Maaf, terjadi kesalahan dalam menghasilkan jawaban. Silakan coba lagi."
 
-    def _calculate_confidence(self, context: List[SearchResult]) -> float:
+    def _calculate_confidence(self, context: List[Any]) -> float:
         """Calculate confidence score based on context quality"""
         if not context:
             return 0.0
@@ -365,26 +394,49 @@ Jawaban:"""
         base_score = min(len(context) * 0.2, 1.0)
 
         # Boost for exact matches
-        exact_matches = sum(1 for c in context if c.score > 0.8)
+        def _score_of(c: Any) -> float:
+            return (c.get("score") if isinstance(c, dict) else getattr(c, "score", 0.0)) or 0.0
+
+        exact_matches = sum(1 for c in context if _score_of(c) > 0.8)
         boost = exact_matches * 0.1
 
         return min(base_score + boost, 1.0)
 
     def _extract_citations(self, answer: str, context: List[SearchResult]) -> List[Dict[str, str]]:
         """Extract citations from answer and context"""
-        citations = []
+        citations: List[Dict[str, str]] = []
 
-        # Extract citations from context
         for result in context:
-            if result.unit_type:
-                citation = {
-                    "pasal": getattr(result, 'pasal_number', ''),
-                    "ayat": getattr(result, 'ayat_number', ''),
-                    "text": (result.content or '')[:100] + "...",
-                    "document_title": getattr(result, 'document_title', ''),
-                    "unit_type": result.unit_type,
-                    "citation_string": result.citation_string or ''
-                }
+            try:
+                if isinstance(result, dict):
+                    unit_type = result.get('unit_type')
+                    if not unit_type:
+                        continue
+                    snippet = (result.get('content') or '')
+                    citation = {
+                        "pasal": result.get('pasal_number', ''),
+                        "ayat": result.get('ayat_number', ''),
+                        "text": (snippet[:100] + "...") if snippet else "",
+                        "document_title": result.get('document_title', ''),
+                        "unit_type": unit_type,
+                        "citation_string": result.get('citation_string', '') or ''
+                    }
+                else:
+                    unit_type = getattr(result, 'unit_type', None)
+                    if not unit_type:
+                        continue
+                    content = getattr(result, 'content', '') or ''
+                    citation = {
+                        "pasal": getattr(result, 'pasal_number', ''),
+                        "ayat": getattr(result, 'ayat_number', ''),
+                        "text": (content[:100] + "...") if content else "",
+                        "document_title": getattr(result, 'document_title', ''),
+                        "unit_type": unit_type,
+                        "citation_string": getattr(result, 'citation_string', '') or ''
+                    }
                 citations.append(citation)
+            except Exception:
+                # Skip if any unexpected shape
+                continue
 
         return citations
