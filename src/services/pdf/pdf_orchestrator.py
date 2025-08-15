@@ -215,20 +215,20 @@ class PDFOrchestrator:
             logger.warning("TextCleaner not available, using basic cleaning")
             # return self._basic_clean(text)
 
-    # def _basic_clean(self, text: str) -> str:
-    #     """Basic text cleaning fallback"""
-    #     import re
+    def _basic_clean(self, text: str) -> str:
+        """Basic text cleaning fallback"""
+        import re
 
-    #     # Remove excessive whitespace
-    #     text = re.sub(r'\s+', ' ', text)
+        # Remove excessive whitespace
+        text = re.sub(r'\s+', ' ', text)
 
-    #     # Remove page breaks and form feeds
-    #     text = re.sub(r'[\f\r]+', '\n', text)
+        # Remove page breaks and form feeds
+        text = re.sub(r'[\f\r]+', '\n', text)
 
-    #     # Clean up line breaks
-    #     text = re.sub(r'\n\s*\n\s*\n', '\n\n', text)
+        # Clean up line breaks
+        text = re.sub(r'\n\s*\n\s*\n', '\n\n', text)
 
-    #     return text.strip()
+        return text.strip()
 
     def _build_document_tree(self, text: str) -> LegalNode:
         """Build structured document tree from legal text."""

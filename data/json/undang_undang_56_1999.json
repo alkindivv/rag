@@ -1,0 +1,58 @@
+{
+  "doc_source": "BPK",
+  "doc_id": "UU-1999-56",
+  "doc_type": "Peraturan Perundang-undangan",
+  "doc_title": "Undang-undang (UU)  Nomor 56 Tahun 1999 tentang Rakyat Terlatih",
+  "doc_teu": "Indonesia, Pemerintah Pusat",
+  "doc_number": "56",
+  "doc_form": "UU",
+  "doc_form_short": "UU",
+  "doc_year": "1999",
+  "doc_place_enacted": "Jakarta",
+  "doc_date_enacted": null,
+  "doc_date_promulgated": null,
+  "doc_date_effective": null,
+  "doc_subject": [
+    "PERTAHANAN DAN KEAMANAN",
+    "MILITER",
+    "KETATANEGARAAN",
+    "KENEGARAAN"
+  ],
+  "doc_status": "Tidak Berlaku",
+  "doc_language": "Bahasa Indonesia",
+  "doc_location": "Pemerintah Pusat",
+  "doc_field": null,
+  "doc_content": null,
+  "doc_processing_status": "pdf_processed",
+  "relationships": {
+    "dicabut_dengan": [
+      {
+        "regulation_reference": "UU No. 23 Tahun 2019 tentang Pengelolaan Sumber Daya Nasional Untuk Pertahanan Negara",
+        "reference_link": "https://peraturan.bpk.go.id/Details/123685/uu-no-23-tahun-2019"
+      }
+    ]
+  },
+  "detail_url": "https://peraturan.bpk.go.id/Details/45405/uu-no-56-tahun-1999",
+  "source_url": "https://peraturan.bpk.go.id/Details/45405/uu-no-56-tahun-1999",
+  "pdf_url": "https://peraturan.bpk.go.id/Download/33905/UU%20Nomor%2056%20Tahun%201999.pdf",
+  "uji_materi_pdf_url": null,
+  "uji_materi": [],
+  "pdf_path": "data/pdfs/undang_undang_56_1999.pdf",
+  "text_path": null,
+  "document_tree": null,
+  "last_updated": "2025-08-15T23:11:18.139074",
+  "pdf_extraction_metadata": {
+    "method": "pdfplumber",
+    "confidence": 90.0,
+    "processing_time": 0.7132339477539062,
+    "text_length": 30685,
+    "original_text_length": 32925,
+    "page_count": 22,
+    "tree_nodes_count": 0
+  },
+  "pasal_metadata": null,
+  "structure_flags": null,
+  "structure_analysis": null,
+  "chapters": null,
+  "articles": null
+}
